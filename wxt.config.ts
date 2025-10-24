@@ -6,6 +6,6 @@ export default defineConfig({
 	srcDir: 'src',
 	manifest: {
 		default_locale: 'en',
-		permissions: ['bookmarks', 'tabs'],
+		permissions: ['bookmarks', 'tabs', 'storage'],
 	},
 });

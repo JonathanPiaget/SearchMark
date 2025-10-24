@@ -19,3 +19,16 @@ tryDifferentSearch: Essayez un terme de recherche différent
 expandHint: Appuyez sur Shift+Espace pour étendre les dossiers avec enfants
 save: Enregistrer
 cancel: Annuler
+toggleTheme: Changer le thème
+settings: Paramètres
+appearance: Apparence
+theme: Thème
+themeDescription: Choisissez l'apparence de SearchMark
+themeAuto: Auto (suivre le système)
+themeLight: Clair
+themeDark: Sombre
+preview: Aperçu
+previewText: Dossier exemple
+about: À propos
+version: Version
+extensionDescription: Une extension de navigateur pour une gestion efficace des marque-pages avec des capacités de recherche

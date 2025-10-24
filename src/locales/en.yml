@@ -19,3 +19,16 @@ tryDifferentSearch: Try a different search term
 expandHint: Press Shift+Space to expand folders with children
 save: Save
 cancel: Cancel
+toggleTheme: Toggle theme
+settings: Settings
+appearance: Appearance
+theme: Theme
+themeDescription: Choose how SearchMark looks
+themeAuto: Auto (follow system)
+themeLight: Light
+themeDark: Dark
+preview: Preview
+previewText: Example folder
+about: About
+version: Version
+extensionDescription: A browser extension for efficient bookmark management with search capabilities

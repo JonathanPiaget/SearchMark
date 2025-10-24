@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useTheme } from '../../composables/useTheme';
 import { getBookmarkToolbarId } from '../../utils/bookmark';
 import BookmarkForm from './components/BookmarkForm.vue';
 import FolderSelector from './components/FolderSelector.vue';
 import SaveButton from './components/SaveButton.vue';
+import ThemeToggle from './components/ThemeToggle.vue';
 
 const currentUrl = ref('');
 const currentTitle = ref('');
@@ -14,6 +16,8 @@ const bookmarkUrl = ref('');
 const bookmarkTitle = ref('');
 const selectedFolderId = ref('');
 const selectedFolderName = ref('');
+
+const { initTheme } = useTheme();
 
 const loadCurrentTab = async () => {
 	try {
@@ -37,6 +41,7 @@ const loadCurrentTab = async () => {
 };
 
 onMounted(() => {
+	initTheme();
 	loadCurrentTab();
 });
 
@@ -97,6 +102,7 @@ const saveBookmark = async () => {
         <img src="/icon.svg" alt="SearchMark Logo" class="logo">
         <h1>SearchMark</h1>
       </div>
+      <ThemeToggle />
     </div>
 
     <FolderSelector
@@ -123,15 +129,21 @@ const saveBookmark = async () => {
 .container {
   width: 380px;
   padding: 16px;
-  background: linear-gradient(135deg, #fafbff 0%, #f5f3ff 100%);
+  background: var(--bg-secondary);
+  transition: background 0.2s ease;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  margin-bottom: 20px;
 }
 
 .logo {
@@ -143,6 +155,7 @@ const saveBookmark = async () => {
   font-size: 18px;
   font-weight: 600;
   margin: 0;
-  color: #5e33a9;
+  color: var(--accent-primary);
+  transition: color 0.2s ease;
 }
 </style>

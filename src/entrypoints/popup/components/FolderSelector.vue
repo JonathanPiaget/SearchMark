@@ -259,14 +259,15 @@ onMounted(() => {
 
 .shortcut-hint {
   font-size: 11px;
-  color: #6b46c1;
+  color: var(--text-secondary);
   padding: 8px 12px;
   font-style: italic;
   text-align: center;
   opacity: 0.8;
-  background: #f8f6ff;
-  border-bottom: 1px solid #e1d7f0;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
   margin: 0;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .dropdown-container {
@@ -274,20 +275,21 @@ onMounted(() => {
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #e1d7f0;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(94, 51, 169, 0.15);
+  box-shadow: 0 8px 24px var(--shadow-secondary);
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
   margin-top: 4px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .dropdown-item {
   cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.1s;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
 }
 
 .dropdown-item:last-child {
@@ -296,7 +298,7 @@ onMounted(() => {
 
 .dropdown-item:hover,
 .dropdown-item.highlighted {
-  background-color: #5e33a9;
+  background-color: var(--accent-primary);
   color: white;
 }
 
@@ -324,22 +326,24 @@ onMounted(() => {
 
 .children-count {
   font-size: 11px;
-  color: #6b46c1;
+  color: var(--text-secondary);
   margin-left: 4px;
   font-weight: normal;
+  transition: color 0.2s ease;
 }
 
 .expand-hint {
   font-size: 12px;
-  color: #999;
+  color: var(--text-muted);
   margin-left: 6px;
-  background: #f3f0ff;
+  background: var(--bg-tertiary);
   padding: 2px 6px;
   border-radius: 3px;
   font-weight: 500;
   min-width: 20px;
   text-align: center;
   flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-item:hover .children-count,
@@ -386,28 +390,31 @@ onMounted(() => {
 
 .folder-name {
   font-weight: 500;
-  color: #2d1b4e;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
   min-width: 0;
+  transition: color 0.2s ease;
 }
 
 .child-indicator {
   font-size: 11px;
-  color: #6b46c1;
-  background: #e9ecef;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
   padding: 1px 4px;
   border-radius: 3px;
   margin-left: auto;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .folder-breadcrumb {
   font-size: 12px;
-  color: #6b46c1;
+  color: var(--text-secondary);
   opacity: 0.8;
   margin-left: 18px;
+  transition: color 0.2s ease;
 }
 
 .children-list {
@@ -421,9 +428,10 @@ onMounted(() => {
 
 .children-header {
   font-size: 11px;
-  color: #6b46c1;
+  color: var(--text-secondary);
   margin-bottom: 4px;
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .children-items {
@@ -434,22 +442,22 @@ onMounted(() => {
 
 .child-folder {
   font-size: 11px;
-  color: #555;
-  background: #faf9ff;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
   padding: 4px 8px;
   border-radius: 3px;
   cursor: pointer;
-  transition: background-color 0.1s;
-  border: 1px solid #e1d7f0;
+  transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
+  border: 1px solid var(--border-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .child-folder:hover {
-  background-color: #5e33a9;
+  background-color: var(--accent-primary);
   color: white;
-  border-color: #4a2889;
+  border-color: var(--accent-hover);
 }
 
 .dropdown-item:hover .child-folder,
@@ -462,20 +470,21 @@ onMounted(() => {
 .dropdown-item:hover .child-folder:hover,
 .dropdown-item.highlighted .child-folder:hover {
   background-color: rgba(255, 255, 255, 1);
-  color: #5e33a9;
-  border-color: #5e33a9;
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
 .more-children {
   font-size: 11px;
-  color: #6b46c1;
+  color: var(--text-secondary);
   font-style: italic;
+  transition: color 0.2s ease;
 }
 
 /* Highlighting styles */
 .highlight {
-  background-color: #ffeb3b;
-  color: #2d1b4e;
+  background-color: var(--highlight-bg);
+  color: var(--highlight-text);
   font-weight: 600;
   padding: 1px 2px;
   border-radius: 2px;
@@ -483,7 +492,7 @@ onMounted(() => {
 
 .dropdown-item.highlighted .highlight,
 .dropdown-item:hover .highlight {
-  background-color: #fff200;
+  background-color: var(--highlight-selected);
   color: #000;
   font-weight: 700;
 }
@@ -492,7 +501,8 @@ onMounted(() => {
 .no-results {
   padding: 20px;
   text-align: center;
-  color: #6b46c1;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
 }
 
 .no-results-icon {
@@ -505,11 +515,13 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: #2d1b4e;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
 }
 
 .no-results-hint {
   font-size: 12px;
-  color: #999;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
 }
 </style>
