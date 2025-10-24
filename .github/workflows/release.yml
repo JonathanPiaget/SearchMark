@@ -1,4 +1,6 @@
 name: Release
+permissions:
+  contents: read
 
 on:
   push:
@@ -85,6 +87,8 @@ jobs:
     needs: [Version, Submit]
     if: ${{ needs.Version.outputs.version_changed == '1' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - name: Create Release
