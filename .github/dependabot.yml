@@ -7,7 +7,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all-github-actions:
         patterns:
@@ -18,7 +18,7 @@ updates:
     # Look for a `packages.json` in the `root` directory
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       all-npm-dependencies:
         patterns:
