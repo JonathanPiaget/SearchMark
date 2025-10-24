@@ -15,23 +15,25 @@ Save bookmarks using global keyboard shortcuts without opening browser menus. Pr
 **Folder Search**
 Find bookmark folders by typing their names. Navigate results with arrow keys and expand folders with children. The interface highlights matching text and shows folder paths for easy identification.
 
+**Dark Mode**
+Automatic theme detection follows your system preferences, or manually toggle between light and dark modes. Access theme settings via the extension options page for fine-grained control (Auto/Light/Dark).
+
 **Multi-language Support**
 Currently supports English and French, with the architecture in place to easily add additional languages in the future.
 
 ## Planned Features
 
-1. Dark mode support
-2. Display in which folder the current tab is saved
-3. Full-text search across bookmark titles, URLs and folders
-4. Enable creating new folders during save process
-5. Customize hot keys and default folder for quick save
-6. Add a note to a bookmark
-7. Find a way to do a trash for deleted bookmarks
-8. List broken URLs bookmarks
-9. Auto backup locally on any change
-10. Add a button "see later" or similar to add in a dedicated folder
-11. Add more languages
-12. Add tags to bookmarks
+1. Display in which folder the current tab is saved
+2. Full-text search across bookmark titles, URLs and folders
+3. Enable creating new folders during save process
+4. Customize hot keys and default folder for quick save
+5. Add a note to a bookmark
+6. Find a way to do a trash for deleted bookmarks
+7. List broken URLs bookmarks
+8. Auto backup locally on any change
+9. Add a button "see later" or similar to add in a dedicated folder
+10. Add more languages
+11. Add tags to bookmarks
 
 ## Development
 
