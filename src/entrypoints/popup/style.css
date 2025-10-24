@@ -1,6 +1,12 @@
+/* Import shared theme variables */
+@import "../theme-variables.css";
+
 html {
 	border-radius: 12px;
 	overflow: visible;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
 }
 
 body {
@@ -9,11 +15,14 @@ body {
 		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 	font-size: 14px;
 	line-height: 1.4;
-	color: #2d1b4e;
-	background: #fff;
+	color: var(--text-primary);
+	background: var(--bg-primary);
 	border-radius: 12px;
 	overflow: visible;
 	min-height: 100vh;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
 }
 
 * {
@@ -29,23 +38,29 @@ body {
 	margin-bottom: 4px;
 	font-size: 13px;
 	font-weight: 500;
-	color: #2d1b4e;
+	color: var(--text-primary);
+	transition: color 0.2s ease;
 }
 
 .form-input,
 .form-textarea {
 	width: 100%;
 	padding: 8px 12px;
-	border: 1px solid #e1d7f0;
+	border: 1px solid var(--border-primary);
 	border-radius: 6px;
 	font-size: 14px;
 	box-sizing: border-box;
-	transition: border-color 0.2s;
+	transition:
+		border-color 0.2s ease,
+		background-color 0.2s ease,
+		color 0.2s ease;
+	background-color: var(--input-bg);
+	color: var(--text-primary);
 }
 
 .form-input:focus,
 .form-textarea:focus {
 	outline: none;
-	border-color: #5e33a9;
-	box-shadow: 0 0 0 3px rgba(94, 51, 169, 0.1);
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px var(--shadow-primary);
 }

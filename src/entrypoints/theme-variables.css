@@ -1,0 +1,60 @@
+/* CSS Variables for theming - Shared across all entrypoints */
+:root {
+	/* Light theme colors */
+	--bg-primary: #ffffff;
+	--bg-secondary: linear-gradient(135deg, #fafbff 0%, #f5f3ff 100%);
+	--bg-tertiary: #f8f6ff;
+	--text-primary: #2d1b4e;
+	--text-secondary: #6b46c1;
+	--text-muted: #999;
+	--accent-primary: #5e33a9;
+	--accent-secondary: #7c4dff;
+	--accent-hover: #4a2889;
+	--accent-hover-secondary: #6a1b9a;
+	--border-primary: #e1d7f0;
+	--border-secondary: #d4c5f0;
+	--border-subtle: #f0f0f0;
+	--shadow-primary: rgba(94, 51, 169, 0.1);
+	--shadow-secondary: rgba(94, 51, 169, 0.15);
+	--input-bg: #ffffff;
+	--dropdown-bg: #ffffff;
+	--highlight-bg: #ffeb3b;
+	--highlight-selected: #fff200;
+	--highlight-text: #2d1b4e;
+	--error-bg: #fef2f2;
+	--error-text: #dc2626;
+	--error-border: #fecaca;
+	--success-bg: #f3f0ff;
+	--success-text: #5e33a9;
+	--success-border: #d4c5f0;
+}
+
+/* Dark theme colors */
+html[data-theme="dark"] {
+	--bg-primary: #1a1625;
+	--bg-secondary: linear-gradient(135deg, #1a1625 0%, #2d1b4e 100%);
+	--bg-tertiary: #2d1b4e;
+	--text-primary: #e8e4f0;
+	--text-secondary: #b39dd8;
+	--text-muted: #8b7aa8;
+	--accent-primary: #9d7ae0;
+	--accent-secondary: #b89ef5;
+	--accent-hover: #b89ef5;
+	--accent-hover-secondary: #d4c5f0;
+	--border-primary: #3d2f5a;
+	--border-secondary: #4a3b66;
+	--border-subtle: #2d1f45;
+	--shadow-primary: rgba(0, 0, 0, 0.3);
+	--shadow-secondary: rgba(0, 0, 0, 0.5);
+	--input-bg: #2d1f45;
+	--dropdown-bg: #2d1f45;
+	--highlight-bg: #ffd700;
+	--highlight-selected: #ffea00;
+	--highlight-text: #000000;
+	--error-bg: #3d1f1f;
+	--error-text: #ff6b6b;
+	--error-border: #5a2f2f;
+	--success-bg: #2d1f45;
+	--success-text: #b89ef5;
+	--success-border: #4a3b66;
+}
