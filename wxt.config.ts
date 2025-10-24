@@ -7,5 +7,9 @@ export default defineConfig({
 	manifest: {
 		default_locale: 'en',
 		permissions: ['bookmarks', 'tabs', 'storage'],
+		options_ui: {
+			page: 'settings.html',
+			open_in_tab: true,
+		},
 	},
 });
