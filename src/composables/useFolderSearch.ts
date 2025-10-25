@@ -1,3 +1,4 @@
+import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { BookmarkFolder } from './useFolderTree';
 
@@ -6,11 +7,7 @@ export interface HighlightedTextPart {
 	highlighted: boolean;
 }
 
-export function useFolderSearch(
-	allFolders: ReturnType<
-		typeof import('./useFolderTree').useFolderTree
-	>['allFolders'],
-) {
+export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	const searchQuery = ref('');
 	const searchResults = ref<BookmarkFolder[]>([]);
 
