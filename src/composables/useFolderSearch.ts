@@ -1,18 +1,13 @@
 import { ref } from 'vue';
 import type { BookmarkFolder } from './useFolderTree';
 
-export interface SearchResultItem {
-	folder: BookmarkFolder;
-	type: 'match' | 'parent';
-}
-
 export function useFolderSearch(
 	allFolders: ReturnType<
 		typeof import('./useFolderTree').useFolderTree
 	>['allFolders'],
 ) {
 	const searchQuery = ref('');
-	const searchResults = ref<SearchResultItem[]>([]);
+	const searchResults = ref<BookmarkFolder[]>([]);
 
 	const searchFolders = (): void => {
 		if (!searchQuery.value.trim()) {
@@ -21,7 +16,7 @@ export function useFolderSearch(
 		}
 
 		const query = searchQuery.value.toLowerCase();
-		const results: SearchResultItem[] = [];
+		const results: BookmarkFolder[] = [];
 		const addedIds = new Set<string>();
 
 		for (const folder of allFolders.value) {
@@ -29,10 +24,7 @@ export function useFolderSearch(
 
 			if (titleMatch) {
 				if (!addedIds.has(folder.id)) {
-					results.push({
-						folder,
-						type: 'match',
-					});
+					results.push(folder);
 					addedIds.add(folder.id);
 				}
 			}

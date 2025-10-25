@@ -25,9 +25,9 @@
       <div v-if="searchResults.length > 0">
         <div
           v-for="(item, index) in searchResults"
-          :key="`${item.type}-${item.folder.id}`"
-          :class="['dropdown-item', { highlighted: index === highlightedIndex }, item.type]"
-          @mousedown="selectFolder(item.folder)"
+          :key="item.id"
+          :class="['dropdown-item', { highlighted: index === highlightedIndex }]"
+          @mousedown="selectFolder(item)"
           @mouseenter="highlightedIndex = index"
           @keydown="handleItemKeydown($event, item)"
           tabindex="-1"
@@ -37,29 +37,29 @@
               <div class="folder-name-section">
                 <span class="folder-icon">📁</span>
                 <span class="folder-name">
-                  <template v-for="part in highlightText(item.folder.title, searchQuery)" :key="part.text">
+                  <template v-for="part in highlightText(item.title, searchQuery)" :key="part.text">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                     <span v-else>{{ part.text }}</span>
                   </template>
                 </span>
               </div>
-              <div v-if="item.folder.children && item.folder.children.length > 0" class="folder-actions">
+              <div v-if="item.children && item.children.length > 0" class="folder-actions">
                 <span class="children-count">
-                  ({{ item.folder.children.length }} {{ item.folder.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
+                  ({{ item.children.length }} {{ item.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
                 </span>
                 <span class="expand-hint">
                   →
                 </span>
               </div>
             </div>
-            <div v-if="item.folder.path" class="folder-breadcrumb">
-              {{ item.folder.path }}
+            <div v-if="item.path" class="folder-breadcrumb">
+              {{ item.path }}
             </div>
-            <div v-if="showChildrenFor === item.folder.id && item.folder.children && item.folder.children.length > 0" class="children-list">
+            <div v-if="showChildrenFor === item.id && item.children && item.children.length > 0" class="children-list">
               <div class="children-header">{{ i18n.t('contains') }}:</div>
               <div class="children-items">
                 <span
-                  v-for="child in item.folder.children"
+                  v-for="child in item.children"
                   :key="child.id"
                   class="child-folder"
                   @click.stop="selectChildFolder(child)"
@@ -86,7 +86,6 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
-import type { SearchResultItem } from '../../../composables/useFolderSearch';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';
 import { useFolderTree } from '../../../composables/useFolderTree';
@@ -188,7 +187,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 	if (showDropdown.value && searchResults.value.length > 0) {
 		handleNavigation(event, searchResults.value, {
-			onEnter: (item) => selectFolder(item.folder),
+			onEnter: (item) => selectFolder(item),
 			onEscape: () => {
 				showDropdown.value = false;
 				searchQuery.value = '';
@@ -212,12 +211,12 @@ const handleKeydown = (event: KeyboardEvent) => {
 	}
 };
 
-const handleItemKeydown = (event: KeyboardEvent, item: SearchResultItem) => {
+const handleItemKeydown = (event: KeyboardEvent, item: BookmarkFolder) => {
 	if (event.key === ' ' && event.shiftKey) {
 		event.preventDefault();
-		if (item.folder.children && item.folder.children.length > 0) {
+		if (item.children && item.children.length > 0) {
 			showChildrenFor.value =
-				showChildrenFor.value === item.folder.id ? null : item.folder.id;
+				showChildrenFor.value === item.id ? null : item.id;
 		}
 	}
 };

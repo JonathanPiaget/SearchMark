@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { SearchResultItem } from './useFolderSearch';
+import type { BookmarkFolder } from './useFolderTree';
 
 export function useKeyboardNavigation() {
 	const highlightedIndex = ref(-1);
@@ -31,9 +31,9 @@ export function useKeyboardNavigation() {
 
 	const handleNavigation = (
 		event: KeyboardEvent,
-		searchResults: SearchResultItem[],
+		searchResults: BookmarkFolder[],
 		callbacks: {
-			onEnter: (item: SearchResultItem) => void;
+			onEnter: (item: BookmarkFolder) => void;
 			onEscape: () => void;
 			onEmitEnter: () => void;
 		},
@@ -54,14 +54,9 @@ export function useKeyboardNavigation() {
 		} else if (event.key === ' ' && event.shiftKey) {
 			event.preventDefault();
 			const currentItem = searchResults[highlightedIndex.value];
-			if (
-				currentItem?.folder.children &&
-				currentItem.folder.children.length > 0
-			) {
+			if (currentItem?.children && currentItem.children.length > 0) {
 				showChildrenFor.value =
-					showChildrenFor.value === currentItem.folder.id
-						? null
-						: currentItem.folder.id;
+					showChildrenFor.value === currentItem.id ? null : currentItem.id;
 				setTimeout(() => scrollToHighlighted(), 100);
 			}
 		} else if (event.key === 'Enter') {
