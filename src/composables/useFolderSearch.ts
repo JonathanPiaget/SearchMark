@@ -14,7 +14,7 @@ export function useFolderSearch(
 	const searchQuery = ref('');
 	const searchResults = ref<SearchResultItem[]>([]);
 
-	const searchFolders = () => {
+	const searchFolders = (): void => {
 		if (!searchQuery.value.trim()) {
 			searchResults.value = [];
 			return;
@@ -39,7 +39,6 @@ export function useFolderSearch(
 		}
 
 		searchResults.value = results.slice(0, 10);
-		return searchResults.value.length > 0 ? 0 : -1;
 	};
 
 	const highlightText = (text: string, query: string) => {

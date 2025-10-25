@@ -135,10 +135,8 @@ const initializeFolders = async () => {
 };
 
 const onSearchInput = () => {
-	const newHighlightedIndex = searchFolders();
-	if (newHighlightedIndex !== undefined) {
-		highlightedIndex.value = newHighlightedIndex;
-	}
+	searchFolders();
+	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 	showDropdown.value = searchQuery.value.trim().length > 0;
 };
 
@@ -182,10 +180,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 			(event.key === 'Enter' && !selectedFolder.value)
 		) {
 			showDropdown.value = true;
-			const newHighlightedIndex = searchFolders();
-			if (newHighlightedIndex !== undefined) {
-				highlightedIndex.value = newHighlightedIndex;
-			}
+			searchFolders();
+			highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 			return;
 		}
 	}
