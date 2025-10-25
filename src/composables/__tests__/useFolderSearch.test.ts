@@ -69,4 +69,46 @@ describe('useFolderSearch', () => {
 			expect(searchResults.value.some((r) => r.title === 'Fiction')).toBe(true);
 		});
 	});
+
+	describe('highlightText', () => {
+		it('returns unhighlighted text when query is empty', () => {
+			const allFolders = ref([]);
+			const { highlightText } = useFolderSearch(allFolders);
+
+			const result = highlightText('Sample Text', '');
+
+			expect(result).toEqual([{ text: 'Sample Text', highlighted: false }]);
+		});
+
+		it('highlights matching text correctly', () => {
+			const allFolders = ref([]);
+			const { highlightText } = useFolderSearch(allFolders);
+
+			const result = highlightText('Hello World', 'World');
+
+			expect(result).toHaveLength(2);
+			expect(result[0]).toEqual({ text: 'Hello ', highlighted: false });
+			expect(result[1]).toEqual({ text: 'World', highlighted: true });
+		});
+
+		it('escapes special regex characters', () => {
+			const allFolders = ref([]);
+			const { highlightText } = useFolderSearch(allFolders);
+
+			const result = highlightText('Cost: $100 (USD)', '$100');
+
+			expect(result).toContainEqual({ text: '$100', highlighted: true });
+		});
+
+		it('highlights text case-insensitively', () => {
+			const allFolders = ref([]);
+			const { highlightText } = useFolderSearch(allFolders);
+
+			const result = highlightText('JavaScript Tutorial', 'script');
+
+			expect(
+				result.some((part) => part.highlighted && part.text === 'Script'),
+			).toBe(true);
+		});
+	});
 });

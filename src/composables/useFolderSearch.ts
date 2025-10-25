@@ -1,6 +1,11 @@
 import { ref } from 'vue';
 import type { BookmarkFolder } from './useFolderTree';
 
+export interface HighlightedTextPart {
+	text: string;
+	highlighted: boolean;
+}
+
 export function useFolderSearch(
 	allFolders: ReturnType<
 		typeof import('./useFolderTree').useFolderTree
@@ -33,22 +38,44 @@ export function useFolderSearch(
 		searchResults.value = results.slice(0, 10);
 	};
 
-	const highlightText = (text: string, query: string) => {
+	const highlightText = (
+		text: string,
+		query: string,
+	): HighlightedTextPart[] => {
 		if (!query.trim()) return [{ text, highlighted: false }];
 
-		const regex = new RegExp(
-			`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
-			'gi',
-		);
+		const result: HighlightedTextPart[] = [];
+		const lowerText = text.toLowerCase();
+		const lowerQuery = query.toLowerCase();
+		let lastIndex = 0;
 
-		const parts = text.split(regex);
-		const result = [];
+		let index = lowerText.indexOf(lowerQuery);
 
-		for (let i = 0; i < parts.length; i++) {
-			if (parts[i]) {
-				const highlighted = regex.test(parts[i]);
-				result.push({ text: parts[i], highlighted });
+		while (index !== -1) {
+			// Add non-highlighted text before the match
+			if (index > lastIndex) {
+				result.push({
+					text: text.substring(lastIndex, index),
+					highlighted: false,
+				});
 			}
+
+			// Add the highlighted match (preserve original case!)
+			result.push({
+				text: text.substring(index, index + query.length),
+				highlighted: true,
+			});
+
+			lastIndex = index + query.length;
+			index = lowerText.indexOf(lowerQuery, lastIndex);
+		}
+
+		// Add remaining text after last match
+		if (lastIndex < text.length) {
+			result.push({
+				text: text.substring(lastIndex),
+				highlighted: false,
+			});
 		}
 
 		return result;
