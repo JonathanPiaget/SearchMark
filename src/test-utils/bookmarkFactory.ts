@@ -155,3 +155,42 @@ export function createEdgeCaseFolders(): BookmarkFolder[] {
 		createFolder({ title: 'a' }), // Lowercase single char
 	];
 }
+
+/**
+ * Preset: Simple tree structure for testing buildFolderTree
+ */
+export function createSimpleTreeNodes(): BookmarkTreeNode[] {
+	return [
+		createNode({ id: '1', title: 'Work', parentId: '0' }),
+		createNode({ id: '2', title: 'Personal', parentId: '0' }),
+		createNode({ title: 'Bookmark', url: 'https://example.com' }),
+	];
+}
+
+/**
+ * Preset: Nested tree structure for testing buildFolderTree
+ */
+export function createNestedTreeNodes(): BookmarkTreeNode[] {
+	return [
+		createNode({
+			id: '1',
+			title: 'Books',
+			parentId: '0',
+			children: [
+				createNode({
+					id: '2',
+					title: 'Fiction',
+					parentId: '1',
+					children: [
+						createNode({
+							id: '3',
+							title: 'Sci-Fi',
+							parentId: '2',
+						}),
+					],
+				}),
+				createNode({ title: 'Book URL', url: 'https://example.com' }),
+			],
+		}),
+	];
+}

@@ -11,48 +11,46 @@ export interface BookmarkFolder {
 	children?: BookmarkFolder[];
 }
 
-export function useFolderTree() {
-	const allFolders = ref<BookmarkFolder[]>([]);
-	const folderMap = ref<Map<string, BookmarkFolder>>(new Map());
+export const buildFolderTree = (
+	nodes: BookmarkTreeNode[],
+	parentPath = '',
+): BookmarkFolder[] => {
+	const folders: BookmarkFolder[] = [];
 
-	const buildFolderTree = (
-		nodes: BookmarkTreeNode[],
-		parentPath = '',
-		level = 0,
-	): BookmarkFolder[] => {
-		const folders: BookmarkFolder[] = [];
+	for (const node of nodes) {
+		if (node.url) continue;
 
-		for (const node of nodes) {
-			if (!node.url) {
-				const folder: BookmarkFolder = {
-					id: node.id,
-					title: node.title,
-					path: parentPath,
-					parentId: node.parentId,
-					children: [],
-				};
+		const folder: BookmarkFolder = {
+			id: node.id,
+			title: node.title,
+			path: parentPath,
+			parentId: node.parentId,
+			children: [],
+		};
 
-				folders.push(folder);
+		folders.push(folder);
 
-				if (node.children) {
-					const currentPath = parentPath
-						? `${parentPath} > ${node.title}`
-						: node.title;
-					const childFolders = buildFolderTree(
-						node.children,
-						currentPath,
-						level + 1,
-					);
-					folder.children = childFolders.filter(
-						(child) => child.parentId === node.id,
-					);
-					folders.push(...childFolders);
-				}
-			}
+		if (node.children && node.children.length > 0) {
+			const currentPath = parentPath
+				? `${parentPath} > ${node.title}`
+				: node.title;
+
+			const childFolders = buildFolderTree(node.children, currentPath);
+
+			folder.children = childFolders.filter(
+				(child) => child.parentId === node.id,
+			);
+
+			folders.push(...childFolders);
 		}
+	}
 
-		return folders;
-	};
+	return folders;
+};
+
+export function useFolderTree() {
+	const folderMap = ref<Map<string, BookmarkFolder>>(new Map());
+	const allFolders = ref<BookmarkFolder[]>([]);
 
 	const loadFolders = async () => {
 		try {
