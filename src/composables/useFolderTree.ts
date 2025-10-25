@@ -53,20 +53,16 @@ export function useFolderTree() {
 	const allFolders = ref<BookmarkFolder[]>([]);
 
 	const loadFolders = async () => {
-		try {
-			const tree = await browser.bookmarks.getTree();
-			const folders = buildFolderTree(tree);
+		const tree = await browser.bookmarks.getTree();
+		const folders = buildFolderTree(tree);
 
-			allFolders.value = folders.filter(
-				(folder) => folder.title !== '' && folder.id !== '0',
-			);
+		allFolders.value = folders.filter(
+			(folder) => folder.title !== '' && folder.id !== '0',
+		);
 
-			folderMap.value.clear();
-			for (const folder of allFolders.value) {
-				folderMap.value.set(folder.id, folder);
-			}
-		} catch (error) {
-			console.error('Error loading folders:', error);
+		folderMap.value.clear();
+		for (const folder of allFolders.value) {
+			folderMap.value.set(folder.id, folder);
 		}
 	};
 
