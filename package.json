@@ -15,7 +15,8 @@
 		"postinstall": "wxt prepare",
 		"format": "biome format --write",
 		"lint": "biome lint --write",
-		"check": "biome check --write"
+		"check": "biome check --write",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.4",
@@ -25,6 +26,8 @@
 		"@biomejs/biome": "^2.3.0",
 		"@wxt-dev/module-vue": "^1.0.3",
 		"typescript": "5.9.3",
+		"vite": "^7.1.12",
+		"vitest": "^4.0.3",
 		"vue-tsc": "^3.1.1",
 		"wxt": "^0.20.6"
 	},
