@@ -38,5 +38,8 @@ jobs:
       - name: Run Checks
         run: pnpm run check
 
+      - name: Run Tests
+        run: pnpm run test
+
       - name: Build
         run: pnpm run build
