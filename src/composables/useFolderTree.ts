@@ -1,12 +1,7 @@
 import { ref } from 'vue';
+import type { Browser } from 'wxt/browser';
 
-export interface BookmarkNode {
-	id: string;
-	title: string;
-	url?: string;
-	parentId?: string;
-	children?: BookmarkNode[];
-}
+type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
 export interface BookmarkFolder {
 	id: string;
@@ -21,7 +16,7 @@ export function useFolderTree() {
 	const folderMap = ref<Map<string, BookmarkFolder>>(new Map());
 
 	const buildFolderTree = (
-		nodes: BookmarkNode[],
+		nodes: BookmarkTreeNode[],
 		parentPath = '',
 		level = 0,
 	): BookmarkFolder[] => {
@@ -62,7 +57,7 @@ export function useFolderTree() {
 	const loadFolders = async () => {
 		try {
 			const tree = await browser.bookmarks.getTree();
-			const folders = buildFolderTree(tree as BookmarkNode[]);
+			const folders = buildFolderTree(tree);
 
 			allFolders.value = folders.filter(
 				(folder) => folder.title !== '' && folder.id !== '0',

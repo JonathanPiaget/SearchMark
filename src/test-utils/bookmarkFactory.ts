@@ -1,7 +1,7 @@
-import type {
-	BookmarkFolder,
-	BookmarkNode,
-} from '../composables/useFolderTree';
+import type { Browser } from 'wxt/browser';
+import type { BookmarkFolder } from '../composables/useFolderTree';
+
+type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
 /**
  * Factory for creating realistic bookmark test data
@@ -21,7 +21,7 @@ export interface CreateNodeOptions {
 	title: string;
 	url?: string;
 	parentId?: string;
-	children?: BookmarkNode[];
+	children?: BookmarkTreeNode[];
 }
 
 /**
@@ -38,12 +38,13 @@ export function createFolder(options: CreateFolderOptions): BookmarkFolder {
 }
 
 /**
- * Creates a single BookmarkNode (raw browser format)
+ * Creates a single BookmarkTreeNode (raw browser format)
  */
-export function createNode(options: CreateNodeOptions): BookmarkNode {
+export function createNode(options: CreateNodeOptions): BookmarkTreeNode {
 	return {
 		id: options.id || `node-${Math.random().toString(36).substr(2, 9)}`,
 		title: options.title,
+		syncing: false, // Default to not synced for test data
 		url: options.url,
 		parentId: options.parentId,
 		children: options.children,
