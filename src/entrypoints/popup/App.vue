@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkSearch } from '../../composables/useBookmarkSearch';
+import { useFolderTree } from '../../composables/useFolderTree';
 import { useTheme } from '../../composables/useTheme';
 import { getBookmarkToolbarId } from '../../utils/bookmark';
 import BookmarkForm from './components/BookmarkForm.vue';
+import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';
 import SaveButton from './components/SaveButton.vue';
 import ThemeToggle from './components/ThemeToggle.vue';
@@ -18,6 +21,12 @@ const selectedFolderId = ref('');
 const selectedFolderName = ref('');
 
 const { initTheme } = useTheme();
+const { folderMap, loadFolders } = useFolderTree();
+const {
+	bookmarkLocations,
+	isLoading: isSearching,
+	searchByUrl,
+} = useBookmarkSearch(folderMap);
 
 const loadCurrentTab = async () => {
 	try {
@@ -31,6 +40,10 @@ const loadCurrentTab = async () => {
 
 			bookmarkUrl.value = currentUrl.value;
 			bookmarkTitle.value = currentTitle.value;
+
+			// Search for existing bookmarks with this URL
+			await loadFolders();
+			await searchByUrl(tab.url);
 		}
 	} catch {
 		message.value = i18n.t('bookmarkError');
@@ -104,6 +117,11 @@ const saveBookmark = async () => {
       </div>
       <ThemeToggle />
     </div>
+
+    <ExistingBookmarks
+      :locations="bookmarkLocations"
+      :is-loading="isSearching"
+    />
 
     <FolderSelector
       v-model="selectedFolderId"
