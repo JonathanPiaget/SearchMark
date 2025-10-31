@@ -23,17 +23,16 @@ Currently supports English and French, with the architecture in place to easily 
 
 ## Planned Features
 
-1. Display in which folder the current tab is saved
-2. Full-text search across bookmark titles, URLs and folders
-3. Enable creating new folders during save process
-4. Customize hot keys and default folder for quick save
-5. Add a note to a bookmark
-6. Find a way to do a trash for deleted bookmarks
-7. List broken URLs bookmarks
-8. Auto backup locally on any change
-9. Add a button "see later" or similar to add in a dedicated folder
-10. Add more languages
-11. Add tags to bookmarks
+1. Full-text search across bookmark titles, URLs and folders
+2. Enable creating new folders during save process
+3. Customize hot keys and default folder for quick save
+4. Add a note to a bookmark
+5. Find a way to do a trash for deleted bookmarks
+6. List broken URLs bookmarks
+7. Auto backup locally on any change
+8. Add a button "see later" or similar to add in a dedicated folder
+9.  Add more languages
+10. Add tags to bookmarks
 
 ## Development
 
