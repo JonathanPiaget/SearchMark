@@ -33,3 +33,6 @@ about: About
 version: Version
 extensionDescription: A browser extension for efficient bookmark management with search capabilities
 alreadySaved: Already saved in
+bookmarkDeleted: Bookmark deleted successfully
+delete: Delete bookmark
+confirmDelete: Are you sure you want to delete this bookmark?

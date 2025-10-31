@@ -58,6 +58,13 @@ onMounted(() => {
 	loadCurrentTab();
 });
 
+const handleBookmarkDeleted = async () => {
+	// Refresh the bookmark search after deletion
+	if (currentUrl.value) {
+		await searchByUrl(currentUrl.value);
+	}
+};
+
 const saveBookmark = async () => {
 	isLoading.value = true;
 	try {
@@ -121,6 +128,7 @@ const saveBookmark = async () => {
     <ExistingBookmarks
       :locations="bookmarkLocations"
       :is-loading="isSearching"
+      @bookmark-deleted="handleBookmarkDeleted"
     />
 
     <FolderSelector

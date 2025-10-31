@@ -33,3 +33,6 @@ about: À propos
 version: Version
 extensionDescription: Une extension de navigateur pour une gestion efficace des marque-pages avec des capacités de recherche
 alreadySaved: Déjà enregistré dans
+bookmarkDeleted: Marque-page supprimé avec succès
+delete: Supprimer le marque-page
+confirmDelete: Êtes-vous sûr de vouloir supprimer ce marque-page ?

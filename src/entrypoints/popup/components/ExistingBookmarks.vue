@@ -13,6 +13,14 @@
       >
         <span class="folder-icon">📁</span>
         <span class="folder-path">{{ location.folderPath }}</span>
+        <button
+          class="delete-button"
+          :disabled="isDeleting"
+          :title="i18n.t('delete')"
+          @click="handleDelete(location.id)"
+        >
+          {{ isDeleting ? '⏳' : '🗑️' }}
+        </button>
       </div>
     </div>
   </div>
@@ -20,6 +28,7 @@
 
 <script lang="ts" setup>
 import { i18n } from '#i18n';
+import { useBookmarkActions } from '../../../composables/useBookmarkActions';
 import type { BookmarkLocation } from '../../../composables/useBookmarkSearch';
 
 interface Props {
@@ -28,6 +37,23 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const emit = defineEmits<{
+	bookmarkDeleted: [];
+}>();
+
+const { isDeleting, deleteBookmark } = useBookmarkActions();
+
+const handleDelete = async (bookmarkId: string) => {
+	// Show confirmation dialog
+	const confirmed = confirm(i18n.t('confirmDelete'));
+	if (!confirmed) {
+		return;
+	}
+
+	await deleteBookmark(bookmarkId);
+	emit('bookmarkDeleted');
+};
 </script>
 
 <style scoped>
@@ -37,7 +63,7 @@ defineProps<Props>();
   background: var(--bg-tertiary);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .header {
@@ -83,10 +109,34 @@ defineProps<Props>();
 }
 
 .folder-path {
+  flex: 1;
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.2s ease;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+}
+
+.delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>
