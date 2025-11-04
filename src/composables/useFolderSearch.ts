@@ -32,7 +32,7 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 			}
 		}
 
-		searchResults.value = results.slice(0, 10);
+		searchResults.value = results;
 	};
 
 	const highlightText = (
