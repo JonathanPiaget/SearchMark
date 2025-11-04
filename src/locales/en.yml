@@ -9,6 +9,7 @@ title: Title
 folder: Folder
 selectFolder: Select a folder
 searchFolders: Search folders...
+loadingFolders: Loading folders...
 childOf: child of
 contains: Contains
 more: more

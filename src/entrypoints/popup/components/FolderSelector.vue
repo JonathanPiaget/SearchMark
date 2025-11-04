@@ -9,7 +9,8 @@
           v-model="searchQuery"
           type="text"
           class="form-input"
-          :placeholder="i18n.t('searchFolders')"
+          :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
+          :disabled="isInitializing"
           @input="onSearchInput"
           @keydown="handleKeydown"
           @focus="onFocus"
@@ -84,7 +85,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';
@@ -108,6 +109,7 @@ const emit = defineEmits<Emits>();
 const showDropdown = ref(false);
 const folderInput = ref<HTMLInputElement>();
 const selectedFolder = ref<BookmarkFolder | null>(null);
+const isInitializing = ref(true);
 
 const { allFolders, loadFolders } = useFolderTree();
 const { searchQuery, searchResults, searchFolders, highlightText } =
@@ -123,7 +125,6 @@ const initializeFolders = async () => {
 		const bookmarkToolbar = allFolders.value.find((f) => f.id === toolbarId);
 		if (bookmarkToolbar) {
 			selectedFolder.value = bookmarkToolbar;
-			searchQuery.value = bookmarkToolbar.title;
 			emit('update:modelValue', bookmarkToolbar.id);
 			emit('folderSelected', {
 				id: bookmarkToolbar.id,
@@ -235,11 +236,14 @@ watch(
 	},
 );
 
-onMounted(() => {
-	initializeFolders();
-	setTimeout(() => {
+onMounted(async () => {
+	try {
+		await initializeFolders();
+	} finally {
+		isInitializing.value = false;
+		await nextTick(); // Waits for Vue to update the DOM
 		folderInput.value?.focus();
-	}, 100);
+	}
 });
 </script>
 

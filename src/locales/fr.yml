@@ -9,6 +9,7 @@ title: Titre
 folder: Dossier
 selectFolder: Sélectionner un dossier
 searchFolders: Rechercher des dossiers...
+loadingFolders: Chargement des dossiers...
 childOf: enfant de
 contains: Contient
 more: de plus
