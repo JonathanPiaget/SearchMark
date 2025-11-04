@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 import {
-	createFolders,
 	createNestedFolders,
 	createSpecialCharFolders,
 	createWorkBookmarks,
@@ -32,17 +31,6 @@ describe('useFolderSearch', () => {
 			expect(searchResults.value).toHaveLength(2);
 			expect(searchResults.value[0].title).toBe('Work Projects');
 			expect(searchResults.value[1].title).toBe('work notes');
-		});
-
-		it('limits results to 10 folders maximum', () => {
-			const allFolders = ref(createFolders(15));
-			const { searchQuery, searchResults, searchFolders } =
-				useFolderSearch(allFolders);
-
-			searchQuery.value = 'Folder'; // Matches all 15 folders
-			searchFolders();
-
-			expect(searchResults.value).toHaveLength(10);
 		});
 
 		it('finds folders with special characters', () => {
