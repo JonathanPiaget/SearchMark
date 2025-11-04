@@ -9,6 +9,7 @@ import BookmarkForm from './components/BookmarkForm.vue';
 import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';
 import SaveButton from './components/SaveButton.vue';
+import SettingsButton from './components/SettingsButton.vue';
 import ThemeToggle from './components/ThemeToggle.vue';
 
 const currentUrl = ref('');
@@ -122,7 +123,10 @@ const saveBookmark = async () => {
         <img src="/icon.svg" alt="SearchMark Logo" class="logo">
         <h1>SearchMark</h1>
       </div>
-      <ThemeToggle />
+      <div class="header-buttons">
+        <SettingsButton />
+        <ThemeToggle />
+      </div>
     </div>
 
     <ExistingBookmarks
@@ -183,5 +187,11 @@ const saveBookmark = async () => {
   margin: 0;
   color: var(--accent-primary);
   transition: color 0.2s ease;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
