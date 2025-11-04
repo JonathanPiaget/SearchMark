@@ -17,19 +17,28 @@
           class="delete-button"
           :disabled="isDeleting"
           :title="i18n.t('delete')"
-          @click="handleDelete(location.id)"
+          @click="showConfirmDialog(location.id)"
         >
           {{ isDeleting ? '⏳' : '🗑️' }}
         </button>
       </div>
     </div>
+
+    <ConfirmDialog
+      v-model="confirmDialogVisible"
+      :message="i18n.t('confirmDelete')"
+      @confirm="handleConfirmDelete"
+      @cancel="handleCancelDelete"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
 import { i18n } from '#i18n';
 import { useBookmarkActions } from '../../../composables/useBookmarkActions';
 import type { BookmarkLocation } from '../../../composables/useBookmarkSearch';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 interface Props {
 	locations: BookmarkLocation[];
@@ -43,16 +52,24 @@ const emit = defineEmits<{
 }>();
 
 const { isDeleting, deleteBookmark } = useBookmarkActions();
+const confirmDialogVisible = ref(false);
+const bookmarkToDelete = ref<string | null>(null);
 
-const handleDelete = async (bookmarkId: string) => {
-	// Show confirmation dialog
-	const confirmed = confirm(i18n.t('confirmDelete'));
-	if (!confirmed) {
-		return;
+const showConfirmDialog = (bookmarkId: string) => {
+	bookmarkToDelete.value = bookmarkId;
+	confirmDialogVisible.value = true;
+};
+
+const handleConfirmDelete = async () => {
+	if (bookmarkToDelete.value) {
+		await deleteBookmark(bookmarkToDelete.value);
+		emit('bookmarkDeleted');
+		bookmarkToDelete.value = null;
 	}
+};
 
-	await deleteBookmark(bookmarkId);
-	emit('bookmarkDeleted');
+const handleCancelDelete = () => {
+	bookmarkToDelete.value = null;
 };
 </script>
 

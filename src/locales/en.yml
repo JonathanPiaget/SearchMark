@@ -19,6 +19,7 @@ tryDifferentSearch: Try a different search term
 expandHint: Press Shift+Space to expand folders with children
 save: Save
 cancel: Cancel
+confirm: Delete
 toggleTheme: Toggle theme
 settings: Settings
 appearance: Appearance
