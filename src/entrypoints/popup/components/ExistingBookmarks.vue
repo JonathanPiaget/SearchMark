@@ -107,6 +107,8 @@ const handleCancelDelete = () => {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .location-item {

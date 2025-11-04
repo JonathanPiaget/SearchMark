@@ -274,7 +274,7 @@ onMounted(() => {
   border: 1px solid var(--border-primary);
   border-radius: 8px;
   box-shadow: 0 8px 24px var(--shadow-secondary);
-  max-height: 200px;
+  max-height: 400px;
   overflow-y: auto;
   z-index: 1000;
   margin-top: 4px;

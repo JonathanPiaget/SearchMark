@@ -157,7 +157,7 @@ const saveBookmark = async () => {
 
 <style scoped>
 .container {
-  width: 380px;
+  width: 450px;
   padding: 16px;
   background: var(--bg-secondary);
   transition: background 0.2s ease;
