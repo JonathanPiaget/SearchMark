@@ -27,26 +27,6 @@
             <option value="dark">{{ i18n.t('themeDark') }}</option>
           </select>
         </div>
-
-        <div class="theme-preview">
-          <div class="preview-label">{{ i18n.t('preview') }}:</div>
-          <div class="preview-box">
-            <div class="preview-header">
-              <span class="preview-icon">📁</span>
-              <span class="preview-text">{{ i18n.t('previewText') }}</span>
-            </div>
-            <div class="preview-button">{{ i18n.t('saveBookmark') }}</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="settings-section">
-        <h2>{{ i18n.t('about') }}</h2>
-        <div class="about-info">
-          <p><strong>SearchMark</strong></p>
-          <p class="version">{{ i18n.t('version') }}: {{ version }}</p>
-          <p class="description">{{ i18n.t('extensionDescription') }}</p>
-        </div>
       </section>
     </main>
   </div>
