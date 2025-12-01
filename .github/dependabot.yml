@@ -12,6 +12,8 @@ updates:
       all-github-actions:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
 
   # Enable version updates for javascript/npm
   - package-ecosystem: "npm"
@@ -23,3 +25,5 @@ updates:
       all-npm-dependencies:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
