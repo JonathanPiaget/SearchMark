@@ -30,9 +30,8 @@ Currently supports English and French, with the architecture in place to easily 
 5. Find a way to do a trash for deleted bookmarks
 6. List broken URLs bookmarks
 7. Auto backup locally on any change
-8. Add a button "see later" or similar to add in a dedicated folder
-9.  Add more languages
-10. Add tags to bookmarks
+8.  Add more languages
+9.  Add tags to bookmarks
 
 ## Development
 
