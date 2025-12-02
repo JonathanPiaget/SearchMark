@@ -38,3 +38,13 @@ alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Marque-page supprimé avec succès
 delete: Supprimer le marque-page
 confirmDelete: Êtes-vous sûr de vouloir supprimer ce marque-page ?
+seeLater: Voir Plus Tard
+seeLaterTooltip: Enregistrer dans votre dossier Voir Plus Tard
+seeLaterSuccess: Enregistré dans "{folderName}" pour plus tard
+seeLaterError: Échec de l'enregistrement dans le dossier Voir Plus Tard
+quickActions: Actions Rapides
+seeLaterFolder: Dossier Voir Plus Tard
+seeLaterFolderDescription: "Par défaut : crée un dossier \"Voir Plus Tard\" dans la barre de favoris"
+seeLaterUsingDefault: Par défaut (barre de favoris)
+seeLaterResetToDefault: Réinitialiser par défaut
+selectSeeLaterFolder: Rechercher des dossiers...

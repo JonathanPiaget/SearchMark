@@ -28,6 +28,30 @@
           </select>
         </div>
       </section>
+
+      <section class="settings-section">
+        <h2>{{ i18n.t('quickActions') }}</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">{{ i18n.t('seeLaterFolder') }}</label>
+            <p class="setting-description">{{ i18n.t('seeLaterFolderDescription') }}</p>
+          </div>
+          <div class="folder-selector-wrapper">
+            <button
+              class="reset-button"
+              @click="handleUseDefaultFolder"
+              v-if="selectedFolderId"
+            >{{ i18n.t('seeLaterResetToDefault') }}</button>
+            <FolderSelector
+              v-model="selectedFolderId"
+              :autofocus="false"
+              :auto-select-default="false"
+              @folder-selected="handleSeeLaterFolderChange"
+            />
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -35,25 +59,47 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
 import { useTheme } from '../../composables/useTheme';
+import FolderSelector from '../popup/components/FolderSelector.vue';
 
 const { currentTheme, setTheme, initTheme } = useTheme();
+const {
+	seeLaterFolderId,
+	saveSeeLaterFolder,
+	clearSeeLaterFolder,
+	initSeeLater,
+} = useSeeLater();
 const selectedTheme = ref<Theme>('auto');
 const version = ref('');
+const selectedFolderId = ref(seeLaterFolderId.value || '');
 
 const handleThemeChange = async () => {
 	await setTheme(selectedTheme.value);
 };
 
+const handleSeeLaterFolderChange = async (folder: {
+	id: string;
+	name: string;
+}) => {
+	await saveSeeLaterFolder(folder.id);
+};
+
 onMounted(async () => {
 	await initTheme();
+	await initSeeLater();
 	selectedTheme.value = currentTheme.value;
 
 	// Get version from manifest
 	const manifest = browser.runtime.getManifest();
 	version.value = manifest.version;
 });
+
+const handleUseDefaultFolder = async () => {
+	selectedFolderId.value = '';
+	await clearSeeLaterFolder();
+};
 </script>
 
 <style scoped>
@@ -165,6 +211,54 @@ onMounted(async () => {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--shadow-primary);
+}
+
+.reset-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.reset-button:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.reset-button:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--shadow-primary);
+}
+
+.folder-selector-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: auto;
+  max-width: 500px;
+  flex-shrink: 0;
+}
+
+.folder-selector-wrapper .folder-selector {
+  flex: 1;
+  min-width: 300px;
+}
+
+.folder-selector-wrapper :deep(.form-group) {
+  margin-bottom: 0;
+}
+
+.folder-selector-wrapper :deep(.form-group label) {
+  display: none;
 }
 
 .theme-preview {

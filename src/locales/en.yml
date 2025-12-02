@@ -38,3 +38,13 @@ alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark
 confirmDelete: Are you sure you want to delete this bookmark?
+seeLater: See Later
+seeLaterTooltip: Save to your See Later folder
+seeLaterSuccess: Saved to "{folderName}" for later
+seeLaterError: Failed to save to See Later folder
+quickActions: Quick Actions
+seeLaterFolder: See Later Folder
+seeLaterFolderDescription: "Default: creates a \"See Later\" folder in your Bookmarks Toolbar"
+seeLaterUsingDefault: Default (Bookmarks Toolbar)
+seeLaterResetToDefault: Reset to default
+selectSeeLaterFolder: Search folders...

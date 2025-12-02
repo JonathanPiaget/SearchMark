@@ -38,7 +38,7 @@
               <div class="folder-name-section">
                 <span class="folder-icon">📁</span>
                 <span class="folder-name">
-                  <template v-for="part in highlightText(item.title, searchQuery)" :key="part.text">
+                  <template v-for="(part, partIndex) in highlightText(item.title, searchQuery)" :key="`${item.id}-${partIndex}`">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                     <span v-else>{{ part.text }}</span>
                   </template>
@@ -95,6 +95,8 @@ import { getBookmarkToolbarId } from '../../../utils/bookmark';
 
 interface Props {
 	modelValue: string;
+	autofocus?: boolean;
+	autoSelectDefault?: boolean;
 }
 
 interface Emits {
@@ -103,7 +105,10 @@ interface Emits {
 	(e: 'enterPressed'): void;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+	autofocus: true,
+	autoSelectDefault: true,
+});
 const emit = defineEmits<Emits>();
 
 const showDropdown = ref(false);
@@ -120,7 +125,7 @@ const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
 const initializeFolders = async () => {
 	await loadFolders();
 
-	if (!props.modelValue) {
+	if (props.autoSelectDefault && !props.modelValue) {
 		const toolbarId = await getBookmarkToolbarId();
 		const bookmarkToolbar = allFolders.value.find((f) => f.id === toolbarId);
 		if (bookmarkToolbar) {
@@ -232,6 +237,10 @@ watch(
 				selectedFolder.value = folder;
 				searchQuery.value = folder.title; // Show folder name in input
 			}
+		} else if (!newValue) {
+			// Clear selection when modelValue is empty (reset to default)
+			selectedFolder.value = null;
+			searchQuery.value = '';
 		}
 	},
 );
@@ -241,8 +250,10 @@ onMounted(async () => {
 		await initializeFolders();
 	} finally {
 		isInitializing.value = false;
-		await nextTick(); // Waits for Vue to update the DOM
-		folderInput.value?.focus();
+		if (props.autofocus) {
+			await nextTick(); // Waits for Vue to update the DOM
+			folderInput.value?.focus();
+		}
 	}
 });
 </script>

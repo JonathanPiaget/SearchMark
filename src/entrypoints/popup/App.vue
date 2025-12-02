@@ -3,12 +3,14 @@ import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import { useBookmarkSearch } from '../../composables/useBookmarkSearch';
 import { useFolderTree } from '../../composables/useFolderTree';
+import { useSeeLater } from '../../composables/useSeeLater';
 import { useTheme } from '../../composables/useTheme';
 import { getBookmarkToolbarId } from '../../utils/bookmark';
 import BookmarkForm from './components/BookmarkForm.vue';
 import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';
 import SaveButton from './components/SaveButton.vue';
+import SeeLaterButton from './components/SeeLaterButton.vue';
 import SettingsButton from './components/SettingsButton.vue';
 import ThemeToggle from './components/ThemeToggle.vue';
 
@@ -22,6 +24,7 @@ const selectedFolderId = ref('');
 const selectedFolderName = ref('');
 
 const { initTheme } = useTheme();
+const { initSeeLater } = useSeeLater();
 const { folderMap, loadFolders } = useFolderTree();
 const {
 	bookmarkLocations,
@@ -56,6 +59,7 @@ const loadCurrentTab = async () => {
 
 onMounted(() => {
 	initTheme();
+	initSeeLater();
 	loadCurrentTab();
 });
 
@@ -124,6 +128,7 @@ const saveBookmark = async () => {
         <h1>SearchMark</h1>
       </div>
       <div class="header-buttons">
+        <SeeLaterButton />
         <SettingsButton />
         <ThemeToggle />
       </div>
