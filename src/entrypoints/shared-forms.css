@@ -1,0 +1,37 @@
+/* Shared form styles for popup and settings */
+
+.form-group {
+	margin-bottom: 16px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text-primary);
+	transition: color 0.2s ease;
+}
+
+.form-input,
+.form-textarea {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--border-primary);
+	border-radius: 6px;
+	font-size: 14px;
+	box-sizing: border-box;
+	transition:
+		border-color 0.2s ease,
+		background-color 0.2s ease,
+		color 0.2s ease;
+	background-color: var(--input-bg);
+	color: var(--text-primary);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+	outline: none;
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px var(--shadow-primary);
+}

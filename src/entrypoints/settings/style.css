@@ -1,5 +1,6 @@
-/* Import shared theme variables */
+/* Import shared theme variables and form styles */
 @import "../theme-variables.css";
+@import "../shared-forms.css";
 
 html,
 body {
