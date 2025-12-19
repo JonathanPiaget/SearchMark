@@ -4,7 +4,7 @@
     tabindex="0"
     :title="`${bookmark.title} - ${bookmark.url}`"
     @click="handleOpen"
-    @keydown.enter="handleOpen"
+    @keydown="handleKeydown"
   >
     <div class="bookmark-info">
       <div class="bookmark-header">
@@ -36,6 +36,29 @@ const emit = defineEmits<{
 const handleOpen = () => {
 	new URL(props.bookmark.url);
 	emit('open');
+};
+
+const handleKeydown = (event: KeyboardEvent) => {
+	if (event.key === 'Enter') {
+		handleOpen();
+		return;
+	}
+
+	if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+		const currentItem = event.target as HTMLElement;
+		const allItems = Array.from(
+			currentItem.parentElement?.querySelectorAll('.bookmark-item') || [],
+		);
+		const currentIndex = allItems.indexOf(currentItem);
+
+		if (event.key === 'ArrowDown' && currentIndex < allItems.length - 1) {
+			(allItems[currentIndex + 1] as HTMLElement).focus();
+			event.preventDefault();
+		} else if (event.key === 'ArrowUp' && currentIndex > 0) {
+			(allItems[currentIndex - 1] as HTMLElement).focus();
+			event.preventDefault();
+		}
+	}
 };
 </script>
 

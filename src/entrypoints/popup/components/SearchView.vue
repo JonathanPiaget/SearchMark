@@ -1,6 +1,11 @@
 <template>
   <div class="search-view">
-    <FolderSelector v-model="selectedFolderId" :autofocus="false" :auto-select-default="false" />
+    <FolderSelector
+      v-model="selectedFolderId"
+      :autofocus="false"
+      :auto-select-default="false"
+      :on-arrow-down-with-selection="focusFirstBookmark"
+    />
 
     <div class="search-options">
       <label class="checkbox-label">
@@ -18,8 +23,14 @@
       {{ i18n.t('error') }}
     </div>
 
-    <BookmarkList v-if="selectedFolderId && !error" :bookmarks="bookmarks" :is-loading="isLoading"
-      :empty-message="i18n.t('emptyFolderMessage')" @open-bookmark="handleOpenBookmark" />
+    <BookmarkList
+      ref="bookmarkListRef"
+      v-if="selectedFolderId && !error"
+      :bookmarks="bookmarks"
+      :is-loading="isLoading"
+      :empty-message="i18n.t('emptyFolderMessage')"
+      @open-bookmark="handleOpenBookmark"
+    />
 
     <div v-if="!selectedFolderId" class="prompt-message">
       <span class="icon">🔍</span>
@@ -29,6 +40,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { ComponentPublicInstance } from 'vue';
 import { onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
 import type { BookmarkItem } from '../../../composables/useBookmarkFolder';
@@ -40,10 +52,23 @@ import FolderSelector from './FolderSelector.vue';
 const selectedFolderId = ref('');
 const isRecursive = ref(true);
 const RECURSIVE_STORAGE_KEY = 'searchmark_recursive_search';
+const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 
 const { folderMap, loadFolders } = useFolderTree();
 const { bookmarks, isLoading, error, loadBookmarks } =
 	useBookmarkFolder(folderMap);
+
+const focusFirstBookmark = () => {
+	if (!bookmarkListRef.value) return false;
+
+	const firstBookmark =
+		bookmarkListRef.value.$el?.querySelector('.bookmark-item');
+	if (firstBookmark) {
+		firstBookmark.focus();
+		return true;
+	}
+	return false;
+};
 
 onMounted(async () => {
 	await loadFolders();

@@ -97,6 +97,7 @@ interface Props {
 	modelValue: string;
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
+	onArrowDownWithSelection?: () => boolean;
 }
 
 interface Emits {
@@ -179,6 +180,19 @@ const onBlur = () => {
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
+	if (
+		event.key === 'ArrowDown' &&
+		!showDropdown.value &&
+		selectedFolder.value &&
+		props.onArrowDownWithSelection
+	) {
+		const handled = props.onArrowDownWithSelection();
+		if (handled) {
+			event.preventDefault();
+			return;
+		}
+	}
+
 	if (!showDropdown.value && searchQuery.value.trim()) {
 		if (
 			event.key === 'ArrowDown' ||
