@@ -193,9 +193,13 @@ const saveBookmark = async () => {
 <style scoped>
 .container {
   width: 450px;
+  max-height: 600px;
   padding: 16px;
   background: var(--bg-secondary);
   transition: background 0.2s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {

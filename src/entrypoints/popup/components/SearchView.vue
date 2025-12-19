@@ -79,6 +79,9 @@ const handleOpenBookmark = (bookmark: BookmarkItem) => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .error-message {

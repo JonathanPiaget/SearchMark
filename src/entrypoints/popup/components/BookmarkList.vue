@@ -41,7 +41,10 @@ const emit = defineEmits<{
 
 <style scoped>
 .bookmark-list {
-  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
 }
 
 .loading-state,
@@ -70,10 +73,14 @@ const emit = defineEmits<{
 .bookmark-items {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 400px;
   overflow-y: auto;
-  padding: 2px; /* Prevent focus outline from being cut off */
+  padding: 4px 0;
+  min-height: 0;
+  flex: 1;
+}
+
+.bookmark-items > :not(:last-child) {
+  margin-bottom: 8px;
 }
 
 /* Custom scrollbar for bookmark list */
