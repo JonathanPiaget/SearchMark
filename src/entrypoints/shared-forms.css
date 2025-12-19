@@ -1,9 +1,5 @@
 /* Shared form styles for popup and settings */
 
-.form-group {
-	margin-bottom: 16px;
-}
-
 .form-group label {
 	display: block;
 	margin-bottom: 4px;

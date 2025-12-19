@@ -48,3 +48,18 @@ seeLaterFolderDescription: "Default: creates a \"See Later\" folder in your Book
 seeLaterUsingDefault: Default (Bookmarks Toolbar)
 seeLaterResetToDefault: Reset to default
 selectSeeLaterFolder: Search folders...
+search: Search
+searchBookmarks: Search Bookmarks
+selectFolderToSearch: Select a folder to view its bookmarks
+noBookmarksInFolder: No bookmarks found in this folder
+loadingBookmarks: Loading bookmarks...
+errorLoadingBookmarks: Failed to load bookmarks
+folderNotFound: Folder not found
+bookmarkOpened: Bookmark opened in new tab
+bookmarks: bookmarks
+bookmark: bookmark
+pathLabel: "Path:"
+emptyFolderMessage: This folder is empty
+selectFolderPrompt: Select a folder above to view its bookmarks
+error: An error occurred. Please try again.
+includeSubfolders: Include subfolders

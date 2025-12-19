@@ -77,4 +77,8 @@ watch(
 .bookmark-form {
   margin-bottom: 20px;
 }
+
+.form-group {
+  margin-bottom: 16px;
+}
 </style>

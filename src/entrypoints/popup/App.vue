@@ -10,10 +10,12 @@ import BookmarkForm from './components/BookmarkForm.vue';
 import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';
 import SaveButton from './components/SaveButton.vue';
+import SearchView from './components/SearchView.vue';
 import SeeLaterButton from './components/SeeLaterButton.vue';
 import SettingsButton from './components/SettingsButton.vue';
 import ThemeToggle from './components/ThemeToggle.vue';
 
+const activeView = ref<'save' | 'search'>('save');
 const currentUrl = ref('');
 const currentTitle = ref('');
 const message = ref('');
@@ -22,6 +24,10 @@ const bookmarkUrl = ref('');
 const bookmarkTitle = ref('');
 const selectedFolderId = ref('');
 const selectedFolderName = ref('');
+
+const switchView = (view: 'save' | 'search') => {
+	activeView.value = view;
+};
 
 const { initTheme } = useTheme();
 const { initSeeLater } = useSeeLater();
@@ -134,29 +140,53 @@ const saveBookmark = async () => {
       </div>
     </div>
 
-    <ExistingBookmarks
-      :locations="bookmarkLocations"
-      :is-loading="isSearching"
-      @bookmark-deleted="handleBookmarkDeleted"
-    />
+    <!-- Tab switcher -->
+    <div class="view-tabs">
+      <button
+        :class="['tab-button', { active: activeView === 'save' }]"
+        @click="switchView('save')"
+      >
+        <span class="tab-icon">💾</span>
+        <span class="tab-label">{{ i18n.t('save') }}</span>
+      </button>
+      <button
+        :class="['tab-button', { active: activeView === 'search' }]"
+        @click="switchView('search')"
+      >
+        <span class="tab-icon">🔍</span>
+        <span class="tab-label">{{ i18n.t('search') }}</span>
+      </button>
+    </div>
 
-    <FolderSelector
-      v-model="selectedFolderId"
-      @folder-selected="(folder) => selectedFolderName = folder.name"
-      @enter-pressed="saveBookmark"
-    />
+    <!-- Save View -->
+    <div v-if="activeView === 'save'" class="save-view">
+      <ExistingBookmarks
+        :locations="bookmarkLocations"
+        :is-loading="isSearching"
+        @bookmark-deleted="handleBookmarkDeleted"
+      />
 
-    <BookmarkForm
-      v-model:model-url="bookmarkUrl"
-      v-model:model-title="bookmarkTitle"
-      @enter-pressed="saveBookmark"
-    />
+      <FolderSelector
+        v-model="selectedFolderId"
+        @folder-selected="(folder) => selectedFolderName = folder.name"
+        @enter-pressed="saveBookmark"
+      />
 
-    <SaveButton
-      :message="message"
-      :is-loading="isLoading"
-      @save="saveBookmark"
-    />
+      <BookmarkForm
+        v-model:model-url="bookmarkUrl"
+        v-model:model-title="bookmarkTitle"
+        @enter-pressed="saveBookmark"
+      />
+
+      <SaveButton
+        :message="message"
+        :is-loading="isLoading"
+        @save="saveBookmark"
+      />
+    </div>
+
+    <!-- Search View -->
+    <SearchView v-else-if="activeView === 'search'" />
   </div>
 </template>
 
@@ -198,5 +228,14 @@ const saveBookmark = async () => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Restore margins for Save view only */
+.save-view .folder-selector {
+  margin-bottom: 16px;
+}
+
+.save-view .form-group {
+  margin-bottom: 16px;
 }
 </style>

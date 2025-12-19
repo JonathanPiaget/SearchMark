@@ -28,3 +28,47 @@ body {
 * {
 	box-sizing: border-box;
 }
+
+.view-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+	border-bottom: 2px solid var(--border-primary);
+	transition: border-color 0.2s ease;
+}
+
+.tab-button {
+	background: transparent;
+	border: none;
+	border-bottom: 3px solid transparent;
+	padding: 10px 16px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--text-secondary);
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	margin-bottom: -2px; /* Overlap with parent border */
+}
+
+.tab-button:hover {
+	color: var(--text-primary);
+	background: var(--bg-tertiary);
+	border-radius: 6px 6px 0 0;
+}
+
+.tab-button.active {
+	color: var(--accent-primary);
+	border-bottom-color: var(--accent-primary);
+	font-weight: 600;
+}
+
+.tab-icon {
+	font-size: 16px;
+}
+
+.tab-label {
+	user-select: none;
+}

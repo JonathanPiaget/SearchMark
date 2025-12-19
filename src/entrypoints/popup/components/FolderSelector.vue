@@ -259,10 +259,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.folder-selector {
-  margin-bottom: 16px;
-}
-
 .search-container {
   position: relative;
 }

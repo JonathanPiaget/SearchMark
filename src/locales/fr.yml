@@ -48,3 +48,18 @@ seeLaterFolderDescription: "Par défaut : crée un dossier \"Voir Plus Tard\" da
 seeLaterUsingDefault: Par défaut (barre de favoris)
 seeLaterResetToDefault: Réinitialiser par défaut
 selectSeeLaterFolder: Rechercher des dossiers...
+search: Rechercher
+searchBookmarks: Rechercher des favoris
+selectFolderToSearch: Sélectionnez un dossier pour voir ses favoris
+noBookmarksInFolder: Aucun favori trouvé dans ce dossier
+loadingBookmarks: Chargement des favoris...
+errorLoadingBookmarks: Échec du chargement des favoris
+folderNotFound: Dossier introuvable
+bookmarkOpened: Favori ouvert dans un nouvel onglet
+bookmarks: favoris
+bookmark: favori
+pathLabel: "Chemin :"
+emptyFolderMessage: Ce dossier est vide
+selectFolderPrompt: Sélectionnez un dossier ci-dessus pour voir ses favoris
+error: Une erreur est survenue. Veuillez réessayer.
+includeSubfolders: Inclure les sous-dossiers
