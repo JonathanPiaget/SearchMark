@@ -10,10 +10,19 @@ A browser extension for efficient bookmark management with search capabilities.
 ## Features
 
 **Quick Save**
-Save bookmarks using global keyboard shortcuts without opening browser menus. Press `Cmd+Shift+S` (Mac) or `Ctrl+Shift+S` (Windows/Linux) to open the popup for custom folder selection, or `Cmd+Shift+B` (Mac) or `Ctrl+Shift+B` (Windows/Linux) to quickly save to your bookmark toolbar.
+Save bookmarks quickly by opening the extension popup. The popup auto-fills the current page title and URL for easy editing before saving to your chosen folder.
 
 **Folder Search**
-Find bookmark folders by typing their names. Navigate results with arrow keys and expand folders with children. The interface highlights matching text and shows folder paths for easy identification.
+Find bookmark folders by typing their names with real-time filtering. Navigate results with arrow keys and expand child folders. The interface highlights matching text and shows breadcrumb paths for easy identification.
+
+**Bookmark Search**
+Search for bookmarks within folders using full-text search. View folder contents with the option to display recursive or direct content only.
+
+**Current Page Detection**
+See the full path where the current page is already bookmarked, and quickly delete it directly from the popup if needed.
+
+**Save for Later**
+Quickly save pages to a dedicated "See later" folder with one click. Configure your preferred quick-save folder in the extension settings.
 
 **Dark Mode**
 Automatic theme detection follows your system preferences, or manually toggle between light and dark modes. Access theme settings via the extension options page for fine-grained control (Auto/Light/Dark).
@@ -23,15 +32,14 @@ Currently supports English and French, with the architecture in place to easily 
 
 ## Planned Features
 
-1. Full-text search across bookmark titles, URLs and folders
-2. Enable creating new folders during save process
-3. Customize hot keys and default folder for quick save
-4. Add a note to a bookmark
-5. Find a way to do a trash for deleted bookmarks
-6. List broken URLs bookmarks
-7. Auto backup locally on any change
-8.  Add more languages
-9.  Add tags to bookmarks
+1. Enable creating new folders during save process
+2. Customize hot keys and default folder for quick save
+3. Add a note to a bookmark
+4. Find a way to do a trash for deleted bookmarks
+5. List broken URLs bookmarks
+6. Auto backup locally on any change
+7. Add more languages
+8. Add tags to bookmarks
 
 ## Development
 
