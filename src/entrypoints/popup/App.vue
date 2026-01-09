@@ -197,7 +197,7 @@ const saveBookmark = async () => {
   padding: 16px;
   background: var(--bg-secondary);
   transition: background 0.2s ease;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
 }
