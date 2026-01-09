@@ -63,3 +63,7 @@ emptyFolderMessage: Ce dossier est vide
 selectFolderPrompt: Sélectionnez un dossier ci-dessus pour voir ses favoris
 error: Une erreur est survenue. Veuillez réessayer.
 includeSubfolders: Inclure les sous-dossiers
+support: Soutenir
+supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
+buyMeACoffee: M'offrir un café
+rateExtension: Noter l'extension

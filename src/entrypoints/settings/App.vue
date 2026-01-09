@@ -52,17 +52,49 @@
           </div>
         </div>
       </section>
+
+      <section class="settings-section support-section">
+        <h2>{{ i18n.t('support') }}</h2>
+
+        <div class="setting-item support-item">
+          <p class="support-message">{{ i18n.t('supportMessage') }}</p>
+          <div class="support-actions">
+            <a
+              href="https://buymeacoffee.com/piagetjonathan"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="support-button coffee-button"
+            >
+              {{ i18n.t('buyMeACoffee') }}
+            </a>
+            <a
+              :href="storeUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="support-button rate-button"
+            >
+              {{ i18n.t('rateExtension') }}
+            </a>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
 import { useTheme } from '../../composables/useTheme';
 import FolderSelector from '../popup/components/FolderSelector.vue';
+
+const STORE_URLS = {
+	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/searchmark/',
+	chrome:
+		'https://chromewebstore.google.com/detail/searchmark/ojcnjoecdiojbelkehfhibhljjaocfaf',
+};
 
 const { currentTheme, setTheme, initTheme } = useTheme();
 const {
@@ -74,6 +106,11 @@ const {
 const selectedTheme = ref<Theme>('auto');
 const version = ref('');
 const selectedFolderId = ref(seeLaterFolderId.value || '');
+
+const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
+const storeUrl = computed(() =>
+	isFirefox.value ? STORE_URLS.firefox : STORE_URLS.chrome,
+);
 
 const handleThemeChange = async () => {
 	await setTheme(selectedTheme.value);
@@ -342,5 +379,60 @@ const handleUseDefaultFolder = async () => {
   color: var(--text-secondary);
   margin-top: 12px !important;
   transition: color 0.2s ease;
+}
+
+.support-item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.support-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+  transition: color 0.2s ease;
+}
+
+.support-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.support-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.coffee-button {
+  background: linear-gradient(135deg, #ffdd00 0%, #fbb034 100%);
+  color: #1a1a1a;
+  border: none;
+}
+
+.coffee-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(251, 176, 52, 0.4);
+}
+
+.rate-button {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+}
+
+.rate-button:hover {
+  background: var(--accent-primary);
+  color: white;
 }
 </style>

@@ -63,3 +63,7 @@ emptyFolderMessage: This folder is empty
 selectFolderPrompt: Select a folder above to view its bookmarks
 error: An error occurred. Please try again.
 includeSubfolders: Include subfolders
+support: Support
+supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
+buyMeACoffee: Buy me a coffee
+rateExtension: Rate this extension
