@@ -67,3 +67,5 @@ support: Support
 supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
 buyMeACoffee: Buy me a coffee
 rateExtension: Rate this extension
+classifyWithAI: Classify with AI
+classifyTooltip: Download prompt for AI classification

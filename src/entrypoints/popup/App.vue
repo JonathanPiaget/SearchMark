@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkClassifier } from '../../composables/useBookmarkClassifier';
 import { useBookmarkSearch } from '../../composables/useBookmarkSearch';
 import { useFolderTree } from '../../composables/useFolderTree';
 import { useSeeLater } from '../../composables/useSeeLater';
@@ -32,6 +33,15 @@ const switchView = (view: 'save' | 'search') => {
 const { initTheme } = useTheme();
 const { initSeeLater } = useSeeLater();
 const { folderMap, loadFolders } = useFolderTree();
+const { downloadPrompt, loadFolders: loadClassifierFolders } =
+	useBookmarkClassifier();
+
+const handleClassify = async () => {
+	if (currentUrl.value) {
+		await loadClassifierFolders();
+		downloadPrompt(currentUrl.value);
+	}
+};
 const {
 	bookmarkLocations,
 	isLoading: isSearching,
@@ -178,11 +188,20 @@ const saveBookmark = async () => {
         @enter-pressed="saveBookmark"
       />
 
-      <SaveButton
-        :message="message"
-        :is-loading="isLoading"
-        @save="saveBookmark"
-      />
+      <div class="action-buttons">
+        <SaveButton
+          :message="message"
+          :is-loading="isLoading"
+          @save="saveBookmark"
+        />
+        <button
+          class="classify-btn"
+          :title="i18n.t('classifyTooltip')"
+          @click="handleClassify"
+        >
+          🤖
+        </button>
+      </div>
     </div>
 
     <!-- Search View -->
@@ -241,5 +260,30 @@ const saveBookmark = async () => {
 
 .save-view .form-group {
   margin-bottom: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.action-buttons :deep(.save-button) {
+  flex: 1;
+}
+
+.classify-btn {
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.classify-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
 }
 </style>

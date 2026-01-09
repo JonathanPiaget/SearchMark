@@ -67,3 +67,5 @@ support: Soutenir
 supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
 buyMeACoffee: M'offrir un café
 rateExtension: Noter l'extension
+classifyWithAI: Classifier avec l'IA
+classifyTooltip: Télécharger le prompt pour la classification IA
