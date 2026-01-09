@@ -106,7 +106,7 @@ const handleOpenBookmark = (bookmark: BookmarkItem) => {
   gap: 8px;
   min-height: 0;
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .error-message {
