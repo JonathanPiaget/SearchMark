@@ -1,67 +1,57 @@
 import { type BookmarkFolder, useFolderTree } from './useFolderTree';
 
+export interface ClassificationFolder {
+	id: string;
+	name: string;
+	children?: ClassificationFolder[];
+}
+
+export interface ClassificationData {
+	url: string;
+	folders: ClassificationFolder[];
+}
+
 export interface ClassificationResult {
 	action: 'existing' | 'new';
-	folderPath: string;
-	newFolderName?: string;
-	confidence: 'high' | 'medium' | 'low';
-	reasoning: string;
+	folder_id?: string;
+	parent_id?: string;
+	new_folder_name?: string;
+}
+
+function toClassificationFolder(folder: BookmarkFolder): ClassificationFolder {
+	const result: ClassificationFolder = {
+		id: folder.id,
+		name: folder.title,
+	};
+
+	if (folder.children && folder.children.length > 0) {
+		result.children = folder.children.map(toClassificationFolder);
+	}
+
+	return result;
 }
 
 export function useBookmarkClassifier() {
 	const { allFolders, loadFolders } = useFolderTree();
 
-	function formatFolderTree(folderList: BookmarkFolder[]): string {
-		const childrenMap = new Map<string | undefined, BookmarkFolder[]>();
+	function generateData(url: string): ClassificationData {
+		const rootFolders = allFolders.value.filter((folder) => folder.path === '');
 
-		for (const folder of folderList) {
-			const parentId = folder.parentId;
-			const existing = childrenMap.get(parentId);
-			if (existing) {
-				existing.push(folder);
-			} else {
-				childrenMap.set(parentId, [folder]);
-			}
-		}
-
-		function buildTree(parentId: string | undefined, indent: number): string {
-			const children = childrenMap.get(parentId) || [];
-			let result = '';
-
-			for (const folder of children) {
-				result += `${'  '.repeat(indent)}${folder.title}/\n`;
-				result += buildTree(folder.id, indent + 1);
-			}
-
-			return result;
-		}
-
-		const rootParentIds = ['0', '1', '2'];
-		let tree = '';
-		for (const rootId of rootParentIds) {
-			tree += buildTree(rootId, 0);
-		}
-
-		return tree || buildTree(undefined, 0);
+		return {
+			url,
+			folders: rootFolders.map(toClassificationFolder),
+		};
 	}
 
-	function generatePrompt(url: string): string {
-		const tree = formatFolderTree(allFolders.value);
-
-		return `## Page to Classify URL:
-${url}
-
-## Folder Structure
-${tree}`;
-	}
-
-	function downloadPrompt(url: string): void {
-		const prompt = generatePrompt(url);
-		const blob = new Blob([prompt], { type: 'text/plain' });
+	function downloadData(url: string): void {
+		const data = generateData(url);
+		const blob = new Blob([JSON.stringify(data, null, 2)], {
+			type: 'application/json',
+		});
 		const blobUrl = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = blobUrl;
-		a.download = `classify-bookmark-${Date.now()}.txt`;
+		a.download = `classify-bookmark-${Date.now()}.json`;
 		a.click();
 		URL.revokeObjectURL(blobUrl);
 	}
@@ -69,7 +59,6 @@ ${tree}`;
 	function parseResponse(response: string): ClassificationResult | null {
 		const jsonMatch = response.match(/\{[\s\S]*?\}/);
 		if (!jsonMatch) return null;
-
 		try {
 			return JSON.parse(jsonMatch[0]) as ClassificationResult;
 		} catch {
@@ -79,8 +68,8 @@ ${tree}`;
 
 	return {
 		loadFolders,
-		generatePrompt,
-		downloadPrompt,
+		generateData,
+		downloadData,
 		parseResponse,
 	};
 }

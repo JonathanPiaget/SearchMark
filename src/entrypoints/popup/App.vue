@@ -33,13 +33,13 @@ const switchView = (view: 'save' | 'search') => {
 const { initTheme } = useTheme();
 const { initSeeLater } = useSeeLater();
 const { folderMap, loadFolders } = useFolderTree();
-const { downloadPrompt, loadFolders: loadClassifierFolders } =
+const { downloadData, loadFolders: loadClassifierFolders } =
 	useBookmarkClassifier();
 
 const handleClassify = async () => {
 	if (currentUrl.value) {
 		await loadClassifierFolders();
-		downloadPrompt(currentUrl.value);
+		downloadData(currentUrl.value);
 	}
 };
 const {
