@@ -15,6 +15,9 @@
         v-for="bookmark in bookmarks"
         :key="bookmark.id"
         :bookmark="bookmark"
+        :filter-query="filterQuery"
+        :highlight-indexes="filterIndexesMap?.get(bookmark.id) ?? null"
+        :is-fuzzy="isFuzzy"
         @open="emit('openBookmark', bookmark)"
       />
     </div>
@@ -30,6 +33,9 @@ interface Props {
 	bookmarks: BookmarkItemType[];
 	isLoading?: boolean;
 	emptyMessage?: string;
+	filterQuery?: string;
+	filterIndexesMap?: Map<string, readonly number[]>;
+	isFuzzy?: boolean;
 }
 
 defineProps<Props>();

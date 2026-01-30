@@ -16,7 +16,37 @@ export interface UseBookmarkFolderReturn {
 	isLoading: Ref<boolean>;
 	error: Ref<string | null>;
 	loadBookmarks: (folderId: string, recursive?: boolean) => Promise<void>;
+	loadAllBookmarks: () => Promise<void>;
 }
+
+const fetchBookmarksFromNode = async (
+	node: Browser.bookmarks.BookmarkTreeNode,
+	basePath = '',
+): Promise<BookmarkItem[]> => {
+	const children =
+		node.children || (await browser.bookmarks.getChildren(node.id));
+	const results: BookmarkItem[] = [];
+
+	for (const child of children) {
+		if (child.url) {
+			results.push({
+				id: child.id,
+				title: child.title,
+				url: child.url,
+				parentId: child.parentId || node.id,
+				parentPath: basePath,
+				dateAdded: child.dateAdded,
+			});
+		} else if (child.title) {
+			const subfolderPath = basePath
+				? `${basePath} > ${child.title}`
+				: child.title;
+			const subBookmarks = await fetchBookmarksFromNode(child, subfolderPath);
+			results.push(...subBookmarks);
+		}
+	}
+	return results;
+};
 
 export function useBookmarkFolder(
 	folderMap: Ref<Map<string, BookmarkFolder>>,
@@ -102,10 +132,40 @@ export function useBookmarkFolder(
 		}
 	};
 
+	const loadAllBookmarks = async (): Promise<void> => {
+		isLoading.value = true;
+		error.value = null;
+
+		try {
+			const [tree] = await browser.bookmarks.getTree();
+			const rootFolders = tree.children || [];
+			const allResults: BookmarkItem[] = [];
+
+			for (const rootFolder of rootFolders) {
+				if (!rootFolder.url && rootFolder.id !== '0') {
+					const subBookmarks = await fetchBookmarksFromNode(
+						rootFolder,
+						rootFolder.title,
+					);
+					allResults.push(...subBookmarks);
+				}
+			}
+
+			bookmarks.value = allResults;
+		} catch (err) {
+			error.value = 'errorLoadingBookmarks';
+			bookmarks.value = [];
+			throw err;
+		} finally {
+			isLoading.value = false;
+		}
+	};
+
 	return {
 		bookmarks,
 		isLoading,
 		error,
 		loadBookmarks,
+		loadAllBookmarks,
 	};
 }

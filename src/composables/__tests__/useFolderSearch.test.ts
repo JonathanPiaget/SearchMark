@@ -1,102 +1,110 @@
 import { describe, expect, it } from 'vitest';
 import { ref } from 'vue';
-import {
-	createNestedFolders,
-	createSpecialCharFolders,
-	createWorkBookmarks,
-} from '../../test-utils/bookmarkFactory';
+import { createWorkBookmarks } from '../../test-utils/bookmarkFactory';
 import { useFolderSearch } from '../useFolderSearch';
+import type { BookmarkFolder } from '../useFolderTree';
 
 describe('useFolderSearch', () => {
-	describe('searchFolders', () => {
+	describe('exact mode', () => {
 		it('returns empty results when query is empty', () => {
-			const allFolders = ref(createWorkBookmarks());
-			const { searchQuery, searchResults, searchFolders } =
-				useFolderSearch(allFolders);
+			const { searchQuery, searchResults, searchFolders, isFuzzyEnabled } =
+				useFolderSearch(ref(createWorkBookmarks()));
 
+			isFuzzyEnabled.value = false;
 			searchQuery.value = '';
 			searchFolders();
 
 			expect(searchResults.value).toEqual([]);
 		});
 
-		it('finds folders by name (case-insensitive)', () => {
-			const allFolders = ref(createWorkBookmarks());
-			const { searchQuery, searchResults, searchFolders } =
-				useFolderSearch(allFolders);
+		it('finds folders case-insensitively with null indexes', () => {
+			const { searchQuery, searchResults, searchFolders, isFuzzyEnabled } =
+				useFolderSearch(ref(createWorkBookmarks()));
 
+			isFuzzyEnabled.value = false;
 			searchQuery.value = 'WORK';
 			searchFolders();
 
 			expect(searchResults.value).toHaveLength(2);
-			expect(searchResults.value[0].title).toBe('Work Projects');
-			expect(searchResults.value[1].title).toBe('work notes');
+			expect(searchResults.value[0].folder.title).toBe('Work Projects');
+			expect(searchResults.value[0].indexes).toBeNull();
 		});
+	});
 
-		it('finds folders with special characters', () => {
-			const allFolders = ref(createSpecialCharFolders());
-			const { searchQuery, searchResults, searchFolders } =
-				useFolderSearch(allFolders);
+	describe('fuzzy mode', () => {
+		it('finds folders with fuzzy matching and returns indexes', () => {
+			const folders: BookmarkFolder[] = [
+				{ id: '1', title: 'kotlin-lang-lambda', path: '' },
+				{ id: '2', title: 'javascript-tutorial', path: '' },
+			];
+			const { searchQuery, searchResults, searchFolders, isFuzzyEnabled } =
+				useFolderSearch(ref(folders));
 
-			searchQuery.value = '$100';
+			isFuzzyEnabled.value = true;
+			searchQuery.value = 'ktln';
 			searchFolders();
 
 			expect(searchResults.value).toHaveLength(1);
-			expect(searchResults.value[0].title).toBe('Price: $100 (USD)');
+			expect(searchResults.value[0].folder.title).toBe('kotlin-lang-lambda');
+			expect(searchResults.value[0].indexes!.length).toBeGreaterThan(0);
 		});
 
-		it('searches within nested folder structures', () => {
-			const allFolders = ref(createNestedFolders());
-			const { searchQuery, searchResults, searchFolders } =
-				useFolderSearch(allFolders);
+		it('filters out poor matches based on threshold', () => {
+			const folders: BookmarkFolder[] = [{ id: '1', title: 'xyz', path: '' }];
+			const { searchQuery, searchResults, searchFolders, isFuzzyEnabled } =
+				useFolderSearch(ref(folders));
 
-			searchQuery.value = 'Fiction';
+			isFuzzyEnabled.value = true;
+			searchQuery.value = 'abc';
 			searchFolders();
 
-			expect(searchResults.value.length).toBeGreaterThan(0);
-			expect(searchResults.value.some((r) => r.title === 'Fiction')).toBe(true);
+			expect(searchResults.value).toHaveLength(0);
 		});
 	});
 
 	describe('highlightText', () => {
-		it('returns unhighlighted text when query is empty', () => {
-			const allFolders = ref([]);
-			const { highlightText } = useFolderSearch(allFolders);
+		it('highlights by indexes when provided (fuzzy)', () => {
+			const { highlightText } = useFolderSearch(ref([]));
 
-			const result = highlightText('Sample Text', '');
+			const result = highlightText('Hello', '', [0, 2, 4]);
 
-			expect(result).toEqual([{ text: 'Sample Text', highlighted: false }]);
+			expect(result).toEqual([
+				{ text: 'H', highlighted: true },
+				{ text: 'e', highlighted: false },
+				{ text: 'l', highlighted: true },
+				{ text: 'l', highlighted: false },
+				{ text: 'o', highlighted: true },
+			]);
 		});
 
-		it('highlights matching text correctly', () => {
-			const allFolders = ref([]);
-			const { highlightText } = useFolderSearch(allFolders);
+		it('highlights by substring when indexes is null (exact)', () => {
+			const { highlightText } = useFolderSearch(ref([]));
 
-			const result = highlightText('Hello World', 'World');
+			const result = highlightText('Hello World', 'World', null);
 
-			expect(result).toHaveLength(2);
-			expect(result[0]).toEqual({ text: 'Hello ', highlighted: false });
-			expect(result[1]).toEqual({ text: 'World', highlighted: true });
+			expect(result).toEqual([
+				{ text: 'Hello ', highlighted: false },
+				{ text: 'World', highlighted: true },
+			]);
 		});
 
-		it('escapes special regex characters', () => {
-			const allFolders = ref([]);
-			const { highlightText } = useFolderSearch(allFolders);
+		it('groups consecutive highlighted characters', () => {
+			const { highlightText } = useFolderSearch(ref([]));
 
-			const result = highlightText('Cost: $100 (USD)', '$100');
+			const result = highlightText('Hello', '', [0, 1, 2]);
 
-			expect(result).toContainEqual({ text: '$100', highlighted: true });
+			expect(result).toEqual([
+				{ text: 'Hel', highlighted: true },
+				{ text: 'lo', highlighted: false },
+			]);
 		});
 
-		it('highlights text case-insensitively', () => {
-			const allFolders = ref([]);
-			const { highlightText } = useFolderSearch(allFolders);
+		it('preserves original case in substring mode', () => {
+			const { highlightText } = useFolderSearch(ref([]));
 
-			const result = highlightText('JavaScript Tutorial', 'script');
+			const result = highlightText('JavaScript', 'script', null);
 
-			expect(
-				result.some((part) => part.highlighted && part.text === 'Script'),
-			).toBe(true);
+			expect(result).toContainEqual({ text: 'Script', highlighted: true });
 		});
 	});
 });
