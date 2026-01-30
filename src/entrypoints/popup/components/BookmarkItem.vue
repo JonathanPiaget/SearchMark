@@ -31,11 +31,7 @@
 import { computed } from 'vue';
 import { i18n } from '#i18n';
 import type { BookmarkItem as BookmarkItemType } from '../../../composables/useBookmarkFolder';
-
-interface HighlightedPart {
-	text: string;
-	highlighted: boolean;
-}
+import { highlightText } from '../../../utils/highlight';
 
 interface Props {
 	bookmark: BookmarkItemType;
@@ -50,62 +46,13 @@ const emit = defineEmits<{
 	open: [];
 }>();
 
-const highlightedTitle = computed((): HighlightedPart[] => {
-	const text = props.bookmark.title;
-	const query = props.filterQuery || '';
-	const indexes = props.highlightIndexes;
-
-	if (indexes?.length) {
-		const result: HighlightedPart[] = [];
-		const indexSet = new Set(indexes);
-		let currentPart = '';
-		let currentHighlighted = indexSet.has(0);
-
-		for (let i = 0; i < text.length; i++) {
-			const isHighlighted = indexSet.has(i);
-			if (isHighlighted === currentHighlighted) {
-				currentPart += text[i];
-			} else {
-				if (currentPart)
-					result.push({ text: currentPart, highlighted: currentHighlighted });
-				currentPart = text[i];
-				currentHighlighted = isHighlighted;
-			}
-		}
-		if (currentPart)
-			result.push({ text: currentPart, highlighted: currentHighlighted });
-		return result;
-	}
-
-	if (!query.trim()) return [{ text, highlighted: false }];
-
-	const result: HighlightedPart[] = [];
-	const lowerText = text.toLowerCase();
-	const lowerQuery = query.toLowerCase();
-	let lastIndex = 0;
-	let index = lowerText.indexOf(lowerQuery);
-
-	while (index !== -1) {
-		if (index > lastIndex) {
-			result.push({
-				text: text.substring(lastIndex, index),
-				highlighted: false,
-			});
-		}
-		result.push({
-			text: text.substring(index, index + query.length),
-			highlighted: true,
-		});
-		lastIndex = index + query.length;
-		index = lowerText.indexOf(lowerQuery, lastIndex);
-	}
-
-	if (lastIndex < text.length) {
-		result.push({ text: text.substring(lastIndex), highlighted: false });
-	}
-
-	return result;
-});
+const highlightedTitle = computed(() =>
+	highlightText(
+		props.bookmark.title,
+		props.filterQuery || '',
+		props.highlightIndexes,
+	),
+);
 
 const handleOpen = () => {
 	new URL(props.bookmark.url);
