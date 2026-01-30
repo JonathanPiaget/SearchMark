@@ -168,7 +168,6 @@ const handleRecursiveChange = async () => {
 };
 
 watch(selectedFolderId, async (newFolderId) => {
-	filterQuery.value = '';
 	if (newFolderId) {
 		await loadBookmarks(newFolderId, isRecursive.value);
 	} else {
