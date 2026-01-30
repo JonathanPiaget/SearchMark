@@ -24,7 +24,7 @@
             <div class="shortcut-hint">
               {{ i18n.t('expandHint') }}
             </div>
-            <label class="fuzzy-toggle">
+            <label class="fuzzy-toggle" @mousedown.prevent>
               <input
                 v-model="isFuzzyEnabled"
                 type="checkbox"
