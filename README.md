@@ -13,10 +13,10 @@ A browser extension for efficient bookmark management with search capabilities.
 Save bookmarks quickly by opening the extension popup. The popup auto-fills the current page title and URL for easy editing before saving to your chosen folder.
 
 **Folder Search**
-Find bookmark folders by typing their names with real-time filtering. Navigate results with arrow keys and expand child folders. The interface highlights matching text and shows breadcrumb paths for easy identification.
+Find bookmark folders by typing their names with real-time filtering. Toggle between fuzzy and exact matching for flexible search. Navigate results with arrow keys and expand child folders. The interface highlights matching text and shows breadcrumb paths for easy identification.
 
 **Bookmark Search**
-Search for bookmarks within folders using full-text search. View folder contents with the option to display recursive or direct content only.
+Search for bookmarks across all folders or within a specific folder. Toggle fuzzy search for typo-tolerant matching. Filter results in real-time with highlighted matches. View folder contents with the option to display recursive or direct content only.
 
 **Current Page Detection**
 See the full path where the current page is already bookmarked, and quickly delete it directly from the popup if needed.
