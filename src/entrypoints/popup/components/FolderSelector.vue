@@ -64,6 +64,7 @@
         <div
           v-for="(result, index) in searchResults"
           :key="result.folder.id"
+          :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
           :class="['dropdown-item', { highlighted: index === highlightedIndex }]"
           @mousedown="selectFolder(result.folder)"
           @mouseenter="highlightedIndex = index"
@@ -155,6 +156,8 @@ const showDropdown = ref(false);
 const folderInput = ref<HTMLInputElement>();
 const selectedFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownItemRefs = ref<HTMLElement[]>([]);
 
 const { allFolders, loadFolders } = useFolderTree();
 const {
@@ -166,7 +169,10 @@ const {
 	loadFuzzyPreference,
 } = useFolderSearch(allFolders);
 const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
-	useKeyboardNavigation();
+	useKeyboardNavigation({
+		containerRef: dropdownRef,
+		itemRefs: dropdownItemRefs,
+	});
 
 /** Re-run search when fuzzy mode is toggled */
 const onFuzzyToggle = () => {
@@ -195,6 +201,7 @@ const initializeFolders = async () => {
 
 const onSearchInput = () => {
 	searchFolders();
+	dropdownItemRefs.value = [];
 	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 	showDropdown.value = searchQuery.value.trim().length > 0;
 };
@@ -235,8 +242,6 @@ const clearSelection = () => {
 	emit('update:modelValue', '');
 	emit('folderSelected', { id: '', name: '' });
 };
-
-const dropdownRef = ref<HTMLElement | null>(null);
 
 const onBlur = (event: FocusEvent) => {
 	const relatedTarget = event.relatedTarget as HTMLElement | null;
@@ -409,6 +414,8 @@ onMounted(async () => {
   box-shadow: 0 8px 24px var(--shadow-secondary);
   max-height: 400px;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   z-index: 1000;
   margin-top: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease;
