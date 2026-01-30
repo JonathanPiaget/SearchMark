@@ -18,13 +18,14 @@
         >
         <div
           v-if="showDropdown && searchQuery.trim()"
+          ref="dropdownRef"
           class="dropdown-container"
         >
-          <div class="dropdown-header">
+          <div class="dropdown-header" @mousedown.prevent>
             <div class="shortcut-hint">
               {{ i18n.t('expandHint') }}
             </div>
-            <label class="fuzzy-toggle" @mousedown.prevent>
+            <label class="fuzzy-toggle">
               <input
                 v-model="isFuzzyEnabled"
                 type="checkbox"
@@ -218,7 +219,13 @@ const selectChildFolder = (child: BookmarkFolder) => {
 	selectFolder(fullFolder);
 };
 
-const onBlur = () => {
+const dropdownRef = ref<HTMLElement | null>(null);
+
+const onBlur = (event: FocusEvent) => {
+	const relatedTarget = event.relatedTarget as HTMLElement | null;
+	if (relatedTarget && dropdownRef.value?.contains(relatedTarget)) {
+		return;
+	}
 	setTimeout(() => {
 		showDropdown.value = false;
 		resetNavigation();
