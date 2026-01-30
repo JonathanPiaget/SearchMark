@@ -107,10 +107,17 @@ jobs:
           name: release-assets
           path: .output
 
+      - name: Read changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ needs.Version.outputs.version }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ needs.Version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changes }}
           draft: false
           prerelease: false
           files: |
