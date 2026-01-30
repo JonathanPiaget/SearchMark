@@ -18,7 +18,7 @@
           @blur="onBlur"
         >
         <button
-          v-if="selectedFolder"
+          v-if="selectedFolder && searchQuery"
           type="button"
           class="clear-button"
           @mousedown.prevent="clearSelection"
