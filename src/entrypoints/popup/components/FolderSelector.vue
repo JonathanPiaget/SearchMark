@@ -20,17 +20,28 @@
           v-if="showDropdown && searchQuery.trim()"
           class="dropdown-container"
         >
-          <div class="shortcut-hint">
-            {{ i18n.t('expandHint') }}
+          <div class="dropdown-header">
+            <div class="shortcut-hint">
+              {{ i18n.t('expandHint') }}
+            </div>
+            <label class="fuzzy-toggle">
+              <input
+                v-model="isFuzzyEnabled"
+                type="checkbox"
+                class="fuzzy-checkbox"
+                @change="onFuzzyToggle"
+              >
+              <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
+            </label>
           </div>
       <div v-if="searchResults.length > 0">
         <div
-          v-for="(item, index) in searchResults"
-          :key="item.id"
+          v-for="(result, index) in searchResults"
+          :key="result.folder.id"
           :class="['dropdown-item', { highlighted: index === highlightedIndex }]"
-          @mousedown="selectFolder(item)"
+          @mousedown="selectFolder(result.folder)"
           @mouseenter="highlightedIndex = index"
-          @keydown="handleItemKeydown($event, item)"
+          @keydown="handleItemKeydown($event, result.folder)"
           tabindex="-1"
         >
           <div class="folder-info">
@@ -38,29 +49,29 @@
               <div class="folder-name-section">
                 <span class="folder-icon">📁</span>
                 <span class="folder-name">
-                  <template v-for="(part, partIndex) in highlightText(item.title, searchQuery)" :key="`${item.id}-${partIndex}`">
+                  <template v-for="(part, partIndex) in highlightText(result.folder.title, searchQuery, result.indexes)" :key="`${result.folder.id}-${partIndex}`">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                     <span v-else>{{ part.text }}</span>
                   </template>
                 </span>
               </div>
-              <div v-if="item.children && item.children.length > 0" class="folder-actions">
+              <div v-if="result.folder.children && result.folder.children.length > 0" class="folder-actions">
                 <span class="children-count">
-                  ({{ item.children.length }} {{ item.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
+                  ({{ result.folder.children.length }} {{ result.folder.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
                 </span>
                 <span class="expand-hint">
                   →
                 </span>
               </div>
             </div>
-            <div v-if="item.path" class="folder-breadcrumb">
-              {{ item.path }}
+            <div v-if="result.folder.path" class="folder-breadcrumb">
+              {{ result.folder.path }}
             </div>
-            <div v-if="showChildrenFor === item.id && item.children && item.children.length > 0" class="children-list">
+            <div v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0" class="children-list">
               <div class="children-header">{{ i18n.t('contains') }}:</div>
               <div class="children-items">
                 <span
-                  v-for="child in item.children"
+                  v-for="child in result.folder.children"
                   :key="child.id"
                   class="child-folder"
                   @click.stop="selectChildFolder(child)"
@@ -118,13 +129,27 @@ const selectedFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
 
 const { allFolders, loadFolders } = useFolderTree();
-const { searchQuery, searchResults, searchFolders, highlightText } =
-	useFolderSearch(allFolders);
+const {
+	searchQuery,
+	searchResults,
+	searchFolders,
+	highlightText,
+	isFuzzyEnabled,
+	loadFuzzyPreference,
+} = useFolderSearch(allFolders);
 const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
 	useKeyboardNavigation();
 
+/** Re-run search when fuzzy mode is toggled */
+const onFuzzyToggle = () => {
+	if (searchQuery.value.trim()) {
+		searchFolders();
+	}
+};
+
 const initializeFolders = async () => {
 	await loadFolders();
+	await loadFuzzyPreference();
 
 	if (props.autoSelectDefault && !props.modelValue) {
 		const toolbarId = await getBookmarkToolbarId();
@@ -206,16 +231,20 @@ const handleKeydown = (event: KeyboardEvent) => {
 	}
 
 	if (showDropdown.value && searchResults.value.length > 0) {
-		handleNavigation(event, searchResults.value, {
-			onEnter: (item) => selectFolder(item),
-			onEscape: () => {
-				showDropdown.value = false;
-				searchQuery.value = '';
-				resetNavigation();
-				folderInput.value?.blur();
+		handleNavigation(
+			event,
+			searchResults.value.map((r) => r.folder),
+			{
+				onEnter: (item) => selectFolder(item),
+				onEscape: () => {
+					showDropdown.value = false;
+					searchQuery.value = '';
+					resetNavigation();
+					folderInput.value?.blur();
+				},
+				onEmitEnter: () => emit('enterPressed'),
 			},
-			onEmitEnter: () => emit('enterPressed'),
-		});
+		);
 		return;
 	}
 
@@ -277,17 +306,47 @@ onMounted(async () => {
   position: relative;
 }
 
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
 .shortcut-hint {
   font-size: 11px;
   color: var(--text-secondary);
-  padding: 8px 12px;
   font-style: italic;
-  text-align: center;
   opacity: 0.8;
-  background: var(--bg-tertiary);
-  border-bottom: 1px solid var(--border-primary);
-  margin: 0;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease;
+}
+
+.fuzzy-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.fuzzy-toggle:hover {
+  color: var(--text-primary);
+}
+
+.fuzzy-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.fuzzy-label {
+  user-select: none;
 }
 
 .dropdown-container {

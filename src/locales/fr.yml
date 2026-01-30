@@ -44,7 +44,7 @@ seeLaterSuccess: Enregistré dans "{folderName}" pour plus tard
 seeLaterError: Échec de l'enregistrement dans le dossier Voir Plus Tard
 quickActions: Actions Rapides
 seeLaterFolder: Dossier Voir Plus Tard
-seeLaterFolderDescription: "Par défaut : crée un dossier \"Voir Plus Tard\" dans la barre de favoris"
+seeLaterFolderDescription: 'Par défaut : crée un dossier "Voir Plus Tard" dans la barre de favoris'
 seeLaterUsingDefault: Par défaut (barre de favoris)
 seeLaterResetToDefault: Réinitialiser par défaut
 selectSeeLaterFolder: Rechercher des dossiers...
@@ -63,6 +63,7 @@ emptyFolderMessage: Ce dossier est vide
 selectFolderPrompt: Sélectionnez un dossier ci-dessus pour voir ses favoris
 error: Une erreur est survenue. Veuillez réessayer.
 includeSubfolders: Inclure les sous-dossiers
+fuzzySearch: Recherche floue
 support: Soutenir
 supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
 buyMeACoffee: M'offrir un café

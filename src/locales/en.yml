@@ -44,7 +44,7 @@ seeLaterSuccess: Saved to "{folderName}" for later
 seeLaterError: Failed to save to See Later folder
 quickActions: Quick Actions
 seeLaterFolder: See Later Folder
-seeLaterFolderDescription: "Default: creates a \"See Later\" folder in your Bookmarks Toolbar"
+seeLaterFolderDescription: 'Default: creates a "See Later" folder in your Bookmarks Toolbar'
 seeLaterUsingDefault: Default (Bookmarks Toolbar)
 seeLaterResetToDefault: Reset to default
 selectSeeLaterFolder: Search folders...
@@ -63,6 +63,7 @@ emptyFolderMessage: This folder is empty
 selectFolderPrompt: Select a folder above to view its bookmarks
 error: An error occurred. Please try again.
 includeSubfolders: Include subfolders
+fuzzySearch: Fuzzy search
 support: Support
 supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
 buyMeACoffee: Buy me a coffee
