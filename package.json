@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.4",
+		"fuzzysort": "^3.1.0",
 		"vue": "^3.5.26"
 	},
 	"devDependencies": {

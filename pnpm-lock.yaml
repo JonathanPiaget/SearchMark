@@ -11,6 +11,9 @@ importers:
       '@wxt-dev/i18n':
         specifier: ^0.2.4
         version: 0.2.4(wxt@0.20.13(@types/node@25.0.3)(jiti@2.6.1)(rollup@4.54.0))
+      fuzzysort:
+        specifier: ^3.1.0
+        version: 3.1.0
       vue:
         specifier: ^3.5.26
         version: 3.5.26(typescript@5.9.3)
@@ -1001,6 +1004,9 @@ packages:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+
+  fuzzysort@3.1.0:
+    resolution: {integrity: sha512-sR9BNCjBg6LNgwvxlBd0sBABvQitkLzoVY9MYYROQVX/FvfJ4Mai9LsGhDgd8qYdds0bY77VzYd5iuB+v5rwQQ==}
 
   fx-runner@1.4.0:
     resolution: {integrity: sha512-rci1g6U0rdTg6bAaBboP7XdRu01dzTAaKXxFf+PUqGuCv6Xu7o8NZdY1D5MvKGIjb6EdS1g3VlXOgksir1uGkg==}
@@ -2749,6 +2755,8 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  fuzzysort@3.1.0: {}
 
   fx-runner@1.4.0:
     dependencies:
