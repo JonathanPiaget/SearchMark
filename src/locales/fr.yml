@@ -69,6 +69,7 @@ typeToSearch: Tapez pour rechercher tous les favoris
 moreResults: "{count} résultats de plus..."
 allBookmarks: Tous les favoris
 fuzzySearch: Recherche floue
+clearSelection: Effacer la sélection
 support: Soutenir
 supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
 buyMeACoffee: M'offrir un café

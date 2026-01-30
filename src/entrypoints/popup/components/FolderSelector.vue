@@ -9,6 +9,7 @@
           v-model="searchQuery"
           type="text"
           class="form-input"
+          :class="{ 'has-clear': selectedFolder }"
           :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
           :disabled="isInitializing"
           @input="onSearchInput"
@@ -16,6 +17,15 @@
           @focus="onFocus"
           @blur="onBlur"
         >
+        <button
+          v-if="selectedFolder"
+          type="button"
+          class="clear-button"
+          @mousedown.prevent="clearSelection"
+          :title="i18n.t('clearSelection')"
+        >
+          ×
+        </button>
         <div
           v-if="showDropdown && searchQuery.trim()"
           ref="dropdownRef"
@@ -219,6 +229,13 @@ const selectChildFolder = (child: BookmarkFolder) => {
 	selectFolder(fullFolder);
 };
 
+const clearSelection = () => {
+	selectedFolder.value = null;
+	searchQuery.value = '';
+	emit('update:modelValue', '');
+	emit('folderSelected', { id: '', name: '' });
+};
+
 const dropdownRef = ref<HTMLElement | null>(null);
 
 const onBlur = (event: FocusEvent) => {
@@ -229,16 +246,9 @@ const onBlur = (event: FocusEvent) => {
 	setTimeout(() => {
 		showDropdown.value = false;
 		resetNavigation();
-		if (!showDropdown.value && selectedFolder.value) {
+		// Restore selected folder name if one is selected
+		if (selectedFolder.value) {
 			searchQuery.value = selectedFolder.value.title;
-		} else if (
-			!showDropdown.value &&
-			props.showAllOption &&
-			!props.modelValue
-		) {
-			searchQuery.value = i18n.t('allBookmarks');
-		} else if (!showDropdown.value) {
-			searchQuery.value = '';
 		}
 	}, 150);
 };
@@ -343,6 +353,35 @@ onMounted(async () => {
 <style scoped>
 .search-container {
   position: relative;
+}
+
+.form-input.has-clear {
+  padding-right: 32px;
+}
+
+.clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.clear-button:hover {
+  background: var(--text-secondary);
+  color: var(--bg-primary);
 }
 
 .dropdown-header {

@@ -69,6 +69,7 @@ typeToSearch: Type to search all bookmarks
 moreResults: "{count} more results..."
 allBookmarks: All Bookmarks
 fuzzySearch: Fuzzy search
+clearSelection: Clear selection
 support: Support
 supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
 buyMeACoffee: Buy me a coffee
