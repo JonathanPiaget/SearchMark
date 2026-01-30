@@ -34,6 +34,21 @@
               <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
             </label>
           </div>
+          <div
+            v-if="showAllOption"
+            :class="['dropdown-item', 'all-bookmarks-item', { highlighted: highlightedIndex === -2 }]"
+            @mousedown="selectAllBookmarks"
+            @mouseenter="highlightedIndex = -2"
+          >
+            <div class="folder-info">
+              <div class="folder-main">
+                <div class="folder-name-section">
+                  <span class="folder-icon">📚</span>
+                  <span class="folder-name">{{ i18n.t('allBookmarks') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
       <div v-if="searchResults.length > 0">
         <div
           v-for="(result, index) in searchResults"
@@ -109,6 +124,7 @@ interface Props {
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
 	onArrowDownWithSelection?: () => boolean;
+	showAllOption?: boolean;
 }
 
 interface Emits {
@@ -120,6 +136,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
 	autofocus: true,
 	autoSelectDefault: true,
+	showAllOption: false,
 });
 const emit = defineEmits<Emits>();
 
@@ -186,6 +203,15 @@ const selectFolder = (folder: BookmarkFolder) => {
 	emit('folderSelected', { id: folder.id, name: folder.title });
 };
 
+const selectAllBookmarks = () => {
+	selectedFolder.value = null;
+	searchQuery.value = i18n.t('allBookmarks');
+	showDropdown.value = false;
+	resetNavigation();
+	emit('update:modelValue', '');
+	emit('folderSelected', { id: '', name: i18n.t('allBookmarks') });
+};
+
 const selectChildFolder = (child: BookmarkFolder) => {
 	// Find the full folder object from allFolders to ensure it has all properties
 	const fullFolder = allFolders.value.find((f) => f.id === child.id) || child;
@@ -198,6 +224,12 @@ const onBlur = () => {
 		resetNavigation();
 		if (!showDropdown.value && selectedFolder.value) {
 			searchQuery.value = selectedFolder.value.title;
+		} else if (
+			!showDropdown.value &&
+			props.showAllOption &&
+			!props.modelValue
+		) {
+			searchQuery.value = i18n.t('allBookmarks');
 		} else if (!showDropdown.value) {
 			searchQuery.value = '';
 		}
@@ -369,6 +401,11 @@ onMounted(async () => {
   cursor: pointer;
   border-bottom: 1px solid var(--border-subtle);
   transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
+}
+
+.dropdown-item.all-bookmarks-item {
+  background-color: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-primary);
 }
 
 .dropdown-item:last-child {
