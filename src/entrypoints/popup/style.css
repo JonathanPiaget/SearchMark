@@ -72,3 +72,39 @@ body {
 .tab-label {
 	user-select: none;
 }
+
+/* Clear button for inputs */
+.input-with-clear {
+	position: relative;
+}
+
+.input-with-clear .form-input.has-clear {
+	padding-right: 32px;
+}
+
+.clear-button {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 20px;
+	height: 20px;
+	border: none;
+	background: var(--bg-tertiary);
+	color: var(--text-secondary);
+	border-radius: 50%;
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+}
+
+.clear-button:hover {
+	background: var(--text-secondary);
+	color: var(--bg-primary);
+}

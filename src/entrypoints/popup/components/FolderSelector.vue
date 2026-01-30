@@ -2,7 +2,7 @@
   <div class="folder-selector">
     <div class="form-group">
       <label for="folder-search">{{ i18n.t('folder') }}</label>
-      <div class="search-container">
+      <div class="search-container input-with-clear">
         <input
           ref="folderInput"
           id="folder-search"
@@ -353,35 +353,6 @@ onMounted(async () => {
 <style scoped>
 .search-container {
   position: relative;
-}
-
-.form-input.has-clear {
-  padding-right: 32px;
-}
-
-.clear-button {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.clear-button:hover {
-  background: var(--text-secondary);
-  color: var(--bg-primary);
 }
 
 .dropdown-header {

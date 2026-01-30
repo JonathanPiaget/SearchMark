@@ -21,13 +21,23 @@
     </div>
 
     <div v-if="!error" class="filter-container">
-      <div class="filter-input-wrapper">
+      <div class="filter-input-wrapper input-with-clear">
         <input
           v-model="filterQuery"
           type="text"
           class="form-input"
+          :class="{ 'has-clear': filterQuery }"
           :placeholder="selectedFolderId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
         >
+        <button
+          v-if="filterQuery"
+          type="button"
+          class="clear-button"
+          @mousedown.prevent="filterQuery = ''"
+          :title="i18n.t('clearSelection')"
+        >
+          ×
+        </button>
       </div>
       <label class="fuzzy-toggle" @mousedown.prevent>
         <input
