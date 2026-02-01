@@ -94,7 +94,7 @@ jobs:
   Release:
     name: Release
     needs: [Version, Submit]
-    if: ${{ needs.Version.outputs.version_changed == '1' }}
+    if: ${{ needs.Version.outputs.version_changed == '1' && needs.Submit.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
