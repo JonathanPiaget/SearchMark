@@ -82,19 +82,42 @@ jobs:
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
 
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: release-assets
+          path: |
+            .output/*-chrome.zip
+            .output/*-firefox.zip
+            .output/*-sources.zip
+
   Release:
     name: Release
     needs: [Version, Submit]
-    if: ${{ needs.Version.outputs.version_changed == '1' }}
+    if: ${{ needs.Version.outputs.version_changed == '1' && needs.Submit.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v6
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: release-assets
+          path: .output
+
+      - name: Read changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ needs.Version.outputs.version }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ needs.Version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changes }}
           draft: false
           prerelease: false
           files: |

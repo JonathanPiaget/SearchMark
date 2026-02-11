@@ -2,13 +2,14 @@
   <div class="folder-selector">
     <div class="form-group">
       <label for="folder-search">{{ i18n.t('folder') }}</label>
-      <div class="search-container">
+      <div class="search-container input-with-clear">
         <input
           ref="folderInput"
           id="folder-search"
           v-model="searchQuery"
           type="text"
           class="form-input"
+          :class="{ 'has-clear': selectedFolder }"
           :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
           :disabled="isInitializing"
           @input="onSearchInput"
@@ -16,21 +17,58 @@
           @focus="onFocus"
           @blur="onBlur"
         >
+        <button
+          v-if="selectedFolder && searchQuery"
+          type="button"
+          class="clear-button"
+          @mousedown.prevent="clearSelection"
+          :title="i18n.t('clearSelection')"
+        >
+          ×
+        </button>
         <div
           v-if="showDropdown && searchQuery.trim()"
+          ref="dropdownRef"
           class="dropdown-container"
         >
-          <div class="shortcut-hint">
-            {{ i18n.t('expandHint') }}
+          <div class="dropdown-header" @mousedown.prevent>
+            <div class="shortcut-hint">
+              {{ i18n.t('expandHint') }}
+            </div>
+            <label class="fuzzy-toggle">
+              <input
+                v-model="isFuzzyEnabled"
+                type="checkbox"
+                class="fuzzy-checkbox"
+                @change="onFuzzyToggle"
+              >
+              <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
+            </label>
+          </div>
+          <div
+            v-if="showAllOption"
+            :class="['dropdown-item', 'all-bookmarks-item', { highlighted: highlightedIndex === -2 }]"
+            @mousedown="selectAllBookmarks"
+            @mouseenter="highlightedIndex = -2"
+          >
+            <div class="folder-info">
+              <div class="folder-main">
+                <div class="folder-name-section">
+                  <span class="folder-icon">📚</span>
+                  <span class="folder-name">{{ i18n.t('allBookmarks') }}</span>
+                </div>
+              </div>
+            </div>
           </div>
       <div v-if="searchResults.length > 0">
         <div
-          v-for="(item, index) in searchResults"
-          :key="item.id"
+          v-for="(result, index) in searchResults"
+          :key="result.folder.id"
+          :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
           :class="['dropdown-item', { highlighted: index === highlightedIndex }]"
-          @mousedown="selectFolder(item)"
+          @mousedown="selectFolder(result.folder)"
           @mouseenter="highlightedIndex = index"
-          @keydown="handleItemKeydown($event, item)"
+          @keydown="handleItemKeydown($event, result.folder)"
           tabindex="-1"
         >
           <div class="folder-info">
@@ -38,29 +76,29 @@
               <div class="folder-name-section">
                 <span class="folder-icon">📁</span>
                 <span class="folder-name">
-                  <template v-for="(part, partIndex) in highlightText(item.title, searchQuery)" :key="`${item.id}-${partIndex}`">
+                  <template v-for="(part, partIndex) in highlightText(result.folder.title, searchQuery, result.indexes)" :key="`${result.folder.id}-${partIndex}`">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                     <span v-else>{{ part.text }}</span>
                   </template>
                 </span>
               </div>
-              <div v-if="item.children && item.children.length > 0" class="folder-actions">
+              <div v-if="result.folder.children && result.folder.children.length > 0" class="folder-actions">
                 <span class="children-count">
-                  ({{ item.children.length }} {{ item.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
+                  ({{ result.folder.children.length }} {{ result.folder.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
                 </span>
                 <span class="expand-hint">
                   →
                 </span>
               </div>
             </div>
-            <div v-if="item.path" class="folder-breadcrumb">
-              {{ item.path }}
+            <div v-if="result.folder.path" class="folder-breadcrumb">
+              {{ result.folder.path }}
             </div>
-            <div v-if="showChildrenFor === item.id && item.children && item.children.length > 0" class="children-list">
+            <div v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0" class="children-list">
               <div class="children-header">{{ i18n.t('contains') }}:</div>
               <div class="children-items">
                 <span
-                  v-for="child in item.children"
+                  v-for="child in result.folder.children"
                   :key="child.id"
                   class="child-folder"
                   @click.stop="selectChildFolder(child)"
@@ -98,6 +136,7 @@ interface Props {
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
 	onArrowDownWithSelection?: () => boolean;
+	showAllOption?: boolean;
 }
 
 interface Emits {
@@ -109,6 +148,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
 	autofocus: true,
 	autoSelectDefault: true,
+	showAllOption: false,
 });
 const emit = defineEmits<Emits>();
 
@@ -116,15 +156,34 @@ const showDropdown = ref(false);
 const folderInput = ref<HTMLInputElement>();
 const selectedFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownItemRefs = ref<HTMLElement[]>([]);
 
 const { allFolders, loadFolders } = useFolderTree();
-const { searchQuery, searchResults, searchFolders, highlightText } =
-	useFolderSearch(allFolders);
+const {
+	searchQuery,
+	searchResults,
+	searchFolders,
+	highlightText,
+	isFuzzyEnabled,
+	loadFuzzyPreference,
+} = useFolderSearch(allFolders);
 const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
-	useKeyboardNavigation();
+	useKeyboardNavigation({
+		containerRef: dropdownRef,
+		itemRefs: dropdownItemRefs,
+	});
+
+/** Re-run search when fuzzy mode is toggled */
+const onFuzzyToggle = () => {
+	if (searchQuery.value.trim()) {
+		searchFolders();
+	}
+};
 
 const initializeFolders = async () => {
 	await loadFolders();
+	await loadFuzzyPreference();
 
 	if (props.autoSelectDefault && !props.modelValue) {
 		const toolbarId = await getBookmarkToolbarId();
@@ -142,6 +201,7 @@ const initializeFolders = async () => {
 
 const onSearchInput = () => {
 	searchFolders();
+	dropdownItemRefs.value = [];
 	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 	showDropdown.value = searchQuery.value.trim().length > 0;
 };
@@ -161,20 +221,39 @@ const selectFolder = (folder: BookmarkFolder) => {
 	emit('folderSelected', { id: folder.id, name: folder.title });
 };
 
+const selectAllBookmarks = () => {
+	selectedFolder.value = null;
+	searchQuery.value = i18n.t('allBookmarks');
+	showDropdown.value = false;
+	resetNavigation();
+	emit('update:modelValue', '');
+	emit('folderSelected', { id: '', name: i18n.t('allBookmarks') });
+};
+
 const selectChildFolder = (child: BookmarkFolder) => {
 	// Find the full folder object from allFolders to ensure it has all properties
 	const fullFolder = allFolders.value.find((f) => f.id === child.id) || child;
 	selectFolder(fullFolder);
 };
 
-const onBlur = () => {
+const clearSelection = () => {
+	selectedFolder.value = null;
+	searchQuery.value = '';
+	emit('update:modelValue', '');
+	emit('folderSelected', { id: '', name: '' });
+};
+
+const onBlur = (event: FocusEvent) => {
+	const relatedTarget = event.relatedTarget as HTMLElement | null;
+	if (relatedTarget && dropdownRef.value?.contains(relatedTarget)) {
+		return;
+	}
 	setTimeout(() => {
 		showDropdown.value = false;
 		resetNavigation();
-		if (!showDropdown.value && selectedFolder.value) {
+		// Restore selected folder name if one is selected
+		if (selectedFolder.value) {
 			searchQuery.value = selectedFolder.value.title;
-		} else if (!showDropdown.value) {
-			searchQuery.value = '';
 		}
 	}, 150);
 };
@@ -206,16 +285,20 @@ const handleKeydown = (event: KeyboardEvent) => {
 	}
 
 	if (showDropdown.value && searchResults.value.length > 0) {
-		handleNavigation(event, searchResults.value, {
-			onEnter: (item) => selectFolder(item),
-			onEscape: () => {
-				showDropdown.value = false;
-				searchQuery.value = '';
-				resetNavigation();
-				folderInput.value?.blur();
+		handleNavigation(
+			event,
+			searchResults.value.map((r) => r.folder),
+			{
+				onEnter: (item) => selectFolder(item),
+				onEscape: () => {
+					showDropdown.value = false;
+					searchQuery.value = '';
+					resetNavigation();
+					folderInput.value?.blur();
+				},
+				onEmitEnter: () => emit('enterPressed'),
 			},
-			onEmitEnter: () => emit('enterPressed'),
-		});
+		);
 		return;
 	}
 
@@ -277,17 +360,47 @@ onMounted(async () => {
   position: relative;
 }
 
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
 .shortcut-hint {
   font-size: 11px;
   color: var(--text-secondary);
-  padding: 8px 12px;
   font-style: italic;
-  text-align: center;
   opacity: 0.8;
-  background: var(--bg-tertiary);
-  border-bottom: 1px solid var(--border-primary);
-  margin: 0;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease;
+}
+
+.fuzzy-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.fuzzy-toggle:hover {
+  color: var(--text-primary);
+}
+
+.fuzzy-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.fuzzy-label {
+  user-select: none;
 }
 
 .dropdown-container {
@@ -301,6 +414,8 @@ onMounted(async () => {
   box-shadow: 0 8px 24px var(--shadow-secondary);
   max-height: 400px;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   z-index: 1000;
   margin-top: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -310,6 +425,11 @@ onMounted(async () => {
   cursor: pointer;
   border-bottom: 1px solid var(--border-subtle);
   transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
+}
+
+.dropdown-item.all-bookmarks-item {
+  background-color: var(--bg-tertiary);
+  border-bottom: 2px solid var(--border-primary);
 }
 
 .dropdown-item:last-child {

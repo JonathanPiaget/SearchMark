@@ -1,32 +1,33 @@
+import type { Ref, ShallowRef } from 'vue';
 import { ref } from 'vue';
 import type { BookmarkFolder } from './useFolderTree';
 
-export function useKeyboardNavigation() {
+export interface KeyboardNavigationRefs {
+	containerRef: Ref<HTMLElement | null> | ShallowRef<HTMLElement | null>;
+	itemRefs: Ref<HTMLElement[]>;
+}
+
+export function useKeyboardNavigation(refs?: KeyboardNavigationRefs) {
 	const highlightedIndex = ref(-1);
 	const showChildrenFor = ref<string | null>(null);
 
-	const scrollToHighlighted = () => {
-		setTimeout(() => {
-			const highlightedElement = document.querySelector(
-				'.dropdown-item.highlighted',
-			);
-			const dropdownContainer = document.querySelector('.dropdown-container');
+	const scrollToIndex = (index: number) => {
+		if (!refs) return;
 
-			if (highlightedElement && dropdownContainer) {
-				const elementRect = highlightedElement.getBoundingClientRect();
-				const containerRect = dropdownContainer.getBoundingClientRect();
+		const container = refs.containerRef.value;
+		const item = refs.itemRefs.value[index];
 
-				if (
-					elementRect.top < containerRect.top ||
-					elementRect.bottom > containerRect.bottom
-				) {
-					highlightedElement.scrollIntoView({
-						behavior: 'smooth',
-						block: 'nearest',
-					});
-				}
-			}
-		}, 0);
+		if (!container || !item) return;
+
+		const itemRect = item.getBoundingClientRect();
+		const containerRect = container.getBoundingClientRect();
+
+		if (
+			itemRect.top < containerRect.top ||
+			itemRect.bottom > containerRect.bottom
+		) {
+			item.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+		}
 	};
 
 	const handleNavigation = (
@@ -41,23 +42,24 @@ export function useKeyboardNavigation() {
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			showChildrenFor.value = null;
-			highlightedIndex.value = Math.min(
+			const newIndex = Math.min(
 				highlightedIndex.value + 1,
 				searchResults.length - 1,
 			);
-			scrollToHighlighted();
+			highlightedIndex.value = newIndex;
+			scrollToIndex(newIndex);
 		} else if (event.key === 'ArrowUp') {
 			event.preventDefault();
 			showChildrenFor.value = null;
-			highlightedIndex.value = Math.max(highlightedIndex.value - 1, 0);
-			scrollToHighlighted();
+			const newIndex = Math.max(highlightedIndex.value - 1, 0);
+			highlightedIndex.value = newIndex;
+			scrollToIndex(newIndex);
 		} else if (event.key === ' ' && event.shiftKey) {
 			event.preventDefault();
 			const currentItem = searchResults[highlightedIndex.value];
 			if (currentItem?.children && currentItem.children.length > 0) {
 				showChildrenFor.value =
 					showChildrenFor.value === currentItem.id ? null : currentItem.id;
-				setTimeout(() => scrollToHighlighted(), 100);
 			}
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
