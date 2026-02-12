@@ -19,6 +19,7 @@
         :highlight-indexes="filterIndexesMap?.get(bookmark.id) ?? null"
         :is-fuzzy="isFuzzy"
         @open="emit('openBookmark', bookmark)"
+        @deleted="(id) => emit('bookmarkDeleted', id)"
       />
     </div>
   </div>
@@ -42,6 +43,7 @@ defineProps<Props>();
 
 const emit = defineEmits<{
 	openBookmark: [bookmark: BookmarkItemType];
+	bookmarkDeleted: [id: string];
 }>();
 </script>
 

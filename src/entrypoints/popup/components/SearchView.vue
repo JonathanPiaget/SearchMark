@@ -64,6 +64,7 @@
       :filter-indexes-map="filterIndexesMap"
       :is-fuzzy="isFuzzyFilter"
       @open-bookmark="handleOpenBookmark"
+      @bookmark-deleted="removeBookmark"
     />
 
     <div v-if="hasMoreResults" class="more-results">
@@ -96,8 +97,14 @@ const isFuzzyFilter = ref(true);
 const filterIndexesMap = ref<Map<string, readonly number[]>>(new Map());
 
 const { folderMap, loadFolders } = useFolderTree();
-const { bookmarks, isLoading, error, loadBookmarks, loadAllBookmarks } =
-	useBookmarkFolder(folderMap);
+const {
+	bookmarks,
+	isLoading,
+	error,
+	loadBookmarks,
+	loadAllBookmarks,
+	removeBookmark,
+} = useBookmarkFolder(folderMap);
 
 const filteredBookmarks = computed(() => {
 	if (!filterQuery.value.trim()) {

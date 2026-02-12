@@ -24,14 +24,31 @@
         {{ i18n.t('pathLabel') }} {{ bookmark.parentPath }}
       </div>
     </div>
+    <button
+      class="delete-button"
+      :disabled="isDeleting"
+      :title="i18n.t('delete')"
+      @click.stop="showConfirmDialog"
+    >
+      {{ isDeleting ? '⏳' : '🗑️' }}
+    </button>
+
+    <ConfirmDialog
+      v-model="confirmDialogVisible"
+      :message="i18n.t('confirmDelete')"
+      @confirm="handleConfirmDelete"
+      @cancel="confirmDialogVisible = false"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkActions } from '../../../composables/useBookmarkActions';
 import type { BookmarkItem as BookmarkItemType } from '../../../composables/useBookmarkFolder';
 import { highlightText } from '../../../utils/highlight';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 interface Props {
 	bookmark: BookmarkItemType;
@@ -44,7 +61,11 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
 	open: [];
+	deleted: [id: string];
 }>();
+
+const { isDeleting, deleteBookmark } = useBookmarkActions();
+const confirmDialogVisible = ref(false);
 
 const highlightedTitle = computed(() =>
 	highlightText(
@@ -53,6 +74,15 @@ const highlightedTitle = computed(() =>
 		props.highlightIndexes,
 	),
 );
+
+const showConfirmDialog = () => {
+	confirmDialogVisible.value = true;
+};
+
+const handleConfirmDelete = async () => {
+	await deleteBookmark(props.bookmark.id);
+	emit('deleted', props.bookmark.id);
+};
 
 const handleOpen = () => {
 	new URL(props.bookmark.url);
@@ -154,5 +184,28 @@ const handleKeydown = (event: KeyboardEvent) => {
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.2s ease;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+}
+
+.delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>
