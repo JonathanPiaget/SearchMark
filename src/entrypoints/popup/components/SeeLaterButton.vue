@@ -126,6 +126,10 @@ const handleSeeLater = async () => {
   display: inline-block;
 }
 
+.see-later-button:hover:not(:disabled) .see-later-icon {
+  transform: rotate(-20deg);
+}
+
 .see-later-icon.loading {
   animation: pulse 1.5s ease-in-out infinite;
 }

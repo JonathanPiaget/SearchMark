@@ -53,7 +53,15 @@ const handleToggle = async () => {
   display: inline-block;
 }
 
+.theme-toggle:hover .theme-icon {
+  transform: rotate(20deg);
+}
+
 .theme-icon.dark {
   transform: rotate(20deg);
+}
+
+.theme-toggle:hover .theme-icon.dark {
+  transform: rotate(-10deg);
 }
 </style>
