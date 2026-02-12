@@ -7,7 +7,7 @@ export interface BookmarkItem {
 	title: string;
 	url: string;
 	parentId: string;
-	parentPath: string; // Relative path within selected folder
+	parentPath: string;
 	dateAdded?: number;
 }
 
@@ -103,11 +103,15 @@ export function useBookmarkFolder(
 				throw new Error('Folder not found');
 			}
 
+			const folder = folderMap.value.get(folderId);
+			const fullPath = folder?.path
+				? `${folder.path} > ${folder.title}`
+				: folder?.title || '';
+
 			if (recursive) {
-				bookmarks.value = await fetchBookmarksRecursive(folderId);
+				bookmarks.value = await fetchBookmarksRecursive(folderId, fullPath);
 			} else {
 				const children = await browser.bookmarks.getChildren(folderId);
-				const folder = folderMap.value.get(folderId);
 
 				bookmarks.value = children
 					.filter((child) => child.url)
@@ -116,7 +120,7 @@ export function useBookmarkFolder(
 						title: child.title,
 						url: child.url || '',
 						parentId: child.parentId || folderId,
-						parentPath: folder?.title || '',
+						parentPath: fullPath,
 						dateAdded: child.dateAdded,
 					}));
 			}

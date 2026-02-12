@@ -2,7 +2,7 @@
   <div
     class="bookmark-item"
     tabindex="0"
-    :title="`${bookmark.title} - ${bookmark.url}`"
+    :title="bookmark.parentPath"
     @click="handleOpen"
     @keydown="handleKeydown"
   >
@@ -105,7 +105,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .bookmark-info {
   flex: 1;
-  min-width: 0; /* Allow text truncation */
+  min-width: 0;
 }
 
 .bookmark-header {
