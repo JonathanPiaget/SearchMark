@@ -27,7 +27,7 @@
 		"@biomejs/biome": "^2.4.8",
 		"@wxt-dev/module-vue": "^1.0.3",
 		"typescript": "6.0.2",
-		"vite": "^8.0.2",
+		"vite": "^8.0.5",
 		"vitest": "^4.1.1",
 		"vue-tsc": "^3.2.6",
 		"wxt": "^0.20.20"
