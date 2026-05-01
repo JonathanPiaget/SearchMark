@@ -21,16 +21,16 @@
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.5",
 		"fuzzysort": "^3.1.0",
-		"vue": "^3.5.30"
+		"vue": "^3.5.33"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.8",
+		"@biomejs/biome": "^2.4.13",
 		"@wxt-dev/module-vue": "^1.0.3",
-		"typescript": "6.0.2",
-		"vite": "^8.0.5",
-		"vitest": "^4.1.1",
-		"vue-tsc": "^3.2.6",
-		"wxt": "^0.20.20"
+		"typescript": "6.0.3",
+		"vite": "^8.0.10",
+		"vitest": "^4.1.5",
+		"vue-tsc": "^3.2.7",
+		"wxt": "^0.20.25"
 	},
 	"packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
 }
