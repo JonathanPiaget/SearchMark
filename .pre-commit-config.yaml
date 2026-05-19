@@ -28,3 +28,8 @@ repos:
     rev: "v1.7.12"
     hooks:
       - id: actionlint
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.25.2
+    hooks:
+      - id: zizmor

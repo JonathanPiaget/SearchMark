@@ -22,9 +22,10 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
       version_changed: ${{ steps.check_version.outputs.version_changed }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check for version change
         id: check_version
@@ -51,11 +52,13 @@ jobs:
     if: ${{ needs.Version.outputs.version_changed == '1' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v6.0.3
+      - uses: pnpm/action-setup@903f9c1a6ebcba6cf41d87230be49611ac97822e # v6.0.3
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20
           cache: 'pnpm'
@@ -83,7 +86,7 @@ jobs:
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: release-assets
           path: |
@@ -99,28 +102,31 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
       - name: Download release artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: release-assets
           path: .output
 
       - name: Read changelog
         id: changelog
-        uses: mindsers/changelog-reader-action@v2
+        uses: mindsers/changelog-reader-action@32aa5b4c155d76c94e4ec883a223c947b2f02656 # v2
         with:
           version: ${{ needs.Version.outputs.version }}
 
       - name: Create Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: "v${{ needs.Version.outputs.version }}"
-          body: ${{ steps.changelog.outputs.changes }}
-          draft: false
-          prerelease: false
-          files: |
-            .output/*-chrome.zip
-            .output/*-firefox.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.Version.outputs.version }}
+          CHANGES: ${{ steps.changelog.outputs.changes }}
+        run: |
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --notes "${CHANGES}" \
+            .output/*-chrome.zip \
+            .output/*-firefox.zip \
             .output/*-sources.zip
