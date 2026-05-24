@@ -1,35 +1,35 @@
 repos:
-  - repo: https://github.com/mxr/sync-pre-commit-deps
+-   repo: https://github.com/mxr/sync-pre-commit-deps
     rev: "v0.0.4"
     hooks:
-      - id: sync-pre-commit-deps
+    -   id: sync-pre-commit-deps
 
-  - repo: https://github.com/biomejs/pre-commit
+-   repo: https://github.com/biomejs/pre-commit
     rev: v2.4.15
     hooks:
-      - id: biome-check
-        additional_dependencies: ["@biomejs/biome@2.3.0"]
+    -   id: biome-check
+        additional_dependencies: ["@biomejs/biome@2.4.15"]
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-json
-      - id: check-toml
-      - id: debug-statements
-      - id: check-merge-conflict
-      - id: mixed-line-ending
-      - id: check-case-conflict
-      - id: detect-private-key
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-json
+    -   id: check-toml
+    -   id: debug-statements
+    -   id: check-merge-conflict
+    -   id: mixed-line-ending
+    -   id: check-case-conflict
+    -   id: detect-private-key
 
-  - repo: https://github.com/rhysd/actionlint
+-   repo: https://github.com/rhysd/actionlint
     rev: "v1.7.12"
     hooks:
-      - id: actionlint
+    -   id: actionlint
 
-  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+-   repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: v1.25.2
     hooks:
-      - id: zizmor
+    -   id: zizmor
