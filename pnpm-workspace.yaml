@@ -1,5 +1,3 @@
-ignoredBuiltDependencies:
-  - spawn-sync
-
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
+  spawn-sync: false
