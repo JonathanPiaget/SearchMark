@@ -1,3 +1,4 @@
+import { actionApi } from '../utils/action';
 import { refreshAllBadges, updateBadgeForTab } from '../utils/badge';
 import { getBookmarkToolbarId } from '../utils/bookmark';
 
@@ -45,7 +46,7 @@ export default defineBackground(() => {
 		} else if (message.action === 'openPopup') {
 			(async () => {
 				try {
-					await browser.action.openPopup();
+					await actionApi.openPopup();
 					sendResponse({ success: true });
 				} catch (error) {
 					console.error('Error opening popup:', error);

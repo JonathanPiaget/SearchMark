@@ -1,3 +1,4 @@
+import { actionApi } from './action';
 import { findBookmarksByUrl } from './bookmark';
 
 const BOOKMARKED_BADGE_TEXT = '✓';
@@ -9,12 +10,12 @@ export const updateBadgeForTab = async (
 ): Promise<void> => {
 	try {
 		const isBookmarked = !!url && (await findBookmarksByUrl(url)).length > 0;
-		await browser.action.setBadgeText({
+		await actionApi.setBadgeText({
 			text: isBookmarked ? BOOKMARKED_BADGE_TEXT : '',
 			tabId,
 		});
 		if (isBookmarked) {
-			await browser.action.setBadgeBackgroundColor({
+			await actionApi.setBadgeBackgroundColor({
 				color: BOOKMARKED_BADGE_COLOR,
 				tabId,
 			});
