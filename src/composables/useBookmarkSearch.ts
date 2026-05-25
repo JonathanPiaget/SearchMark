@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import { findBookmarksByUrl } from '../utils/bookmark';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface BookmarkLocation {
@@ -41,24 +42,17 @@ export const searchBookmarksByUrl = async (
 	url: string,
 	folderMap: Map<string, BookmarkFolder>,
 ): Promise<BookmarkLocation[]> => {
-	if (!url) return [];
+	const bookmarks = await findBookmarksByUrl(url);
 
-	try {
-		const bookmarks = await browser.bookmarks.search({ url });
-
-		return bookmarks
-			.filter((bookmark) => bookmark.url === url && bookmark.parentId)
-			.map((bookmark) => ({
-				id: bookmark.id,
-				title: bookmark.title,
-				url: bookmark.url || '',
-				folderId: bookmark.parentId || '',
-				folderPath: buildFolderPath(bookmark.parentId || '', folderMap),
-			}));
-	} catch (error) {
-		console.error('Error searching bookmarks:', error);
-		return [];
-	}
+	return bookmarks
+		.filter((bookmark) => bookmark.parentId)
+		.map((bookmark) => ({
+			id: bookmark.id,
+			title: bookmark.title,
+			url: bookmark.url || '',
+			folderId: bookmark.parentId || '',
+			folderPath: buildFolderPath(bookmark.parentId || '', folderMap),
+		}));
 };
 
 /**

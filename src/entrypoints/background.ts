@@ -1,7 +1,27 @@
+import { refreshAllBadges, updateBadgeForTab } from '../utils/badge';
 import { getBookmarkToolbarId } from '../utils/bookmark';
 
 export default defineBackground(() => {
-	console.log('SearchMark background script loaded');
+	refreshAllBadges();
+
+	browser.tabs.onActivated.addListener(async ({ tabId }) => {
+		try {
+			const tab = await browser.tabs.get(tabId);
+			await updateBadgeForTab(tabId, tab.url);
+		} catch (error) {
+			console.error('Error handling tab activation:', error);
+		}
+	});
+
+	browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+		if (changeInfo.url !== undefined || changeInfo.status === 'complete') {
+			updateBadgeForTab(tabId, changeInfo.url ?? tab.url);
+		}
+	});
+
+	browser.bookmarks.onCreated.addListener(refreshAllBadges);
+	browser.bookmarks.onRemoved.addListener(refreshAllBadges);
+	browser.bookmarks.onChanged.addListener(refreshAllBadges);
 
 	browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 		if (message.action === 'saveBookmark') {
