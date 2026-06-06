@@ -34,7 +34,9 @@
         >
           <div class="dropdown-header" @mousedown.prevent>
             <div class="shortcut-hint">
-              {{ i18n.t('expandHint') }}
+              <kbd class="key">{{ i18n.t('keyShift') }}</kbd>
+              <kbd class="key">{{ i18n.t('keySpace') }}</kbd>
+              <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
             </div>
             <label class="fuzzy-toggle">
               <input
@@ -375,39 +377,65 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  gap: 12px;
+  padding: 10px 12px;
   background: var(--bg-tertiary);
   border-bottom: 1px solid var(--border-primary);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .shortcut-hint {
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
   color: var(--text-secondary);
-  font-style: italic;
-  opacity: 0.8;
+  min-width: 0;
   transition: color 0.2s ease;
+}
+
+.shortcut-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 5px;
+  box-shadow: 0 1px 0 var(--border-primary);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .fuzzy-toggle {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   cursor: pointer;
-  font-size: 11px;
-  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
   transition: color 0.2s ease;
 }
 
-.fuzzy-toggle:hover {
-  color: var(--text-primary);
-}
-
 .fuzzy-checkbox {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
   accent-color: var(--accent-primary);
+  border-radius: 5px;
 }
 
 .fuzzy-label {

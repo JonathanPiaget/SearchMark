@@ -17,7 +17,9 @@ child: child
 children: children
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
-expandHint: Press Shift+Space to expand folders with children
+expandHint: expand folders
+keyShift: Shift
+keySpace: Space
 save: Save
 cancel: Cancel
 confirm: Delete

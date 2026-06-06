@@ -17,7 +17,9 @@ child: enfant
 children: enfants
 noFoldersFound: Aucun dossier trouvé
 tryDifferentSearch: Essayez un terme de recherche différent
-expandHint: Appuyez sur Shift+Espace pour étendre les dossiers avec enfants
+expandHint: déplier les dossiers
+keyShift: Shift
+keySpace: Espace
 save: Enregistrer
 cancel: Annuler
 confirm: Supprimer
