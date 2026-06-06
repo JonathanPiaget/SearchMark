@@ -30,6 +30,7 @@
           v-if="showDropdown && searchQuery.trim()"
           ref="dropdownRef"
           class="dropdown-container"
+          :style="dropdownMaxHeight ? { maxHeight: `${dropdownMaxHeight}px` } : undefined"
         >
           <div class="dropdown-header" @mousedown.prevent>
             <div class="shortcut-hint">
@@ -125,6 +126,7 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';
 import { useFolderTree } from '../../../composables/useFolderTree';
@@ -158,6 +160,9 @@ const selectedFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
+
+const { maxHeight: dropdownMaxHeight, update: updateDropdownFit } =
+	useDropdownFit(showDropdown, folderInput, dropdownRef);
 
 const { allFolders, loadFolders } = useFolderTree();
 const {
@@ -204,6 +209,9 @@ const onSearchInput = () => {
 	dropdownItemRefs.value = [];
 	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 	showDropdown.value = searchQuery.value.trim().length > 0;
+	if (showDropdown.value) {
+		updateDropdownFit();
+	}
 };
 
 const onFocus = () => {
@@ -361,6 +369,9 @@ onMounted(async () => {
 }
 
 .dropdown-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -416,6 +427,8 @@ onMounted(async () => {
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
+  scroll-padding-top: 44px;
+  scroll-padding-bottom: 8px;
   z-index: 1000;
   margin-top: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease;
