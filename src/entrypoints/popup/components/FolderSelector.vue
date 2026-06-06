@@ -119,6 +119,26 @@
         <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
         <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
         </div>
+          <div
+            v-if="searchResults.length > 0"
+            class="dropdown-footer"
+            @mousedown.prevent
+          >
+            <div class="result-count">
+              <span class="count-current">{{ currentPosition }}</span>
+              <span class="count-total"> / {{ allFolders.length }}</span>
+              <span class="count-matches">
+                · {{ searchResults.length }}
+                {{ searchResults.length === 1 ? i18n.t('match') : i18n.t('matches') }}
+              </span>
+            </div>
+            <div class="footer-keys">
+              <kbd class="key">↑</kbd>
+              <kbd class="key">↓</kbd>
+              <span class="key-sep">·</span>
+              <kbd class="key">↵</kbd>
+            </div>
+          </div>
       </div>
     </div>
   </div>
@@ -126,7 +146,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
 import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
@@ -180,6 +200,10 @@ const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
 		containerRef: dropdownRef,
 		itemRefs: dropdownItemRefs,
 	});
+
+const currentPosition = computed(() =>
+	highlightedIndex.value >= 0 ? highlightedIndex.value + 1 : 0,
+);
 
 /** Re-run search when fuzzy mode is toggled */
 const onFuzzyToggle = () => {
@@ -442,6 +466,45 @@ onMounted(async () => {
   user-select: none;
 }
 
+.dropdown-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-primary);
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.result-count {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count-current {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.footer-keys {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.key-sep {
+  color: var(--text-muted);
+}
+
 .dropdown-container {
   position: absolute;
   top: 100%;
@@ -456,7 +519,7 @@ onMounted(async () => {
   overflow-x: hidden;
   overscroll-behavior: contain;
   scroll-padding-top: 44px;
-  scroll-padding-bottom: 8px;
+  scroll-padding-bottom: 44px;
   z-index: 1000;
   margin-top: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease;
