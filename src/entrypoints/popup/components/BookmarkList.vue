@@ -20,6 +20,7 @@
         :is-fuzzy="isFuzzy"
         @open="emit('openBookmark', bookmark)"
         @deleted="(id) => emit('bookmarkDeleted', id)"
+        @escape-top="emit('escapeTop')"
       />
     </div>
   </div>
@@ -46,6 +47,7 @@ defineProps<Props>();
 const emit = defineEmits<{
 	openBookmark: [bookmark: BookmarkItemType];
 	bookmarkDeleted: [id: string];
+	escapeTop: [];
 }>();
 </script>
 

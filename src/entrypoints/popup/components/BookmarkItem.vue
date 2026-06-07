@@ -66,6 +66,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
 	open: [];
 	deleted: [id: string];
+	escapeTop: [];
 }>();
 
 const { isDeleting, deleteBookmark } = useBookmarkActions();
@@ -111,6 +112,9 @@ const handleKeydown = (event: KeyboardEvent) => {
 			event.preventDefault();
 		} else if (event.key === 'ArrowUp' && currentIndex > 0) {
 			(allItems[currentIndex - 1] as HTMLElement).focus();
+			event.preventDefault();
+		} else if (event.key === 'ArrowUp' && currentIndex === 0) {
+			emit('escapeTop');
 			event.preventDefault();
 		}
 	}

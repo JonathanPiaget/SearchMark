@@ -22,11 +22,13 @@
     <div v-if="!error" class="filter-container">
       <div class="filter-input-wrapper input-with-clear">
         <input
+          ref="filterInputRef"
           v-model="filterQuery"
           type="text"
           class="form-input"
           :class="{ 'has-clear': filterQuery }"
           :placeholder="selectedFolderId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
+          @keydown.down.prevent="focusFirstBookmark"
         >
         <button
           v-if="filterQuery"
@@ -64,6 +66,7 @@
       :is-fuzzy="isFuzzyFilter"
       @open-bookmark="handleOpenBookmark"
       @bookmark-deleted="removeBookmark"
+      @escape-top="focusFilterInput"
     />
 
     <div v-if="hasMoreResults" class="more-results">
@@ -91,6 +94,7 @@ const MAX_RESULTS = 100;
 const selectedFolderId = ref('');
 const isRecursive = ref(true);
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
+const filterInputRef = ref<HTMLInputElement | null>(null);
 const filterQuery = ref('');
 const isFuzzyFilter = ref(true);
 const filterIndexesMap = ref<Map<string, readonly number[]>>(new Map());
@@ -197,6 +201,10 @@ const focusFirstBookmark = () => {
 		return true;
 	}
 	return false;
+};
+
+const focusFilterInput = () => {
+	filterInputRef.value?.focus();
 };
 
 onMounted(async () => {
