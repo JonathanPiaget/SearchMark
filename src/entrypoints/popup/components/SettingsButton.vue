@@ -47,14 +47,4 @@ const handleClick = () => {
   font-size: 16px;
   display: inline-block;
 }
-
-.settings-button:hover .settings-icon {
-  animation: spin-icon 0.6s ease;
-}
-
-@keyframes spin-icon {
-  to {
-    transform: rotate(360deg);
-  }
-}
 </style>

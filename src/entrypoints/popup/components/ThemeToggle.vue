@@ -54,14 +54,4 @@ const handleToggle = async () => {
   font-size: 16px;
   display: inline-block;
 }
-
-.theme-toggle:hover .theme-icon {
-  animation: spin-icon 0.6s ease;
-}
-
-@keyframes spin-icon {
-  to {
-    transform: rotate(360deg);
-  }
-}
 </style>
