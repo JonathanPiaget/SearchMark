@@ -65,6 +65,7 @@
               rel="noopener noreferrer"
               class="support-button coffee-button"
             >
+              <IconCoffee class="support-icon" />
               {{ i18n.t('buyMeACoffee') }}
             </a>
             <a
@@ -73,6 +74,7 @@
               rel="noopener noreferrer"
               class="support-button rate-button"
             >
+              <IconStar class="support-icon star-gold" />
               {{ i18n.t('rateExtension') }}
             </a>
           </div>
@@ -85,6 +87,8 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import IconCoffee from '~icons/lucide/coffee';
+import IconStar from '~icons/lucide/star';
 import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
 import { useTheme } from '../../composables/useTheme';
@@ -414,6 +418,11 @@ const handleUseDefaultFolder = async () => {
   cursor: pointer;
 }
 
+.support-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .coffee-button {
   background: linear-gradient(135deg, #ffdd00 0%, #fbb034 100%);
   color: #1a1a1a;
@@ -434,5 +443,10 @@ const handleUseDefaultFolder = async () => {
 .rate-button:hover {
   background: var(--accent-primary);
   color: white;
+}
+
+.star-gold {
+  color: #fbb034;
+  fill: #fbb034;
 }
 </style>
