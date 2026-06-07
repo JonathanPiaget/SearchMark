@@ -52,19 +52,16 @@ const handleToggle = async () => {
 
 .theme-icon {
   font-size: 16px;
-  transition: transform 0.3s ease;
   display: inline-block;
 }
 
 .theme-toggle:hover .theme-icon {
-  transform: rotate(20deg);
+  animation: spin-icon 0.6s ease;
 }
 
-.theme-icon.dark {
-  transform: rotate(20deg);
-}
-
-.theme-toggle:hover .theme-icon.dark {
-  transform: rotate(-10deg);
+@keyframes spin-icon {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

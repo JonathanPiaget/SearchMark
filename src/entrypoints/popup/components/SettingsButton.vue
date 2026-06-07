@@ -45,11 +45,16 @@ const handleClick = () => {
 
 .settings-icon {
   font-size: 16px;
-  transition: transform 0.3s ease;
   display: inline-block;
 }
 
 .settings-button:hover .settings-icon {
-  transform: rotate(45deg);
+  animation: spin-icon 0.6s ease;
+}
+
+@keyframes spin-icon {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
