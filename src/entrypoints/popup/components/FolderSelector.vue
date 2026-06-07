@@ -340,6 +340,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 			if (event.key === 'ArrowUp' && highlightedIndex.value <= 0) {
 				event.preventDefault();
 				highlightedIndex.value = -2;
+				dropdownRef.value?.scrollTo({ top: 0, behavior: 'instant' });
 				return;
 			}
 			if (event.key === 'ArrowDown' && highlightedIndex.value === -2) {
