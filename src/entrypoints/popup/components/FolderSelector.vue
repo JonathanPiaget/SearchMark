@@ -55,9 +55,9 @@
             @mouseenter="highlightedIndex = -2"
           >
             <div class="folder-info">
-              <div class="folder-main">
-                <div class="folder-name-section">
-                  <span class="folder-icon"><IconLibrary /></span>
+              <div class="folder-row">
+                <span class="folder-icon"><IconLibrary /></span>
+                <div class="folder-text">
                   <span class="folder-name">{{ i18n.t('allBookmarks') }}</span>
                 </div>
               </div>
@@ -75,27 +75,30 @@
           tabindex="-1"
         >
           <div class="folder-info">
-            <div class="folder-main">
-              <div class="folder-name-section">
-                <span class="folder-icon"><IconFolder /></span>
+            <div class="folder-row">
+              <span class="folder-icon"><IconFolder /></span>
+              <div class="folder-text">
                 <span class="folder-name">
                   <template v-for="(part, partIndex) in highlightText(result.folder.title, searchQuery, result.indexes)" :key="`${result.folder.id}-${partIndex}`">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                     <span v-else>{{ part.text }}</span>
                   </template>
                 </span>
+                <span v-if="result.folder.path" class="folder-breadcrumb">
+                  {{ result.folder.path }}
+                </span>
               </div>
               <div v-if="result.folder.children && result.folder.children.length > 0" class="folder-actions">
-                <span class="children-count">
-                  ({{ result.folder.children.length }} {{ result.folder.children.length === 1 ? i18n.t('child') : i18n.t('children') }})
+                <span
+                  class="children-count"
+                  :title="`${result.folder.children.length} ${result.folder.children.length === 1 ? i18n.t('child') : i18n.t('children')}`"
+                >
+                  <IconFolders class="children-count-icon" />{{ result.folder.children.length }}
                 </span>
                 <span class="expand-hint">
                   →
                 </span>
               </div>
-            </div>
-            <div v-if="result.folder.path" class="folder-breadcrumb">
-              {{ result.folder.path }}
             </div>
             <div v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0" class="children-list">
               <div class="children-header">{{ i18n.t('contains') }}:</div>
@@ -149,6 +152,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
+import IconFolders from '~icons/lucide/folders';
 import IconLibrary from '~icons/lucide/library';
 import IconSearch from '~icons/lucide/search';
 import IconSpace from '~icons/lucide/space';
@@ -579,11 +583,19 @@ onMounted(async () => {
 }
 
 .children-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-size: 11px;
   color: var(--text-secondary);
   margin-left: 4px;
-  font-weight: normal;
+  font-weight: 500;
   transition: color 0.2s ease;
+}
+
+.children-count-icon {
+  width: 13px;
+  height: 13px;
 }
 
 .expand-hint {
@@ -615,17 +627,16 @@ onMounted(async () => {
   padding: 8px 12px;
 }
 
-.folder-main {
+.folder-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2px;
+  gap: 8px;
 }
 
-.folder-name-section {
+.folder-text {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 1px;
   flex: 1;
   min-width: 0;
 }
@@ -639,7 +650,10 @@ onMounted(async () => {
 }
 
 .folder-icon {
+  display: inline-flex;
+  align-items: center;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .folder-name {
@@ -648,7 +662,6 @@ onMounted(async () => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
   min-width: 0;
   transition: color 0.2s ease;
 }
@@ -667,7 +680,9 @@ onMounted(async () => {
   font-size: 12px;
   color: var(--text-secondary);
   opacity: 0.8;
-  margin-left: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
