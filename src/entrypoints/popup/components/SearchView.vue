@@ -95,16 +95,40 @@ const filterQuery = ref('');
 const isFuzzyFilter = ref(true);
 const filterIndexesMap = ref<Map<string, readonly number[]>>(new Map());
 let allBookmarksLoaded = false;
+let allBookmarksLoading: Promise<void> | null = null;
 
 const { folderMap, loadFolders } = useFolderTree();
+
 const {
-	bookmarks,
-	isLoading,
-	error,
-	loadBookmarks,
+	bookmarks: allBookmarks,
+	isLoading: isLoadingAll,
+	error: errorAll,
 	loadAllBookmarks,
-	removeBookmark,
+	removeBookmark: removeFromAll,
 } = useBookmarkFolder(folderMap);
+
+const {
+	bookmarks: folderBookmarks,
+	isLoading: isLoadingFolder,
+	error: errorFolder,
+	loadBookmarks,
+	removeBookmark: removeFromFolder,
+} = useBookmarkFolder(folderMap);
+
+const bookmarks = computed(() =>
+	selectedFolderId.value ? folderBookmarks.value : allBookmarks.value,
+);
+const isLoading = computed(() =>
+	selectedFolderId.value ? isLoadingFolder.value : isLoadingAll.value,
+);
+const error = computed(() =>
+	selectedFolderId.value ? errorFolder.value : errorAll.value,
+);
+
+const removeBookmark = (id: string) => {
+	removeFromAll(id);
+	removeFromFolder(id);
+};
 
 const filteredBookmarks = computed(() => {
 	if (!filterQuery.value.trim()) {
@@ -151,8 +175,17 @@ const saveFuzzyPreference = () => {
 
 const ensureAllBookmarksLoaded = async () => {
 	if (allBookmarksLoaded) return;
-	await loadAllBookmarks();
-	allBookmarksLoaded = true;
+	if (!allBookmarksLoading) {
+		allBookmarksLoading = loadAllBookmarks()
+			.then(() => {
+				allBookmarksLoaded = true;
+			})
+			.catch(() => {})
+			.finally(() => {
+				allBookmarksLoading = null;
+			});
+	}
+	await allBookmarksLoading;
 };
 
 const focusFirstBookmark = () => {
@@ -191,7 +224,6 @@ const handleRecursiveChange = async () => {
 
 watch(selectedFolderId, async (newFolderId) => {
 	if (newFolderId) {
-		allBookmarksLoaded = false;
 		await loadBookmarks(newFolderId, isRecursive.value);
 	} else if (filterQuery.value.trim()) {
 		await ensureAllBookmarksLoaded();
