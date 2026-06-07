@@ -46,7 +46,7 @@ describe('useFolderSearch', () => {
 
 			expect(searchResults.value).toHaveLength(1);
 			expect(searchResults.value[0].folder.title).toBe('kotlin-lang-lambda');
-			expect(searchResults.value[0].indexes!.length).toBeGreaterThan(0);
+			expect(searchResults.value[0].indexes?.length).toBeGreaterThan(0);
 		});
 
 		it('filters out poor matches based on threshold', () => {
