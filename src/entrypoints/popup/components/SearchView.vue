@@ -94,6 +94,7 @@ const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 const filterQuery = ref('');
 const isFuzzyFilter = ref(true);
 const filterIndexesMap = ref<Map<string, readonly number[]>>(new Map());
+let allBookmarksLoaded = false;
 
 const { folderMap, loadFolders } = useFolderTree();
 const {
@@ -148,6 +149,12 @@ const saveFuzzyPreference = () => {
 	});
 };
 
+const ensureAllBookmarksLoaded = async () => {
+	if (allBookmarksLoaded) return;
+	await loadAllBookmarks();
+	allBookmarksLoaded = true;
+};
+
 const focusFirstBookmark = () => {
 	if (!bookmarkListRef.value) return false;
 	const firstBookmark =
@@ -171,7 +178,6 @@ onMounted(async () => {
 	if (result[FUZZY_FILTER_STORAGE_KEY] !== undefined) {
 		isFuzzyFilter.value = Boolean(result[FUZZY_FILTER_STORAGE_KEY]);
 	}
-	await loadAllBookmarks();
 });
 
 const handleRecursiveChange = async () => {
@@ -185,9 +191,16 @@ const handleRecursiveChange = async () => {
 
 watch(selectedFolderId, async (newFolderId) => {
 	if (newFolderId) {
+		allBookmarksLoaded = false;
 		await loadBookmarks(newFolderId, isRecursive.value);
-	} else {
-		await loadAllBookmarks();
+	} else if (filterQuery.value.trim()) {
+		await ensureAllBookmarksLoaded();
+	}
+});
+
+watch(filterQuery, (query) => {
+	if (query.trim() && !selectedFolderId.value) {
+		ensureAllBookmarksLoaded();
 	}
 });
 
