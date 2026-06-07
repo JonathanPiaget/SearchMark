@@ -1,5 +1,4 @@
 saveBookmark: Save Bookmark
-shortcutHint: Press Cmd+Shift+S (Mac) or Ctrl+S to save quickly
 bookmarkSaved: Bookmark saved successfully
 bookmarkSavedInFolder: Bookmark saved to "{folderName}"
 bookmarkError: Error saving bookmark

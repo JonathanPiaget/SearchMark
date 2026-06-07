@@ -1,5 +1,4 @@
 saveBookmark: Enregistrer le marque-page
-shortcutHint: Appuyez sur Cmd+Shift+S (Mac) ou Ctrl+S pour enregistrer rapidement
 bookmarkSaved: Marque-page enregistré avec succès
 bookmarkSavedInFolder: Marque-page enregistré dans "{folderName}"
 bookmarkError: Erreur lors de l'enregistrement du marque-page

@@ -10,7 +10,7 @@ A browser extension for efficient bookmark management with search capabilities.
 ## Features
 
 **Quick Save**
-Save bookmarks quickly by opening the extension popup. The popup auto-fills the current page title and URL for easy editing before saving to your chosen folder.
+Open the popup from anywhere with a keyboard shortcut (Ctrl+Shift+X, or Cmd+Shift+X on Mac) — it works on every page, including the browser's own pages. The popup auto-fills the current page title and URL for easy editing before saving to your chosen folder.
 
 **Folder Search**
 Find bookmark folders by typing their names with real-time filtering. Toggle between fuzzy and exact matching for flexible search. Navigate results with arrow keys and expand child folders. The interface highlights matching text and shows breadcrumb paths for easy identification.
