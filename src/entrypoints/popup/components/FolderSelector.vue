@@ -100,19 +100,21 @@
                 </span>
               </div>
             </div>
-            <div v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0" class="children-list">
-              <div class="children-header">{{ i18n.t('contains') }}:</div>
-              <div class="children-items">
-                <span
-                  v-for="child in result.folder.children"
-                  :key="child.id"
-                  class="child-folder"
-                  @click.stop="selectChildFolder(child)"
-                  @mousedown.stop
-                >
-                  <IconFolder /> {{ child.title }}
-                </span>
-              </div>
+            <div
+              v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0"
+              class="children-list"
+              @mousedown.stop
+            >
+              <span
+                v-for="child in result.folder.children"
+                :key="child.id"
+                class="child-folder"
+                @click.stop="selectChildFolder(child)"
+                @mousedown.stop
+              >
+                <span class="child-icon"><IconFolder /></span>
+                <span class="child-name">{{ child.title }}</span>
+              </span>
             </div>
           </div>
         </div>
@@ -571,17 +573,6 @@ onMounted(async () => {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.dropdown-item:hover .children-header,
-.dropdown-item.highlighted .children-header {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.dropdown-item:hover .child-folder,
-.dropdown-item.highlighted .child-folder {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
 .children-count {
   display: inline-flex;
   align-items: center;
@@ -687,67 +678,56 @@ onMounted(async () => {
 }
 
 .children-list {
-  margin-top: 8px;
-  margin-left: 18px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding-top: 6px;
-  max-width: 100%;
-  overflow: hidden;
+  position: relative;
+  margin: 6px -12px -8px;
+  padding: 4px 0;
+  background: var(--dropdown-bg);
 }
 
-.children-header {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.children-items {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.children-list::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--border-primary);
 }
 
 .child-folder {
-  font-size: 11px;
-  color: var(--text-primary);
-  background: var(--bg-tertiary);
-  padding: 4px 8px;
-  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px 7px 32px;
+  font-size: 13px;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
-  border: 1px solid var(--border-primary);
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .child-folder:hover {
-  background-color: var(--accent-primary);
-  color: white;
-  border-color: var(--accent-hover);
+  background: var(--hover);
+  color: var(--text-primary);
 }
 
-.dropdown-item:hover .child-folder,
-.dropdown-item.highlighted .child-folder {
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #2d1b4e;
-  border-color: rgba(255, 255, 255, 0.7);
+.child-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
-.dropdown-item:hover .child-folder:hover,
-.dropdown-item.highlighted .child-folder:hover {
-  background-color: rgba(255, 255, 255, 1);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
+.child-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
-.more-children {
-  font-size: 11px;
-  color: var(--text-secondary);
-  font-style: italic;
-  transition: color 0.2s ease;
+.child-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Highlighting styles */
