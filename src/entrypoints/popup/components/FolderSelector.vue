@@ -126,9 +126,8 @@
           >
             <div class="result-count">
               <span class="count-current">{{ currentPosition }}</span>
-              <span class="count-total"> / {{ allFolders.length }}</span>
+              <span class="count-total"> / {{ searchResults.length }}</span>&nbsp;
               <span class="count-matches">
-                · {{ searchResults.length }}
                 {{ searchResults.length === 1 ? i18n.t('match') : i18n.t('matches') }}
               </span>
             </div>
