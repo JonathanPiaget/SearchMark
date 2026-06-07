@@ -16,7 +16,8 @@
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"check": "biome check --write",
-		"test": "vitest"
+		"test": "vitest",
+		"screenshots": "wxt build && node screenshots/generate.mjs"
 	},
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.5",
@@ -27,6 +28,7 @@
 		"@biomejs/biome": "^2.4.15",
 		"@iconify-json/lucide": "^1.2.111",
 		"@wxt-dev/module-vue": "^1.0.3",
+		"playwright": "^1.60.0",
 		"typescript": "6.0.3",
 		"unplugin-icons": "^23.0.1",
 		"vite": "^8.0.14",
