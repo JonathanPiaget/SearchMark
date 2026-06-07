@@ -70,7 +70,7 @@ filterBookmarks: Filter bookmarks...
 searchAllBookmarks: Search all bookmarks...
 typeToSearch: Type to search all bookmarks
 moreResults: "{count} more results..."
-allBookmarks: All Bookmarks
+bookmarkToolbar: Bookmarks toolbar
 fuzzySearch: Fuzzy search
 fuzzySearchTooltip: Finds results from partial input, even with skipped letters, as long as the letters stay in order.
 clearSelection: Clear selection

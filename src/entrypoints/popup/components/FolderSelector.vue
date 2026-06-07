@@ -49,16 +49,16 @@
             </label>
           </div>
           <div
-            v-if="showAllOption"
-            :class="['dropdown-item', 'all-bookmarks-item', { highlighted: highlightedIndex === -2 }]"
-            @mousedown="selectAllBookmarks"
+            v-if="showToolbarOption"
+            :class="['dropdown-item', 'toolbar-item', { highlighted: highlightedIndex === -2 }]"
+            @mousedown="selectBookmarkToolbar"
             @mouseenter="highlightedIndex = -2"
           >
             <div class="folder-info">
               <div class="folder-row">
                 <span class="folder-icon"><IconLibrary /></span>
                 <div class="folder-text">
-                  <span class="folder-name">{{ i18n.t('allBookmarks') }}</span>
+                  <span class="folder-name">{{ i18n.t('bookmarkToolbar') }}</span>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ interface Props {
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
 	onArrowDownWithSelection?: () => boolean;
-	showAllOption?: boolean;
+	showToolbarOption?: boolean;
 }
 
 interface Emits {
@@ -182,7 +182,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
 	autofocus: true,
 	autoSelectDefault: true,
-	showAllOption: false,
+	showToolbarOption: false,
 });
 const emit = defineEmits<Emits>();
 
@@ -265,13 +265,13 @@ const selectFolder = (folder: BookmarkFolder) => {
 	emit('folderSelected', { id: folder.id, name: folder.title });
 };
 
-const selectAllBookmarks = () => {
+const selectBookmarkToolbar = () => {
 	selectedFolder.value = null;
-	searchQuery.value = i18n.t('allBookmarks');
+	searchQuery.value = i18n.t('bookmarkToolbar');
 	showDropdown.value = false;
 	resetNavigation();
 	emit('update:modelValue', '');
-	emit('folderSelected', { id: '', name: i18n.t('allBookmarks') });
+	emit('folderSelected', { id: '', name: i18n.t('bookmarkToolbar') });
 };
 
 const selectChildFolder = (child: BookmarkFolder) => {
@@ -547,7 +547,7 @@ onMounted(async () => {
   transition: background-color 0.1s, color 0.1s, border-color 0.2s ease;
 }
 
-.dropdown-item.all-bookmarks-item {
+.dropdown-item.toolbar-item {
   background-color: var(--bg-tertiary);
   border-bottom: 2px solid var(--border-primary);
 }

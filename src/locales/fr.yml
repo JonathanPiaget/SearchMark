@@ -70,7 +70,7 @@ filterBookmarks: Filtrer les favoris...
 searchAllBookmarks: Rechercher tous les favoris...
 typeToSearch: Tapez pour rechercher tous les favoris
 moreResults: "{count} résultats de plus..."
-allBookmarks: Tous les favoris
+bookmarkToolbar: Barre de favoris
 fuzzySearch: Recherche floue
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées, tant qu'elles restent dans l'ordre.
 clearSelection: Effacer la sélection

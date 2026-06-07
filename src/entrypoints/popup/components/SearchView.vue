@@ -5,7 +5,6 @@
       :autofocus="false"
       :auto-select-default="false"
       :on-arrow-down-with-selection="focusFirstBookmark"
-      :show-all-option="true"
     />
 
     <div v-if="selectedFolderId" class="search-options">
