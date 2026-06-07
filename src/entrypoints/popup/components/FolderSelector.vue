@@ -34,8 +34,8 @@
         >
           <div class="dropdown-header" @mousedown.prevent>
             <div class="shortcut-hint">
-              <kbd class="key">{{ i18n.t('keyShift') }}</kbd>
-              <kbd class="key">{{ i18n.t('keySpace') }}</kbd>
+              <kbd class="key"><IconArrowBigUp class="key-icon" />{{ i18n.t('keyShift') }}</kbd>
+              <kbd class="key"><IconSpace class="key-icon" />{{ i18n.t('keySpace') }}</kbd>
               <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
             </div>
             <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')">
@@ -147,9 +147,11 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconLibrary from '~icons/lucide/library';
 import IconSearch from '~icons/lucide/search';
+import IconSpace from '~icons/lucide/space';
 import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';
@@ -430,6 +432,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   min-width: 18px;
   padding: 2px 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -442,6 +445,11 @@ onMounted(async () => {
   border-radius: 5px;
   box-shadow: 0 1px 0 var(--border-primary);
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.key-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .fuzzy-toggle {

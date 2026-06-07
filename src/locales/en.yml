@@ -19,7 +19,7 @@ match: match
 matches: matches
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
-expandHint: expand folders
+expandHint: to expand folders
 keyShift: Shift
 keySpace: Space
 save: Save
