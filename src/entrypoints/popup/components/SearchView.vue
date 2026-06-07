@@ -39,7 +39,7 @@
           ×
         </button>
       </div>
-      <label class="fuzzy-toggle" @mousedown.prevent>
+      <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')" @mousedown.prevent>
         <input
           v-model="isFuzzyFilter"
           type="checkbox"

@@ -38,7 +38,7 @@
               <kbd class="key">{{ i18n.t('keySpace') }}</kbd>
               <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
             </div>
-            <label class="fuzzy-toggle">
+            <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')">
               <input
                 v-model="isFuzzyEnabled"
                 type="checkbox"
