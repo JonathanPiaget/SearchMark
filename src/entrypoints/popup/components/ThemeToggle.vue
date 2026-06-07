@@ -6,13 +6,16 @@
     @click="handleToggle"
   >
     <span class="theme-icon" :class="{ dark: appliedTheme === 'dark' }">
-      {{ appliedTheme === 'dark' ? '🌙' : '☀️' }}
+      <IconMoon v-if="appliedTheme === 'dark'" />
+      <IconSun v-else />
     </span>
   </button>
 </template>
 
 <script lang="ts" setup>
 import { i18n } from '#i18n';
+import IconMoon from '~icons/lucide/moon';
+import IconSun from '~icons/lucide/sun';
 import { useTheme } from '../../../composables/useTheme';
 
 const { appliedTheme, toggleTheme } = useTheme();

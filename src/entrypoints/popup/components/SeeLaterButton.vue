@@ -7,7 +7,7 @@
     @click="handleSeeLater"
   >
     <span class="see-later-icon" :class="{ loading: isLoading }">
-      🕐
+      <IconClock />
     </span>
   </button>
 </template>
@@ -15,6 +15,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import IconClock from '~icons/lucide/clock';
 import { useSeeLater } from '../../../composables/useSeeLater';
 
 const { getOrCreateSeeLaterFolder } = useSeeLater();

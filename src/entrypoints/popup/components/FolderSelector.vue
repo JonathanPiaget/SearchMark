@@ -57,7 +57,7 @@
             <div class="folder-info">
               <div class="folder-main">
                 <div class="folder-name-section">
-                  <span class="folder-icon">📚</span>
+                  <span class="folder-icon"><IconLibrary /></span>
                   <span class="folder-name">{{ i18n.t('allBookmarks') }}</span>
                 </div>
               </div>
@@ -77,7 +77,7 @@
           <div class="folder-info">
             <div class="folder-main">
               <div class="folder-name-section">
-                <span class="folder-icon">📁</span>
+                <span class="folder-icon"><IconFolder /></span>
                 <span class="folder-name">
                   <template v-for="(part, partIndex) in highlightText(result.folder.title, searchQuery, result.indexes)" :key="`${result.folder.id}-${partIndex}`">
                     <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
@@ -107,7 +107,7 @@
                   @click.stop="selectChildFolder(child)"
                   @mousedown.stop
                 >
-                  📁 {{ child.title }}
+                  <IconFolder /> {{ child.title }}
                 </span>
               </div>
             </div>
@@ -115,7 +115,7 @@
         </div>
       </div>
       <div v-else class="no-results">
-        <div class="no-results-icon">🔍</div>
+        <div class="no-results-icon"><IconSearch /></div>
         <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
         <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
         </div>
@@ -147,6 +147,9 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import IconFolder from '~icons/lucide/folder';
+import IconLibrary from '~icons/lucide/library';
+import IconSearch from '~icons/lucide/search';
 import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';

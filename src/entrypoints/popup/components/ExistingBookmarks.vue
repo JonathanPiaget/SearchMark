@@ -1,7 +1,7 @@
 <template>
   <div v-if="!isLoading && locations.length > 0" class="existing-bookmarks">
     <div class="header">
-      <span class="icon">📌</span>
+      <span class="icon"><IconPin /></span>
       <span class="title">{{ i18n.t('alreadySaved') }}</span>
     </div>
     <div class="locations">
@@ -11,7 +11,7 @@
         class="location-item"
         :title="location.folderPath"
       >
-        <span class="folder-icon">📁</span>
+        <span class="folder-icon"><IconFolder /></span>
         <span class="folder-path">{{ location.folderPath }}</span>
         <button
           class="delete-button"
@@ -19,7 +19,8 @@
           :title="i18n.t('delete')"
           @click="showConfirmDialog(location.id)"
         >
-          {{ isDeleting ? '⏳' : '🗑️' }}
+          <IconLoader v-if="isDeleting" class="spin" />
+          <IconTrash v-else />
         </button>
       </div>
     </div>
@@ -36,6 +37,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import IconFolder from '~icons/lucide/folder';
+import IconLoader from '~icons/lucide/loader-circle';
+import IconPin from '~icons/lucide/pin';
+import IconTrash from '~icons/lucide/trash-2';
 import { useBookmarkActions } from '../../../composables/useBookmarkActions';
 import type { BookmarkLocation } from '../../../composables/useBookmarkSearch';
 import ConfirmDialog from './ConfirmDialog.vue';
@@ -157,5 +162,15 @@ const handleCancelDelete = () => {
 .delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

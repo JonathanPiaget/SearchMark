@@ -29,6 +29,14 @@ body {
 	box-sizing: border-box;
 }
 
+button {
+	color: inherit;
+}
+
+svg {
+	vertical-align: middle;
+}
+
 .view-tabs {
 	display: flex;
 	gap: 8px;

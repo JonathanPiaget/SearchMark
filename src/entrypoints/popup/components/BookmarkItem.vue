@@ -8,7 +8,7 @@
   >
     <div class="bookmark-info">
       <div class="bookmark-header">
-        <span class="bookmark-icon">📖</span>
+        <span class="bookmark-icon"><IconBookOpen /></span>
         <span class="bookmark-title">
           <template v-if="filterQuery && (highlightIndexes || !isFuzzy)">
             <template v-for="(part, idx) in highlightedTitle" :key="idx">
@@ -30,7 +30,8 @@
       :title="i18n.t('delete')"
       @click.stop="showConfirmDialog"
     >
-      {{ isDeleting ? '⏳' : '🗑️' }}
+      <IconLoader v-if="isDeleting" class="spin" />
+      <IconTrash v-else />
     </button>
 
     <ConfirmDialog
@@ -45,6 +46,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { i18n } from '#i18n';
+import IconBookOpen from '~icons/lucide/book-open';
+import IconLoader from '~icons/lucide/loader-circle';
+import IconTrash from '~icons/lucide/trash-2';
 import { useBookmarkActions } from '../../../composables/useBookmarkActions';
 import type { BookmarkItem as BookmarkItemType } from '../../../composables/useBookmarkFolder';
 import { highlightText } from '../../../utils/highlight';
@@ -207,5 +211,15 @@ const handleKeydown = (event: KeyboardEvent) => {
 .delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

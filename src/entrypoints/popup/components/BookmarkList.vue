@@ -1,12 +1,12 @@
 <template>
   <div class="bookmark-list">
     <div v-if="isLoading" class="loading-state">
-      <span class="spinner">⏳</span>
+      <span class="spinner"><IconLoader class="spin" /></span>
       <span class="message">{{ i18n.t('loadingBookmarks') }}</span>
     </div>
 
     <div v-else-if="bookmarks.length === 0" class="empty-state">
-      <span class="icon">📭</span>
+      <span class="icon"><IconInbox /></span>
       <span class="message">{{ emptyMessage || i18n.t('noBookmarksInFolder') }}</span>
     </div>
 
@@ -27,6 +27,8 @@
 
 <script lang="ts" setup>
 import { i18n } from '#i18n';
+import IconInbox from '~icons/lucide/inbox';
+import IconLoader from '~icons/lucide/loader-circle';
 import type { BookmarkItem as BookmarkItemType } from '../../../composables/useBookmarkFolder';
 import BookmarkItem from './BookmarkItem.vue';
 
@@ -109,5 +111,15 @@ const emit = defineEmits<{
 
 .bookmark-items::-webkit-scrollbar-thumb:hover {
   background: var(--accent-primary);
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

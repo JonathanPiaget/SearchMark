@@ -5,12 +5,13 @@
     :title="i18n.t('settings')"
     @click="handleClick"
   >
-    <span class="settings-icon">⚙️</span>
+    <span class="settings-icon"><IconSettings /></span>
   </button>
 </template>
 
 <script lang="ts" setup>
 import { i18n } from '#i18n';
+import IconSettings from '~icons/lucide/settings';
 
 const handleClick = () => {
 	browser.runtime.openOptionsPage();

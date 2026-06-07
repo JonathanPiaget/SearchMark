@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
+import IconSearch from '~icons/lucide/search';
 import { useBookmarkSearch } from '../../composables/useBookmarkSearch';
 import { useFolderTree } from '../../composables/useFolderTree';
 import { useSeeLater } from '../../composables/useSeeLater';
@@ -146,14 +148,14 @@ const saveBookmark = async () => {
         :class="['tab-button', { active: activeView === 'save' }]"
         @click="switchView('save')"
       >
-        <span class="tab-icon">💾</span>
+        <span class="tab-icon"><IconBookmarkPlus /></span>
         <span class="tab-label">{{ i18n.t('save') }}</span>
       </button>
       <button
         :class="['tab-button', { active: activeView === 'search' }]"
         @click="switchView('search')"
       >
-        <span class="tab-icon">🔍</span>
+        <span class="tab-icon"><IconSearch /></span>
         <span class="tab-label">{{ i18n.t('search') }}</span>
       </button>
     </div>

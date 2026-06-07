@@ -1,9 +1,13 @@
+import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'wxt';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
 	modules: ['@wxt-dev/module-vue', '@wxt-dev/i18n/module'],
 	srcDir: 'src',
+	vite: () => ({
+		plugins: [Icons({ compiler: 'vue3' })],
+	}),
 	manifest: {
 		default_locale: 'en',
 		permissions: ['bookmarks', 'tabs', 'storage'],
