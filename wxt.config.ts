@@ -24,7 +24,7 @@ export default defineConfig({
 		},
 		commands: {
 			[manifestVersion === 3 ? '_execute_action' : '_execute_browser_action']: {
-				suggested_key: { default: 'Ctrl+Shift+S', mac: 'Command+Shift+S' },
+				suggested_key: { default: 'Ctrl+Shift+X', mac: 'Command+Shift+X' },
 				description: 'Open SearchMark',
 			},
 		},
