@@ -12,11 +12,11 @@ const OUTPUT_DIR = __dirname; // Screenshots live next to this script.
 const DEVICE_SCALE_FACTOR = 2;
 const THEME_STORAGE_KEY = 'searchmark_theme';
 
-const TARGETS = [
+export const TARGETS = [
 	{ store: 'chrome', viewport: { width: 640, height: 400 } }, // -> 1280x800
 	{ store: 'firefox', viewport: { width: 1200, height: 900 } }, // -> 2400x1800
 ];
-const LANGUAGES = ['en', 'fr'];
+export const LANGUAGES = ['en', 'fr'];
 
 // The current tab is simulated; the popup reads url/title from it automatically.
 const DEMO_TAB = {
@@ -56,7 +56,7 @@ const DEMO_BOOKMARKS = [
 ];
 
 // One screenshot per scene; themes alternate to showcase light and dark.
-const SCENES = [
+export const SCENES = [
 	{ id: '1-save', theme: 'light', setup: setupSave },
 	{ id: '2-folders', theme: 'dark', setup: setupFolderSearch, keepFocus: true },
 	{ id: '3-search', theme: 'light', setup: setupSearchView },
@@ -191,9 +191,13 @@ async function capturePopup(
 	console.log(`Saved ${outputPath}`);
 }
 
-async function main() {
+export async function generate({
+	targets = TARGETS,
+	languages = LANGUAGES,
+	scenes = SCENES,
+} = {}) {
 	const messagesByLang = Object.fromEntries(
-		LANGUAGES.map((lang) => [lang, loadMessages(lang)]),
+		languages.map((lang) => [lang, loadMessages(lang)]),
 	);
 
 	const context = await chromium.launchPersistentContext('', {
@@ -214,10 +218,10 @@ async function main() {
 
 	await injectDemoBookmarks(serviceWorker);
 
-	for (const lang of LANGUAGES) {
-		for (const scene of SCENES) {
+	for (const lang of languages) {
+		for (const scene of scenes) {
 			await setTheme(serviceWorker, scene.theme);
-			for (const target of TARGETS) {
+			for (const target of targets) {
 				await capturePopup(
 					context,
 					extensionId,
@@ -232,8 +236,3 @@ async function main() {
 
 	await context.close();
 }
-
-main().catch((error) => {
-	console.error(error);
-	process.exit(1);
-});

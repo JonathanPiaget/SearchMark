@@ -17,7 +17,7 @@
 		"lint": "biome lint --write",
 		"check": "biome check --write",
 		"test": "vitest",
-		"screenshots": "wxt build && node screenshots/generate.mjs"
+		"screenshots": "wxt build && node screenshots/cli.mjs"
 	},
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.5",
