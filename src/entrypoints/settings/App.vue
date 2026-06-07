@@ -65,7 +65,22 @@
               rel="noopener noreferrer"
               class="support-button coffee-button"
             >
-              <IconCoffee class="support-icon" />
+              <svg
+                class="support-icon coffee-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path class="steam" d="M6 2v2" />
+                <path class="steam" d="M10 2v2" />
+                <path class="steam" d="M14 2v2" />
+                <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
+              </svg>
               {{ i18n.t('buyMeACoffee') }}
             </a>
             <a
@@ -87,7 +102,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
-import IconCoffee from '~icons/lucide/coffee';
 import IconStar from '~icons/lucide/star';
 import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
@@ -432,6 +446,38 @@ const handleUseDefaultFolder = async () => {
 .coffee-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(251, 176, 52, 0.4);
+}
+
+/* Animate only the three steam strokes of the coffee icon */
+.coffee-icon .steam {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: steam 2.4s ease-in-out infinite;
+}
+
+.coffee-icon .steam:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.coffee-icon .steam:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes steam {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-2px) scaleY(1.35);
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coffee-icon .steam {
+    animation: none;
+  }
 }
 
 .rate-button {
