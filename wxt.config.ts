@@ -8,7 +8,7 @@ export default defineConfig({
 	vite: () => ({
 		plugins: [Icons({ compiler: 'vue3' })],
 	}),
-	manifest: {
+	manifest: ({ manifestVersion }) => ({
 		default_locale: 'en',
 		permissions: ['bookmarks', 'tabs', 'storage'],
 		options_ui: {
@@ -22,5 +22,11 @@ export default defineConfig({
 				},
 			},
 		},
-	},
+		commands: {
+			[manifestVersion === 3 ? '_execute_action' : '_execute_browser_action']: {
+				suggested_key: { default: 'Ctrl+Shift+S', mac: 'Command+Shift+S' },
+				description: 'Open SearchMark',
+			},
+		},
+	}),
 });

@@ -1,4 +1,4 @@
-import { isOpenPopupShortcut, isQuickSaveShortcut } from '../utils/keyboard';
+import { isQuickSaveShortcut } from '../utils/keyboard';
 
 export default defineContentScript({
 	matches: ['<all_urls>'],
@@ -45,21 +45,8 @@ export default defineContentScript({
 			}
 		};
 
-		const openPopup = async () => {
-			try {
-				await browser.runtime.sendMessage({
-					action: 'openPopup',
-				});
-			} catch (error) {
-				console.error('Error opening popup:', error);
-			}
-		};
-
 		const handleKeydown = (event: KeyboardEvent) => {
-			if (isOpenPopupShortcut(event)) {
-				event.preventDefault();
-				openPopup();
-			} else if (isQuickSaveShortcut(event)) {
+			if (isQuickSaveShortcut(event)) {
 				event.preventDefault();
 				saveBookmark();
 			}
