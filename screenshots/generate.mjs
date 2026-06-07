@@ -125,12 +125,10 @@ async function fitPopupToFrame(page, frame) {
 
 		const container = document.querySelector('.container');
 		const rect = container.getBoundingClientRect();
-		const scale = Math.min(
+		container.style.zoom = Math.min(
 			(width - PADDING * 2) / rect.width,
 			(height - PADDING * 2) / rect.height,
-			1,
 		);
-		container.style.transform = `scale(${scale})`;
 	}, frame);
 }
 
