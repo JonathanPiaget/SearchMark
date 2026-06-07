@@ -189,6 +189,7 @@ const emit = defineEmits<Emits>();
 const showDropdown = ref(false);
 const folderInput = ref<HTMLInputElement>();
 const selectedFolder = ref<BookmarkFolder | null>(null);
+const toolbarFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
@@ -225,6 +226,16 @@ const onFuzzyToggle = () => {
 const initializeFolders = async () => {
 	await loadFolders();
 	await loadFuzzyPreference();
+
+	if (props.showToolbarOption) {
+		const toolbarId = await getBookmarkToolbarId();
+		toolbarFolder.value =
+			allFolders.value.find((f) => f.id === toolbarId) ?? null;
+		if (props.autoSelectDefault && !props.modelValue) {
+			selectBookmarkToolbar();
+		}
+		return;
+	}
 
 	if (props.autoSelectDefault && !props.modelValue) {
 		const toolbarId = await getBookmarkToolbarId();
@@ -266,12 +277,8 @@ const selectFolder = (folder: BookmarkFolder) => {
 };
 
 const selectBookmarkToolbar = () => {
-	selectedFolder.value = null;
-	searchQuery.value = i18n.t('bookmarkToolbar');
-	showDropdown.value = false;
-	resetNavigation();
-	emit('update:modelValue', '');
-	emit('folderSelected', { id: '', name: i18n.t('bookmarkToolbar') });
+	if (!toolbarFolder.value) return;
+	selectFolder({ ...toolbarFolder.value, title: i18n.t('bookmarkToolbar') });
 };
 
 const selectChildFolder = (child: BookmarkFolder) => {
@@ -328,22 +335,42 @@ const handleKeydown = (event: KeyboardEvent) => {
 		}
 	}
 
-	if (showDropdown.value && searchResults.value.length > 0) {
-		handleNavigation(
-			event,
-			searchResults.value.map((r) => r.folder),
-			{
-				onEnter: (item) => selectFolder(item),
-				onEscape: () => {
-					showDropdown.value = false;
-					searchQuery.value = '';
-					resetNavigation();
-					folderInput.value?.blur();
+	if (showDropdown.value) {
+		if (props.showToolbarOption) {
+			if (event.key === 'ArrowUp' && highlightedIndex.value <= 0) {
+				event.preventDefault();
+				highlightedIndex.value = -2;
+				return;
+			}
+			if (event.key === 'ArrowDown' && highlightedIndex.value === -2) {
+				event.preventDefault();
+				highlightedIndex.value = searchResults.value.length > 0 ? 0 : -2;
+				return;
+			}
+			if (event.key === 'Enter' && highlightedIndex.value === -2) {
+				event.preventDefault();
+				selectBookmarkToolbar();
+				return;
+			}
+		}
+
+		if (searchResults.value.length > 0) {
+			handleNavigation(
+				event,
+				searchResults.value.map((r) => r.folder),
+				{
+					onEnter: (item) => selectFolder(item),
+					onEscape: () => {
+						showDropdown.value = false;
+						searchQuery.value = '';
+						resetNavigation();
+						folderInput.value?.blur();
+					},
+					onEmitEnter: () => emit('enterPressed'),
 				},
-				onEmitEnter: () => emit('enterPressed'),
-			},
-		);
-		return;
+			);
+			return;
+		}
 	}
 
 	if (event.key === 'Enter') {
