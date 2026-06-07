@@ -20,7 +20,7 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	const loadFuzzyPreference = async (): Promise<void> => {
 		const result = await browser.storage.local.get(FUZZY_STORAGE_KEY);
 		if (result[FUZZY_STORAGE_KEY] !== undefined) {
-			isFuzzyEnabled.value = result[FUZZY_STORAGE_KEY];
+			isFuzzyEnabled.value = Boolean(result[FUZZY_STORAGE_KEY]);
 		}
 	};
 

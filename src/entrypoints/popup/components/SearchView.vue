@@ -166,10 +166,10 @@ onMounted(async () => {
 		FUZZY_FILTER_STORAGE_KEY,
 	]);
 	if (result[RECURSIVE_STORAGE_KEY] !== undefined) {
-		isRecursive.value = result[RECURSIVE_STORAGE_KEY];
+		isRecursive.value = Boolean(result[RECURSIVE_STORAGE_KEY]);
 	}
 	if (result[FUZZY_FILTER_STORAGE_KEY] !== undefined) {
-		isFuzzyFilter.value = result[FUZZY_FILTER_STORAGE_KEY];
+		isFuzzyFilter.value = Boolean(result[FUZZY_FILTER_STORAGE_KEY]);
 	}
 	await loadAllBookmarks();
 });
