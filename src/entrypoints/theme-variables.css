@@ -1,60 +1,67 @@
-/* CSS Variables for theming - Shared across all entrypoints */
 :root {
-	/* Light theme colors */
-	--bg-primary: #ffffff;
-	--bg-secondary: linear-gradient(135deg, #fafbff 0%, #f5f3ff 100%);
-	--bg-tertiary: #f8f6ff;
-	--text-primary: #2d1b4e;
-	--text-secondary: #6b46c1;
-	--text-muted: #999;
-	--accent-primary: #5e33a9;
-	--accent-secondary: #7c4dff;
-	--accent-hover: #4a2889;
-	--accent-hover-secondary: #6a1b9a;
-	--border-primary: #e1d7f0;
-	--border-secondary: #d4c5f0;
-	--border-subtle: #f0f0f0;
-	--shadow-primary: rgba(94, 51, 169, 0.1);
-	--shadow-secondary: rgba(94, 51, 169, 0.15);
-	--input-bg: #ffffff;
-	--dropdown-bg: #ffffff;
-	--highlight-bg: #ffeb3b;
-	--highlight-selected: #fff200;
-	--highlight-text: #2d1b4e;
+	--bg: #faf9fc;
+	--surface: #ffffff;
+	--surface-2: #f3f1f8;
+	--hover: rgba(20, 15, 35, 0.035);
+	--border: rgba(25, 18, 45, 0.09);
+	--border-strong: rgba(25, 18, 45, 0.16);
+	--text: #1d1a25;
+	--text-dim: #6c6678;
+	--text-faint: #9a94a6;
+	--accent: oklch(0.55 0.19 295);
+	--accent-text: #ffffff;
+	--accent-soft: rgba(125, 81, 210, 0.1);
+	--accent-line: oklch(0.5 0.2 295);
+	--shadow: 0 10px 30px rgba(40, 25, 80, 0.12);
+
+	--hl-bg: #ffd60a;
+	--hl-text: #1c1206;
+
+	--bg-primary: var(--bg);
+	--bg-secondary: var(--bg);
+	--bg-tertiary: var(--surface-2);
+	--text-primary: var(--text);
+	--text-secondary: var(--text-dim);
+	--text-muted: var(--text-faint);
+	--accent-primary: var(--accent);
+	--accent-secondary: var(--accent-line);
+	--accent-hover: var(--accent-line);
+	--accent-hover-secondary: var(--accent-line);
+	--border-primary: var(--border);
+	--border-secondary: var(--border-strong);
+	--border-subtle: var(--border);
+	--shadow-primary: var(--accent-soft);
+	--shadow-secondary: var(--shadow);
+	--input-bg: var(--surface);
+	--dropdown-bg: var(--surface);
+	--highlight-bg: var(--hl-bg);
+	--highlight-selected: var(--hl-bg);
+	--highlight-text: var(--hl-text);
 	--error-bg: #fef2f2;
 	--error-text: #dc2626;
 	--error-border: #fecaca;
-	--success-bg: #f3f0ff;
-	--success-text: #5e33a9;
-	--success-border: #d4c5f0;
+	--success-bg: var(--surface-2);
+	--success-text: var(--accent-line);
+	--success-border: var(--border);
 }
 
-/* Dark theme colors */
 html[data-theme="dark"] {
-	--bg-primary: #1a1625;
-	--bg-secondary: linear-gradient(135deg, #1a1625 0%, #2d1b4e 100%);
-	--bg-tertiary: #2d1b4e;
-	--text-primary: #e8e4f0;
-	--text-secondary: #b39dd8;
-	--text-muted: #8b7aa8;
-	--accent-primary: #9d7ae0;
-	--accent-secondary: #b89ef5;
-	--accent-hover: #b89ef5;
-	--accent-hover-secondary: #d4c5f0;
-	--border-primary: #3d2f5a;
-	--border-secondary: #4a3b66;
-	--border-subtle: #2d1f45;
-	--shadow-primary: rgba(0, 0, 0, 0.3);
-	--shadow-secondary: rgba(0, 0, 0, 0.5);
-	--input-bg: #2d1f45;
-	--dropdown-bg: #2d1f45;
-	--highlight-bg: #ffd700;
-	--highlight-selected: #ffea00;
-	--highlight-text: #000000;
+	--bg: #18161e;
+	--surface: #211e29;
+	--surface-2: #2a2633;
+	--hover: rgba(255, 255, 255, 0.04);
+	--border: rgba(255, 255, 255, 0.08);
+	--border-strong: rgba(255, 255, 255, 0.14);
+	--text: #eceaf2;
+	--text-dim: #a29db0;
+	--text-faint: #6f6a7d;
+	--accent: oklch(0.66 0.17 295);
+	--accent-text: #ffffff;
+	--accent-soft: rgba(155, 121, 238, 0.16);
+	--accent-line: oklch(0.78 0.12 295);
+	--shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+
 	--error-bg: #3d1f1f;
 	--error-text: #ff6b6b;
 	--error-border: #5a2f2f;
-	--success-bg: #2d1f45;
-	--success-text: #b89ef5;
-	--success-border: #4a3b66;
 }
