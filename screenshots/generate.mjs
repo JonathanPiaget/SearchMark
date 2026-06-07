@@ -12,11 +12,22 @@ const OUTPUT_DIR = __dirname; // Screenshots live next to this script.
 const DEVICE_SCALE_FACTOR = 2;
 const THEME_STORAGE_KEY = 'searchmark_theme';
 
-export const TARGETS = [
-	{ store: 'chrome', viewport: { width: 640, height: 400 } }, // -> 1280x800
-	{ store: 'firefox', viewport: { width: 1200, height: 900 } }, // -> 2400x1800
-];
 export const LANGUAGES = ['en', 'fr'];
+
+// Chrome supports localized screenshots per locale; AMO uses a single shared
+// set, so Firefox only needs one language.
+export const TARGETS = [
+	{
+		store: 'chrome',
+		viewport: { width: 640, height: 400 },
+		languages: LANGUAGES,
+	}, // -> 1280x800
+	{
+		store: 'firefox',
+		viewport: { width: 1200, height: 900 },
+		languages: ['en'],
+	}, // -> 2400x1800
+];
 
 // The current tab is simulated; the popup reads url/title from it automatically.
 const DEMO_TAB = {
@@ -57,10 +68,44 @@ const DEMO_BOOKMARKS = [
 
 // One screenshot per scene; themes alternate to showcase light and dark.
 export const SCENES = [
-	{ id: '1-save', theme: 'light', setup: setupSave },
-	{ id: '2-folders', theme: 'dark', setup: setupFolderSearch, keepFocus: true },
-	{ id: '3-search', theme: 'light', setup: setupSearchView },
-	{ id: '4-existing', theme: 'dark', tab: BOOKMARKED_TAB, setup: setupSave },
+	{
+		id: '1-save',
+		theme: 'light',
+		setup: setupSave,
+		caption: {
+			en: 'Save any page in one click',
+			fr: 'Enregistrez une page en un clic',
+		},
+	},
+	{
+		id: '2-folders',
+		theme: 'dark',
+		setup: setupFolderSearch,
+		keepFocus: true,
+		caption: {
+			en: 'Find the right folder instantly',
+			fr: 'Trouvez le bon dossier instantanément',
+		},
+	},
+	{
+		id: '3-search',
+		theme: 'light',
+		setup: setupSearchView,
+		caption: {
+			en: 'Search across all your bookmarks',
+			fr: 'Cherchez dans tous vos favoris',
+		},
+	},
+	{
+		id: '4-existing',
+		theme: 'dark',
+		tab: BOOKMARKED_TAB,
+		setup: setupSave,
+		caption: {
+			en: 'See where a page is already saved',
+			fr: 'Voyez où une page est déjà rangée',
+		},
+	},
 ];
 
 async function setupSave() {
@@ -108,28 +153,55 @@ async function setTheme(serviceWorker, theme) {
 	);
 }
 
-async function fitPopupToFrame(page, frame) {
-	await page.evaluate(({ width, height }) => {
-		const PADDING = 16;
-		const bg = getComputedStyle(document.documentElement)
-			.getPropertyValue('--bg-primary')
-			.trim();
-		document.body.style.margin = '0';
-		document.body.style.width = `${width}px`;
-		document.body.style.height = `${height}px`;
-		document.body.style.display = 'flex';
-		document.body.style.alignItems = 'center';
-		document.body.style.justifyContent = 'center';
-		document.body.style.overflow = 'hidden';
-		document.body.style.background = bg || '#ffffff';
+async function layoutFrame(page, frame, caption) {
+	await page.evaluate(
+		({ width, height, caption }) => {
+			const PADDING = Math.round(height * 0.06);
+			const styles = getComputedStyle(document.documentElement);
+			const bg = styles.getPropertyValue('--bg-primary').trim();
+			const textColor = styles.getPropertyValue('--text-primary').trim();
 
-		const container = document.querySelector('.container');
-		const rect = container.getBoundingClientRect();
-		container.style.zoom = Math.min(
-			(width - PADDING * 2) / rect.width,
-			(height - PADDING * 2) / rect.height,
-		);
-	}, frame);
+			document.body.style.margin = '0';
+			document.body.style.boxSizing = 'border-box';
+			document.body.style.width = `${width}px`;
+			document.body.style.height = `${height}px`;
+			document.body.style.padding = `${PADDING}px`;
+			document.body.style.display = 'flex';
+			document.body.style.flexDirection = 'column';
+			document.body.style.alignItems = 'center';
+			document.body.style.overflow = 'hidden';
+			document.body.style.background = bg || '#ffffff';
+
+			const captionEl = document.createElement('div');
+			captionEl.textContent = caption;
+			captionEl.style.flex = '0 0 auto';
+			captionEl.style.width = '100%';
+			captionEl.style.textAlign = 'center';
+			captionEl.style.color = textColor;
+			captionEl.style.fontSize = `${Math.round(height * 0.05)}px`;
+			captionEl.style.fontWeight = '700';
+			captionEl.style.lineHeight = '1.2';
+			captionEl.style.marginBottom = `${PADDING}px`;
+			document.body.insertBefore(captionEl, document.body.firstChild);
+
+			const app = document.getElementById('app');
+			app.style.flex = '1 1 auto';
+			app.style.minHeight = '0';
+			app.style.width = '100%';
+			app.style.display = 'flex';
+			app.style.alignItems = 'center';
+			app.style.justifyContent = 'center';
+
+			const available = app.getBoundingClientRect();
+			const container = document.querySelector('.container');
+			const rect = container.getBoundingClientRect();
+			container.style.zoom = Math.min(
+				available.width / rect.width,
+				available.height / rect.height,
+			);
+		},
+		{ width: frame.width, height: frame.height, caption },
+	);
 }
 
 async function capturePopup(
@@ -181,7 +253,7 @@ async function capturePopup(
 	}
 	await page.mouse.move(0, 0); // Avoid hover artifacts on items the cursor landed on.
 	await page.waitForTimeout(350);
-	await fitPopupToFrame(page, target.viewport);
+	await layoutFrame(page, target.viewport, scene.caption?.[lang] ?? '');
 	await page.waitForTimeout(150);
 
 	const outputPath = resolve(OUTPUT_DIR, target.store, lang, `${scene.id}.png`);
@@ -196,9 +268,8 @@ export async function generate({
 	languages = LANGUAGES,
 	scenes = SCENES,
 } = {}) {
-	const messagesByLang = Object.fromEntries(
-		languages.map((lang) => [lang, loadMessages(lang)]),
-	);
+	const messageCache = {};
+	const messagesFor = (lang) => (messageCache[lang] ??= loadMessages(lang));
 
 	const context = await chromium.launchPersistentContext('', {
 		headless: false,
@@ -218,16 +289,19 @@ export async function generate({
 
 	await injectDemoBookmarks(serviceWorker);
 
-	for (const lang of languages) {
-		for (const scene of scenes) {
-			await setTheme(serviceWorker, scene.theme);
-			for (const target of targets) {
+	for (const target of targets) {
+		const targetLanguages = (target.languages ?? LANGUAGES).filter((lang) =>
+			languages.includes(lang),
+		);
+		for (const lang of targetLanguages) {
+			for (const scene of scenes) {
+				await setTheme(serviceWorker, scene.theme);
 				await capturePopup(
 					context,
 					extensionId,
 					target,
 					lang,
-					messagesByLang[lang],
+					messagesFor(lang),
 					scene,
 				);
 			}

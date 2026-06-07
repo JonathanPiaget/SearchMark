@@ -44,7 +44,8 @@ function selectFromArgs() {
 		return null;
 	}
 	if (values.list) {
-		console.log(`Stores:    ${TARGETS.map((t) => t.store).join(', ')}`);
+		const stores = TARGETS.map((t) => `${t.store} (${t.languages.join(', ')})`);
+		console.log(`Stores:    ${stores.join(', ')}`);
 		console.log(`Languages: ${LANGUAGES.join(', ')}`);
 		console.log(`Scenes:    ${SCENES.map((s) => s.id).join(', ')}`);
 		return null;
