@@ -118,7 +118,7 @@
         </div>
       </div>
       <div v-else class="no-results">
-        <div class="no-results-icon"><IconSearch /></div>
+        <div class="no-results-icon"><IconSearchX /></div>
         <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
         <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
         </div>
@@ -154,7 +154,7 @@ import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';
 import IconLibrary from '~icons/lucide/library';
-import IconSearch from '~icons/lucide/search';
+import IconSearchX from '~icons/lucide/search-x';
 import IconSpace from '~icons/lucide/space';
 import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
