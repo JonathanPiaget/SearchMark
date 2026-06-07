@@ -12,21 +12,11 @@ const OUTPUT_DIR = __dirname; // Screenshots live next to this script.
 const DEVICE_SCALE_FACTOR = 2;
 const THEME_STORAGE_KEY = 'searchmark_theme';
 
-export const LANGUAGES = ['en', 'fr'];
+const LOCALE = 'en';
 
-// Chrome supports localized screenshots per locale; AMO uses a single shared
-// set, so Firefox only needs one language.
 export const TARGETS = [
-	{
-		store: 'chrome',
-		viewport: { width: 640, height: 400 },
-		languages: LANGUAGES,
-	}, // -> 1280x800
-	{
-		store: 'firefox',
-		viewport: { width: 1200, height: 900 },
-		languages: ['en'],
-	}, // -> 2400x1800
+	{ store: 'chrome', viewport: { width: 640, height: 400 } }, // -> 1280x800
+	{ store: 'firefox', viewport: { width: 1200, height: 900 } }, // -> 2400x1800
 ];
 
 // The current tab is simulated; the popup reads url/title from it automatically.
@@ -72,39 +62,27 @@ export const SCENES = [
 		id: '1-save',
 		theme: 'light',
 		setup: setupSave,
-		caption: {
-			en: 'Save any page in one click',
-			fr: 'Enregistrez une page en un clic',
-		},
+		caption: 'Save any page in one click',
 	},
 	{
 		id: '2-folders',
 		theme: 'dark',
 		setup: setupFolderSearch,
 		keepFocus: true,
-		caption: {
-			en: 'Find the right folder instantly',
-			fr: 'Trouvez le bon dossier instantanément',
-		},
+		caption: 'Find the right folder instantly',
 	},
 	{
 		id: '3-search',
 		theme: 'light',
 		setup: setupSearchView,
-		caption: {
-			en: 'Search across all your bookmarks',
-			fr: 'Cherchez dans tous vos favoris',
-		},
+		caption: 'Search across all your bookmarks',
 	},
 	{
 		id: '4-existing',
 		theme: 'dark',
 		tab: BOOKMARKED_TAB,
 		setup: setupSave,
-		caption: {
-			en: 'See where a page is already saved',
-			fr: 'Voyez où une page est déjà rangée',
-		},
+		caption: 'See where a page is already saved',
 	},
 ];
 
@@ -204,14 +182,7 @@ async function layoutFrame(page, frame, caption) {
 	);
 }
 
-async function capturePopup(
-	context,
-	extensionId,
-	target,
-	lang,
-	messages,
-	scene,
-) {
+async function capturePopup(context, extensionId, target, scene, messages) {
 	const page = await context.newPage();
 	await page.setViewportSize(target.viewport);
 	await page.addInitScript(
@@ -240,7 +211,7 @@ async function capturePopup(
 				value: () => locale,
 			});
 		},
-		{ tab: scene.tab ?? DEMO_TAB, msgs: messages, locale: lang },
+		{ tab: scene.tab ?? DEMO_TAB, msgs: messages, locale: LOCALE },
 	);
 
 	await page.goto(`chrome-extension://${extensionId}/popup.html`);
@@ -253,23 +224,18 @@ async function capturePopup(
 	}
 	await page.mouse.move(0, 0); // Avoid hover artifacts on items the cursor landed on.
 	await page.waitForTimeout(350);
-	await layoutFrame(page, target.viewport, scene.caption?.[lang] ?? '');
+	await layoutFrame(page, target.viewport, scene.caption ?? '');
 	await page.waitForTimeout(150);
 
-	const outputPath = resolve(OUTPUT_DIR, target.store, lang, `${scene.id}.png`);
+	const outputPath = resolve(OUTPUT_DIR, target.store, `${scene.id}.png`);
 	mkdirSync(dirname(outputPath), { recursive: true });
 	await page.screenshot({ path: outputPath });
 	await page.close();
 	console.log(`Saved ${outputPath}`);
 }
 
-export async function generate({
-	targets = TARGETS,
-	languages = LANGUAGES,
-	scenes = SCENES,
-} = {}) {
-	const messageCache = {};
-	const messagesFor = (lang) => (messageCache[lang] ??= loadMessages(lang));
+export async function generate({ targets = TARGETS, scenes = SCENES } = {}) {
+	const messages = loadMessages(LOCALE);
 
 	const context = await chromium.launchPersistentContext('', {
 		headless: false,
@@ -290,21 +256,9 @@ export async function generate({
 	await injectDemoBookmarks(serviceWorker);
 
 	for (const target of targets) {
-		const targetLanguages = (target.languages ?? LANGUAGES).filter((lang) =>
-			languages.includes(lang),
-		);
-		for (const lang of targetLanguages) {
-			for (const scene of scenes) {
-				await setTheme(serviceWorker, scene.theme);
-				await capturePopup(
-					context,
-					extensionId,
-					target,
-					lang,
-					messagesFor(lang),
-					scene,
-				);
-			}
+		for (const scene of scenes) {
+			await setTheme(serviceWorker, scene.theme);
+			await capturePopup(context, extensionId, target, scene, messages);
 		}
 	}
 
