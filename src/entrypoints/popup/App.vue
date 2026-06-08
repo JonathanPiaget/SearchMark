@@ -29,11 +29,13 @@ const selectedFolderName = ref('');
 
 const hasOpenedSearch = ref(false);
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
+const searchViewRef = ref<{ focus: () => void } | null>(null);
 
 const switchView = (view: 'save' | 'search') => {
 	activeView.value = view;
 	if (view === 'search') {
 		hasOpenedSearch.value = true;
+		nextTick(() => searchViewRef.value?.focus());
 	} else {
 		nextTick(() => folderSelectorRef.value?.focus());
 	}
@@ -198,7 +200,7 @@ const saveBookmark = async () => {
     </div>
 
     <!-- Search View -->
-    <SearchView v-if="hasOpenedSearch" v-show="activeView === 'search'" />
+    <SearchView ref="searchViewRef" v-if="hasOpenedSearch" v-show="activeView === 'search'" />
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 <template>
   <div class="search-view">
     <FolderSelector
+      ref="folderSelectorRef"
       v-model="selectedFolderId"
       :autofocus="false"
       :auto-select-default="false"
@@ -95,6 +96,7 @@ const MAX_RESULTS = 100;
 const selectedFolderId = ref('');
 const isRecursive = ref(true);
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
+const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const filterInputRef = ref<HTMLInputElement | null>(null);
 const filterQuery = ref('');
 const isFuzzyFilter = ref(true);
@@ -208,6 +210,12 @@ const focusFirstBookmark = () => {
 const focusFilterInput = () => {
 	filterInputRef.value?.focus();
 };
+
+const focus = () => {
+	folderSelectorRef.value?.focus();
+};
+
+defineExpose({ focus });
 
 onMounted(async () => {
 	await loadFolders();
