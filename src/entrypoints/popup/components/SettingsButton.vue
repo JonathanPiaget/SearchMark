@@ -15,6 +15,7 @@ import IconSettings from '~icons/lucide/settings';
 
 const handleClick = () => {
 	browser.runtime.openOptionsPage();
+	window.close();
 };
 </script>
 
