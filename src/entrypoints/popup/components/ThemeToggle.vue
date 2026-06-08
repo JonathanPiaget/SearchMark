@@ -3,7 +3,7 @@
     class="theme-toggle"
     :aria-label="i18n.t('toggleTheme')"
     :title="i18n.t('toggleTheme')"
-    @click="handleToggle"
+    @click="toggleTheme"
   >
     <span class="theme-icon" :class="{ dark: appliedTheme === 'dark' }">
       <IconMoon v-if="appliedTheme === 'dark'" />
@@ -19,10 +19,6 @@ import IconSun from '~icons/lucide/sun';
 import { useTheme } from '../../../composables/useTheme';
 
 const { appliedTheme, toggleTheme } = useTheme();
-
-const handleToggle = async () => {
-	await toggleTheme();
-};
 </script>
 
 <style scoped>

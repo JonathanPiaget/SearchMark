@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
@@ -44,6 +44,63 @@ const applyTheme = (theme: 'light' | 'dark') => {
 };
 
 /**
+ * Whether the circular View Transition effect can run for this change
+ */
+const canAnimateThemeChange = (event?: MouseEvent): event is MouseEvent => {
+	return (
+		!!event &&
+		typeof document !== 'undefined' &&
+		'startViewTransition' in document &&
+		!window.matchMedia('(prefers-reduced-motion: reduce)').matches
+	);
+};
+
+/**
+ * Apply the theme with an expanding-circle View Transition originating from the
+ * click position. Falls back to an instant change when unsupported.
+ */
+const applyThemeAnimated = async (
+	theme: 'light' | 'dark',
+	event?: MouseEvent,
+) => {
+	if (!canAnimateThemeChange(event)) {
+		applyTheme(theme);
+		return;
+	}
+
+	const x = event.clientX;
+	const y = event.clientY;
+	const endRadius = Math.hypot(
+		Math.max(x, window.innerWidth - x),
+		Math.max(y, window.innerHeight - y),
+	);
+
+	const transition = document.startViewTransition(async () => {
+		applyTheme(theme);
+		await nextTick();
+	});
+
+	await transition.ready;
+
+	const isDark = theme === 'dark';
+	const clipPath = [
+		`circle(0px at ${x}px ${y}px)`,
+		`circle(${endRadius}px at ${x}px ${y}px)`,
+	];
+	document.documentElement.animate(
+		{ clipPath: isDark ? [...clipPath].reverse() : clipPath },
+		{
+			duration: 400,
+			easing: 'ease-out',
+			fill: 'forwards',
+			pseudoElement: isDark
+				? '::view-transition-old(root)'
+				: '::view-transition-new(root)',
+		},
+	);
+};
+
+/**
  * Load theme from storage
  */
 const loadTheme = async (): Promise<Theme> => {
@@ -75,19 +132,19 @@ export const useTheme = () => {
 	/**
 	 * Set the theme preference
 	 */
-	const setTheme = async (theme: Theme) => {
+	const setTheme = async (theme: Theme, event?: MouseEvent) => {
 		currentTheme.value = theme;
 		const computed = calculateAppliedTheme(theme);
-		applyTheme(computed);
+		await applyThemeAnimated(computed, event);
 		await saveTheme(theme);
 	};
 
 	/**
 	 * Toggle between light and dark (skips auto)
 	 */
-	const toggleTheme = async () => {
+	const toggleTheme = async (event?: MouseEvent) => {
 		const newTheme = appliedTheme.value === 'light' ? 'dark' : 'light';
-		await setTheme(newTheme);
+		await setTheme(newTheme, event);
 	};
 
 	/**

@@ -29,6 +29,32 @@ body {
 	box-sizing: border-box;
 }
 
+/* Circular theme transition (View Transitions API).
+   Disable the browser's default cross-fade so the expanding clip-path circle
+   is visible. The circle grows when switching to dark and shrinks back to
+   light, driven from useTheme.ts. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+	z-index: 1;
+}
+
+::view-transition-new(root) {
+	z-index: 9999;
+}
+
+html[data-theme="dark"]::view-transition-old(root) {
+	z-index: 9999;
+}
+
+html[data-theme="dark"]::view-transition-new(root) {
+	z-index: 1;
+}
+
 button {
 	color: inherit;
 }
