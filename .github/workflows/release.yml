@@ -31,11 +31,10 @@ jobs:
         id: check_version
         run: |
           CURRENT_VERSION=$(jq -r .version package.json)
-          PREVIOUS_VERSION=$(git show HEAD~1:package.json | jq -r .version)
-          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-            VERSION_CHANGED=1
-          else
+          if git rev-parse "v${CURRENT_VERSION}" >/dev/null 2>&1; then
             VERSION_CHANGED=0
+          else
+            VERSION_CHANGED=1
           fi
           echo "version_changed=$VERSION_CHANGED" >> "$GITHUB_OUTPUT"
 
