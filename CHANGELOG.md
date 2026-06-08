@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0]
+
+### Added
+- Switch between the Save and Search views with Alt+Arrow keys
+- Settings page now shows the active keyboard shortcut with a link to the rebind page
+- Folder search input auto-focuses when switching views
+- Circular view-transition animation when toggling the theme
+
+### Fixed
+- Folder input flicker when switching views
+- Missing favicon on the settings page tab
+- Clear button now uses the Lucide X icon for visual consistency
+
 ## [1.10.0]
 
 ### Added
