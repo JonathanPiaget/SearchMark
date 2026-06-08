@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
@@ -27,8 +27,16 @@ const bookmarkTitle = ref('');
 const selectedFolderId = ref('');
 const selectedFolderName = ref('');
 
+const hasOpenedSearch = ref(false);
+const folderSelectorRef = ref<{ focus: () => void } | null>(null);
+
 const switchView = (view: 'save' | 'search') => {
 	activeView.value = view;
+	if (view === 'search') {
+		hasOpenedSearch.value = true;
+	} else {
+		nextTick(() => folderSelectorRef.value?.focus());
+	}
 };
 
 const { initTheme } = useTheme();
@@ -161,7 +169,7 @@ const saveBookmark = async () => {
     </div>
 
     <!-- Save View -->
-    <div v-if="activeView === 'save'" class="save-view">
+    <div v-show="activeView === 'save'" class="save-view">
       <ExistingBookmarks
         :locations="bookmarkLocations"
         :is-loading="isSearching"
@@ -169,6 +177,7 @@ const saveBookmark = async () => {
       />
 
       <FolderSelector
+        ref="folderSelectorRef"
         v-model="selectedFolderId"
         :show-toolbar-option="true"
         @folder-selected="(folder) => selectedFolderName = folder.name"
@@ -189,7 +198,7 @@ const saveBookmark = async () => {
     </div>
 
     <!-- Search View -->
-    <SearchView v-else-if="activeView === 'search'" />
+    <SearchView v-if="hasOpenedSearch" v-show="activeView === 'search'" />
   </div>
 </template>
 

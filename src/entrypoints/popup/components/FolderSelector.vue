@@ -415,6 +415,12 @@ watch(
 	},
 );
 
+const focus = () => {
+	folderInput.value?.focus();
+};
+
+defineExpose({ focus });
+
 onMounted(async () => {
 	try {
 		await initializeFolders();
