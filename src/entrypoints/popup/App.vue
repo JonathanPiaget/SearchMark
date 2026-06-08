@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
@@ -41,6 +41,17 @@ const switchView = (view: 'save' | 'search') => {
 	}
 };
 
+const handleViewShortcut = (event: KeyboardEvent) => {
+	if (!event.altKey || event.ctrlKey || event.metaKey) return;
+	if (event.key === 'ArrowLeft') {
+		event.preventDefault();
+		switchView('save');
+	} else if (event.key === 'ArrowRight') {
+		event.preventDefault();
+		switchView('search');
+	}
+};
+
 const { initTheme } = useTheme();
 const { initSeeLater } = useSeeLater();
 const { folderMap, loadFolders } = useFolderTree();
@@ -79,6 +90,11 @@ onMounted(() => {
 	initTheme();
 	initSeeLater();
 	loadCurrentTab();
+	window.addEventListener('keydown', handleViewShortcut, true);
+});
+
+onUnmounted(() => {
+	window.removeEventListener('keydown', handleViewShortcut, true);
 });
 
 const handleBookmarkDeleted = async () => {
