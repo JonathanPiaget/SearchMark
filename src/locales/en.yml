@@ -55,6 +55,12 @@ bookmarkToolbar: Bookmark toolbar
 fuzzySearch: Fuzzy search
 fuzzySearchTooltip: Finds results from partial input, even with skipped letters, as long as the letters stay in order.
 clearSelection: Clear selection
+shortcuts: Keyboard Shortcut
+openShortcut: Open SearchMark
+shortcutDescriptionChrome: Shortcut to open the popup. Use the button to rebind it.
+shortcutDescriptionFirefox: 'Shortcut to open the popup. Change it in about:addons → ⚙ → Manage Extension Shortcuts.'
+shortcutChange: Change shortcut
+shortcutUnset: Not set
 support: Support
 supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
 buyMeACoffee: Buy me a coffee
