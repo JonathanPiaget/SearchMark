@@ -2,15 +2,11 @@ saveBookmark: Enregistrer le marque-page
 bookmarkSaved: Marque-page enregistré avec succès
 bookmarkSavedInFolder: Marque-page enregistré dans "{folderName}"
 bookmarkError: Erreur lors de l'enregistrement du marque-page
-customizeBookmark: Personnaliser le marque-page
 url: URL
 title: Titre
 folder: Dossier
-selectFolder: Sélectionner un dossier
 searchFolders: Rechercher des dossiers...
 loadingFolders: Chargement des dossiers...
-childOf: enfant de
-more: de plus
 child: enfant
 children: enfants
 match: résultat
@@ -31,11 +27,6 @@ themeDescription: Choisissez l'apparence de SearchMark
 themeAuto: Auto (suivre le système)
 themeLight: Clair
 themeDark: Sombre
-preview: Aperçu
-previewText: Dossier exemple
-about: À propos
-version: Version
-extensionDescription: Une extension de navigateur pour une gestion efficace des marque-pages avec des capacités de recherche
 alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Marque-page supprimé avec succès
 delete: Supprimer le marque-page
@@ -47,22 +38,14 @@ seeLaterError: Échec de l'enregistrement dans le dossier Voir Plus Tard
 quickActions: Actions Rapides
 seeLaterFolder: Dossier Voir Plus Tard
 seeLaterFolderDescription: 'Par défaut : crée un dossier "Voir Plus Tard" dans la barre de favoris'
-seeLaterUsingDefault: Par défaut (barre de favoris)
 seeLaterResetToDefault: Réinitialiser par défaut
-selectSeeLaterFolder: Rechercher des dossiers...
 search: Rechercher
-searchBookmarks: Rechercher des favoris
-selectFolderToSearch: Sélectionnez un dossier pour voir ses favoris
 noBookmarksInFolder: Aucun favori trouvé dans ce dossier
 loadingBookmarks: Chargement des favoris...
 errorLoadingBookmarks: Échec du chargement des favoris
 folderNotFound: Dossier introuvable
-bookmarkOpened: Favori ouvert dans un nouvel onglet
-bookmarks: favoris
-bookmark: favori
 pathLabel: "Chemin :"
 emptyFolderMessage: Ce dossier est vide
-selectFolderPrompt: Sélectionnez un dossier ci-dessus pour voir ses favoris
 error: Une erreur est survenue. Veuillez réessayer.
 includeSubfolders: Inclure les sous-dossiers
 filterBookmarks: Filtrer les favoris...

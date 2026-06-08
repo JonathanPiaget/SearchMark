@@ -122,7 +122,6 @@ const {
 	initSeeLater,
 } = useSeeLater();
 const selectedTheme = ref<Theme>('auto');
-const version = ref('');
 const selectedFolderId = ref(seeLaterFolderId.value || '');
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
@@ -145,10 +144,6 @@ onMounted(async () => {
 	await initTheme();
 	await initSeeLater();
 	selectedTheme.value = currentTheme.value;
-
-	// Get version from manifest
-	const manifest = browser.runtime.getManifest();
-	version.value = manifest.version;
 });
 
 const handleUseDefaultFolder = async () => {
@@ -314,89 +309,6 @@ const handleUseDefaultFolder = async () => {
 
 .folder-selector-wrapper :deep(.form-group label) {
   display: none;
-}
-
-.theme-preview {
-  margin-top: 16px;
-  padding: 16px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: 8px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.preview-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-  transition: color 0.2s ease;
-}
-
-.preview-box {
-  padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: 6px;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.preview-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.preview-icon {
-  font-size: 16px;
-}
-
-.preview-text {
-  font-size: 14px;
-  color: var(--text-primary);
-  transition: color 0.2s ease;
-}
-
-.preview-button {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.about-info {
-  padding: 20px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: 8px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.about-info p {
-  margin: 0 0 8px 0;
-  color: var(--text-primary);
-  transition: color 0.2s ease;
-}
-
-.about-info p:last-child {
-  margin-bottom: 0;
-}
-
-.version {
-  font-size: 14px;
-  color: var(--text-secondary);
-  transition: color 0.2s ease;
-}
-
-.description {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-top: 12px !important;
-  transition: color 0.2s ease;
 }
 
 .support-item {

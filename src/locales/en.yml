@@ -2,15 +2,11 @@ saveBookmark: Save Bookmark
 bookmarkSaved: Bookmark saved successfully
 bookmarkSavedInFolder: Bookmark saved to "{folderName}"
 bookmarkError: Error saving bookmark
-customizeBookmark: Customize Bookmark
 url: URL
 title: Title
 folder: Folder
-selectFolder: Select a folder
 searchFolders: Search folders...
 loadingFolders: Loading folders...
-childOf: child of
-more: more
 child: child
 children: children
 match: match
@@ -31,11 +27,6 @@ themeDescription: Choose how SearchMark looks
 themeAuto: Auto (follow system)
 themeLight: Light
 themeDark: Dark
-preview: Preview
-previewText: Example folder
-about: About
-version: Version
-extensionDescription: A browser extension for efficient bookmark management with search capabilities
 alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark
@@ -47,22 +38,14 @@ seeLaterError: Failed to save to See Later folder
 quickActions: Quick Actions
 seeLaterFolder: See Later Folder
 seeLaterFolderDescription: 'Default: creates a "See Later" folder in your Bookmarks Toolbar'
-seeLaterUsingDefault: Default (Bookmarks Toolbar)
 seeLaterResetToDefault: Reset to default
-selectSeeLaterFolder: Search folders...
 search: Search
-searchBookmarks: Search Bookmarks
-selectFolderToSearch: Select a folder to view its bookmarks
 noBookmarksInFolder: No bookmarks found in this folder
 loadingBookmarks: Loading bookmarks...
 errorLoadingBookmarks: Failed to load bookmarks
 folderNotFound: Folder not found
-bookmarkOpened: Bookmark opened in new tab
-bookmarks: bookmarks
-bookmark: bookmark
 pathLabel: "Path:"
 emptyFolderMessage: This folder is empty
-selectFolderPrompt: Select a folder above to view its bookmarks
 error: An error occurred. Please try again.
 includeSubfolders: Include subfolders
 filterBookmarks: Filter bookmarks...
