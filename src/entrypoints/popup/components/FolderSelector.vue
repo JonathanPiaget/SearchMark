@@ -24,7 +24,7 @@
           @mousedown.prevent="clearSelection"
           :title="i18n.t('clearSelection')"
         >
-          ×
+          <IconX />
         </button>
         <div
           v-if="showDropdown && searchQuery.trim()"
@@ -158,6 +158,7 @@ import IconFolders from '~icons/lucide/folders';
 import IconLibrary from '~icons/lucide/library';
 import IconSearchX from '~icons/lucide/search-x';
 import IconSpace from '~icons/lucide/space';
+import IconX from '~icons/lucide/x';
 import { useDropdownFit } from '../../../composables/useDropdownFit';
 import { useFolderSearch } from '../../../composables/useFolderSearch';
 import type { BookmarkFolder } from '../../../composables/useFolderTree';

@@ -37,7 +37,7 @@
           @mousedown.prevent="filterQuery = ''"
           :title="i18n.t('clearSelection')"
         >
-          ×
+          <IconX />
         </button>
       </div>
       <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')" @mousedown.prevent>
@@ -80,6 +80,7 @@ import fuzzysort from 'fuzzysort';
 import type { ComponentPublicInstance } from 'vue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import IconX from '~icons/lucide/x';
 import type { BookmarkItem } from '../../../composables/useBookmarkFolder';
 import { useBookmarkFolder } from '../../../composables/useBookmarkFolder';
 import { useFolderTree } from '../../../composables/useFolderTree';
