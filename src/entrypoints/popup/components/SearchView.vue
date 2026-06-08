@@ -52,7 +52,7 @@
     </div>
 
     <div v-if="error" class="error-message">
-      {{ i18n.t('error') }}
+      {{ errorMessage }}
     </div>
 
     <BookmarkList
@@ -128,6 +128,7 @@ const isLoading = computed(() =>
 const error = computed(() =>
 	selectedFolderId.value ? errorFolder.value : errorAll.value,
 );
+const errorMessage = computed(() => (error.value ? i18n.t(error.value) : ''));
 
 const removeBookmark = (id: string) => {
 	removeFromAll(id);

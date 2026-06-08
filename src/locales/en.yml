@@ -46,7 +46,6 @@ errorLoadingBookmarks: Failed to load bookmarks
 folderNotFound: Folder not found
 pathLabel: "Path:"
 emptyFolderMessage: This folder is empty
-error: An error occurred. Please try again.
 includeSubfolders: Include subfolders
 filterBookmarks: Filter bookmarks...
 searchAllBookmarks: Search all bookmarks...

@@ -46,7 +46,6 @@ errorLoadingBookmarks: Échec du chargement des favoris
 folderNotFound: Dossier introuvable
 pathLabel: "Chemin :"
 emptyFolderMessage: Ce dossier est vide
-error: Une erreur est survenue. Veuillez réessayer.
 includeSubfolders: Inclure les sous-dossiers
 filterBookmarks: Filtrer les favoris...
 searchAllBookmarks: Rechercher tous les favoris...

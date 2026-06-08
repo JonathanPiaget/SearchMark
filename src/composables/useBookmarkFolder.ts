@@ -11,10 +11,12 @@ export interface BookmarkItem {
 	dateAdded?: number;
 }
 
+export type BookmarkErrorKey = 'folderNotFound' | 'errorLoadingBookmarks';
+
 export interface UseBookmarkFolderReturn {
 	bookmarks: Ref<BookmarkItem[]>;
 	isLoading: Ref<boolean>;
-	error: Ref<string | null>;
+	error: Ref<BookmarkErrorKey | null>;
 	loadBookmarks: (folderId: string, recursive?: boolean) => Promise<void>;
 	loadAllBookmarks: () => Promise<void>;
 	removeBookmark: (id: string) => void;
@@ -54,7 +56,7 @@ export function useBookmarkFolder(
 ): UseBookmarkFolderReturn {
 	const bookmarks = ref<BookmarkItem[]>([]);
 	const isLoading = ref(false);
-	const error = ref<string | null>(null);
+	const error = ref<BookmarkErrorKey | null>(null);
 
 	const fetchBookmarksRecursive = async (
 		folderId: string,
