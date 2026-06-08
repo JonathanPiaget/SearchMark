@@ -266,6 +266,11 @@ const onFocus = () => {
 	// Clear the input when focused for search
 	searchQuery.value = '';
 	showDropdown.value = false;
+	// Firefox keeps the old scrollLeft after clearing, which renders the
+	// placeholder right-aligned with a leading ellipsis. Reset it.
+	nextTick(() => {
+		if (folderInput.value) folderInput.value.scrollLeft = 0;
+	});
 };
 
 const selectFolder = (folder: BookmarkFolder) => {
