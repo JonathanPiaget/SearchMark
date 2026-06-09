@@ -8,6 +8,7 @@ import { useFolderTree } from '../../composables/useFolderTree';
 import { useSeeLater } from '../../composables/useSeeLater';
 import { useTheme } from '../../composables/useTheme';
 import { getBookmarkToolbarId } from '../../utils/bookmark';
+import { notify } from '../../utils/notify';
 import BookmarkForm from './components/BookmarkForm.vue';
 import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';
@@ -116,33 +117,14 @@ const saveBookmark = async () => {
 			parentId: folderId,
 		});
 
-		// Try to show success notification in content script (don't let failure affect save status)
-		try {
-			const [tab] = await browser.tabs.query({
-				active: true,
-				currentWindow: true,
-			});
-			if (tab?.id) {
-				const notificationMessage = selectedFolderName.value
-					? i18n
-							.t('bookmarkSavedInFolder')
-							.replace('{folderName}', selectedFolderName.value)
-					: i18n.t('bookmarkSaved');
+		notify(
+			selectedFolderName.value
+				? i18n
+						.t('bookmarkSavedInFolder')
+						.replace('{folderName}', selectedFolderName.value)
+				: i18n.t('bookmarkSaved'),
+		);
 
-				await browser.tabs.sendMessage(tab.id, {
-					type: 'SHOW_NOTIFICATION',
-					message: notificationMessage,
-					isError: false,
-				});
-			}
-		} catch {
-			// Silently ignore notification errors - bookmark was still saved successfully
-			console.log(
-				'Could not show notification (content script not available on this page)',
-			);
-		}
-
-		// Close the popup
 		window.close();
 	} catch {
 		message.value = i18n.t('bookmarkError');

@@ -39,6 +39,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import IconKeyboard from '~icons/lucide/keyboard';
 import IconX from '~icons/lucide/x';
+import { getOpenShortcut } from '../../../utils/commands';
 import ShortcutKeys from './ShortcutKeys.vue';
 
 const isOpen = ref(false);
@@ -71,8 +72,8 @@ const close = () => {
 };
 
 onMounted(async () => {
-	const [command] = await browser.commands.getAll();
-	if (command?.shortcut) openShortcut.value = command.shortcut;
+	const shortcut = await getOpenShortcut();
+	if (shortcut) openShortcut.value = shortcut;
 });
 
 onUnmounted(() => {

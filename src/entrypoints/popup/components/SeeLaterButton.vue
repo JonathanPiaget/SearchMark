@@ -17,6 +17,7 @@ import { ref } from 'vue';
 import { i18n } from '#i18n';
 import IconClock from '~icons/lucide/clock';
 import { useSeeLater } from '../../../composables/useSeeLater';
+import { notify } from '../../../utils/notify';
 
 const { getOrCreateSeeLaterFolder } = useSeeLater();
 const isLoading = ref(false);
@@ -44,45 +45,14 @@ const handleSeeLater = async () => {
 		});
 
 		// 4. Show success notification
-		try {
-			if (tab.id) {
-				await browser.tabs.sendMessage(tab.id, {
-					type: 'SHOW_NOTIFICATION',
-					message: i18n
-						.t('seeLaterSuccess')
-						.replace('{folderName}', folder.title),
-					isError: false,
-				});
-			}
-		} catch {
-			// Silently ignore notification errors - bookmark was still saved successfully
-			console.log(
-				'Could not show notification (content script not available on this page)',
-			);
-		}
+		notify(i18n.t('seeLaterSuccess').replace('{folderName}', folder.title));
 
 		// 5. Close popup
 		window.close();
 	} catch (error) {
 		console.error('See Later save failed:', error);
 
-		// Show error notification to user
-		try {
-			const [tab] = await browser.tabs.query({
-				active: true,
-				currentWindow: true,
-			});
-			if (tab?.id) {
-				await browser.tabs.sendMessage(tab.id, {
-					type: 'SHOW_NOTIFICATION',
-					message: i18n.t('seeLaterError'),
-					isError: true,
-				});
-			}
-		} catch (notificationError) {
-			// If notification fails, just log it
-			console.log('Could not show error notification:', notificationError);
-		}
+		notify(i18n.t('seeLaterError'));
 
 		// Don't close popup on error - let user try again
 	} finally {

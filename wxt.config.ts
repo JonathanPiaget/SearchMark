@@ -10,7 +10,7 @@ export default defineConfig({
 	}),
 	manifest: ({ manifestVersion }) => ({
 		default_locale: 'en',
-		permissions: ['bookmarks', 'tabs', 'storage'],
+		permissions: ['bookmarks', 'tabs', 'storage', 'notifications'],
 		options_ui: {
 			page: 'settings.html',
 			open_in_tab: true,
@@ -26,6 +26,10 @@ export default defineConfig({
 			[manifestVersion === 3 ? '_execute_action' : '_execute_browser_action']: {
 				suggested_key: { default: 'Ctrl+Shift+X', mac: 'Command+Shift+X' },
 				description: 'Open SearchMark',
+			},
+			'quick-save': {
+				suggested_key: { default: 'Ctrl+Shift+B', mac: 'Command+Shift+B' },
+				description: 'Quick save to bookmark toolbar',
 			},
 		},
 	}),

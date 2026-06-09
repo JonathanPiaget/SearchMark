@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import { notify } from '../utils/notify';
 
 export function useBookmarkActions() {
 	const isDeleting = ref(false);
@@ -17,25 +18,7 @@ export function useBookmarkActions() {
 		try {
 			await browser.bookmarks.remove(id);
 
-			try {
-				const [tab] = await browser.tabs.query({
-					active: true,
-					currentWindow: true,
-				});
-
-				if (tab?.id && typeof tab.id === 'number') {
-					await browser.tabs.sendMessage(tab.id, {
-						type: 'SHOW_NOTIFICATION',
-						message: i18n.t('bookmarkDeleted'),
-						isError: false,
-					});
-				}
-			} catch {
-				// Silently ignore notification errors
-				console.log(
-					'Could not show notification (content script not available on this page)',
-				);
-			}
+			notify(i18n.t('bookmarkDeleted'));
 		} catch (error) {
 			console.error(`Failed to delete bookmark with ID ${id}:`, error);
 			deleteError.value = i18n.t('bookmarkError');

@@ -1,5 +1,39 @@
+import { i18n } from '#i18n';
 import { refreshAllBadges, updateBadgeForTab } from '../utils/badge';
 import { getBookmarkToolbarId } from '../utils/bookmark';
+
+const showNotification = (message: string) => {
+	browser.notifications.create({
+		type: 'basic',
+		iconUrl: browser.runtime.getURL('/icon/128.png'),
+		title: 'SearchMark',
+		message,
+	});
+};
+
+const quickSave = async () => {
+	try {
+		const [tab] = await browser.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		if (!tab?.url) {
+			throw new Error('No active tab to save');
+		}
+
+		const toolbarId = await getBookmarkToolbarId();
+		await browser.bookmarks.create({
+			title: tab.title || tab.url,
+			url: tab.url,
+			parentId: toolbarId,
+		});
+
+		showNotification(i18n.t('bookmarkSaved'));
+	} catch (error) {
+		console.error('Quick save failed:', error);
+		showNotification(i18n.t('bookmarkError'));
+	}
+};
 
 export default defineBackground(() => {
 	refreshAllBadges();
@@ -23,25 +57,15 @@ export default defineBackground(() => {
 	browser.bookmarks.onRemoved.addListener(refreshAllBadges);
 	browser.bookmarks.onChanged.addListener(refreshAllBadges);
 
-	browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-		if (message.action === 'saveBookmark') {
-			(async () => {
-				try {
-					const toolbarId = await getBookmarkToolbarId();
+	browser.commands.onCommand.addListener((command) => {
+		if (command === 'quick-save') {
+			quickSave();
+		}
+	});
 
-					await browser.bookmarks.create({
-						title: message.title,
-						url: message.url,
-						parentId: toolbarId,
-					});
-
-					sendResponse({ success: true });
-				} catch (error) {
-					console.error('Error saving bookmark:', error);
-					sendResponse({ success: false, error: String(error) });
-				}
-			})();
-			return true; // Indicates that the response will be sent asynchronously
+	browser.runtime.onMessage.addListener((message) => {
+		if (message.type === 'NOTIFY') {
+			showNotification(message.message);
 		}
 	});
 });

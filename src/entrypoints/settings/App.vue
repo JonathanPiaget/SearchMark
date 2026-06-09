@@ -136,6 +136,7 @@ import IconStar from '~icons/lucide/star';
 import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
 import { useTheme } from '../../composables/useTheme';
+import { getOpenShortcut } from '../../utils/commands';
 import FolderSelector from '../popup/components/FolderSelector.vue';
 
 const STORE_URLS = {
@@ -216,8 +217,7 @@ onMounted(async () => {
 	await initTheme();
 	await initSeeLater();
 	selectedTheme.value = currentTheme.value;
-	const [command] = await browser.commands.getAll();
-	popupShortcut.value = command?.shortcut ?? '';
+	popupShortcut.value = (await getOpenShortcut()) ?? '';
 });
 
 const handleUseDefaultFolder = async () => {
