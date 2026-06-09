@@ -56,6 +56,9 @@ fuzzySearch: Fuzzy search
 fuzzySearchTooltip: Finds results from partial input, even with skipped letters, as long as the letters stay in order.
 clearSelection: Clear selection
 shortcuts: Keyboard Shortcut
+shortcutsTitle: Keyboard shortcuts
+shortcutQuickSave: Quick save to toolbar
+shortcutSwitchView: Switch view
 openShortcut: Open SearchMark
 shortcutDescriptionChrome: Shortcut to open the popup. Use the button to rebind it.
 shortcutDescriptionFirefox: 'Shortcut to open the popup. Change it in about:addons → ⚙ → Manage Extension Shortcuts.'

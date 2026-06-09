@@ -15,6 +15,7 @@ import SaveButton from './components/SaveButton.vue';
 import SearchView from './components/SearchView.vue';
 import SeeLaterButton from './components/SeeLaterButton.vue';
 import SettingsButton from './components/SettingsButton.vue';
+import ShortcutsHelp from './components/ShortcutsHelp.vue';
 import ThemeToggle from './components/ThemeToggle.vue';
 
 const activeView = ref<'save' | 'search'>('save');
@@ -163,6 +164,7 @@ const saveBookmark = async () => {
       </div>
       <div class="header-buttons">
         <SeeLaterButton />
+        <ShortcutsHelp />
         <SettingsButton />
         <ThemeToggle />
       </div>
@@ -222,6 +224,7 @@ const saveBookmark = async () => {
 
 <style scoped>
 .container {
+  position: relative;
   width: 450px;
   max-height: 600px;
   padding: 16px;
