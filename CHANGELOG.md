@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0]
+
+### Added
+- Discoverable keyboard shortcuts panel in the popup
+- Keyboard navigation into expanded subfolders in the folder selector
+
+### Changed
+- Success/error feedback now uses native OS notifications instead of in-page toasts
+
+### Removed
+- Content script and the `<all_urls>` host permission, for a smaller permission footprint
+
 ## [1.11.0]
 
 ### Added
