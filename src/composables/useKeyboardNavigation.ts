@@ -1,5 +1,5 @@
 import type { Ref, ShallowRef } from 'vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface KeyboardNavigationRefs {
@@ -9,14 +9,13 @@ export interface KeyboardNavigationRefs {
 
 export function useKeyboardNavigation(refs?: KeyboardNavigationRefs) {
 	const highlightedIndex = ref(-1);
+	const highlightedChildIndex = ref(-1);
 	const showChildrenFor = ref<string | null>(null);
 
-	const scrollToIndex = (index: number) => {
+	const scrollIntoViewIfNeeded = (item: HTMLElement | undefined) => {
 		if (!refs) return;
 
 		const container = refs.containerRef.value;
-		const item = refs.itemRefs.value[index];
-
 		if (!container || !item) return;
 
 		const itemRect = item.getBoundingClientRect();
@@ -30,17 +29,47 @@ export function useKeyboardNavigation(refs?: KeyboardNavigationRefs) {
 		}
 	};
 
+	const scrollToIndex = (index: number) => {
+		scrollIntoViewIfNeeded(refs?.itemRefs.value[index]);
+	};
+
+	const scrollToChild = (childIndex: number) => {
+		if (!refs) return;
+		const container = refs.containerRef.value;
+		if (!container) return;
+		nextTick(() => {
+			const children = container.querySelectorAll<HTMLElement>('.child-folder');
+			scrollIntoViewIfNeeded(children[childIndex]);
+		});
+	};
+
 	const handleNavigation = (
 		event: KeyboardEvent,
 		searchResults: BookmarkFolder[],
 		callbacks: {
 			onEnter: (item: BookmarkFolder) => void;
+			onEnterChild: (child: BookmarkFolder) => void;
 			onEscape: () => void;
 			onEmitEnter: () => void;
 		},
 	) => {
+		const current = searchResults[highlightedIndex.value];
+		const expandedChildren =
+			current && showChildrenFor.value === current.id
+				? (current.children ?? [])
+				: [];
+
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
+			if (
+				expandedChildren.length > 0 &&
+				highlightedChildIndex.value < expandedChildren.length - 1
+			) {
+				highlightedChildIndex.value++;
+				scrollToChild(highlightedChildIndex.value);
+				return;
+			}
+			highlightedChildIndex.value = -1;
 			showChildrenFor.value = null;
 			const newIndex = Math.min(
 				highlightedIndex.value + 1,
@@ -50,24 +79,35 @@ export function useKeyboardNavigation(refs?: KeyboardNavigationRefs) {
 			scrollToIndex(newIndex);
 		} else if (event.key === 'ArrowUp') {
 			event.preventDefault();
+			if (highlightedChildIndex.value >= 0) {
+				highlightedChildIndex.value--;
+				if (highlightedChildIndex.value >= 0) {
+					scrollToChild(highlightedChildIndex.value);
+				} else {
+					scrollToIndex(highlightedIndex.value);
+				}
+				return;
+			}
 			showChildrenFor.value = null;
 			const newIndex = Math.max(highlightedIndex.value - 1, 0);
 			highlightedIndex.value = newIndex;
 			scrollToIndex(newIndex);
 		} else if (event.key === ' ' && event.shiftKey) {
 			event.preventDefault();
-			const currentItem = searchResults[highlightedIndex.value];
-			if (currentItem?.children && currentItem.children.length > 0) {
+			if (current?.children && current.children.length > 0) {
 				showChildrenFor.value =
-					showChildrenFor.value === currentItem.id ? null : currentItem.id;
+					showChildrenFor.value === current.id ? null : current.id;
+				highlightedChildIndex.value = -1;
 			}
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
-			if (
-				highlightedIndex.value >= 0 &&
-				searchResults[highlightedIndex.value]
-			) {
-				callbacks.onEnter(searchResults[highlightedIndex.value]);
+			const highlightedChild = expandedChildren[highlightedChildIndex.value];
+			if (highlightedChildIndex.value >= 0 && highlightedChild) {
+				callbacks.onEnterChild(highlightedChild);
+				return;
+			}
+			if (highlightedIndex.value >= 0 && current) {
+				callbacks.onEnter(current);
 				return;
 			}
 			callbacks.onEmitEnter();
@@ -78,11 +118,13 @@ export function useKeyboardNavigation(refs?: KeyboardNavigationRefs) {
 
 	const resetNavigation = () => {
 		highlightedIndex.value = -1;
+		highlightedChildIndex.value = -1;
 		showChildrenFor.value = null;
 	};
 
 	return {
 		highlightedIndex,
+		highlightedChildIndex,
 		showChildrenFor,
 		handleNavigation,
 		resetNavigation,

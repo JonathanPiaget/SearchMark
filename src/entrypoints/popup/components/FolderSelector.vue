@@ -68,9 +68,9 @@
           v-for="(result, index) in searchResults"
           :key="result.folder.id"
           :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
-          :class="['dropdown-item', { highlighted: index === highlightedIndex }]"
+          :class="['dropdown-item', { highlighted: index === highlightedIndex && highlightedChildIndex < 0 }]"
           @mousedown="selectFolder(result.folder)"
-          @mouseenter="highlightedIndex = index"
+          @mouseenter="highlightedIndex = index; highlightedChildIndex = -1"
           @keydown="handleItemKeydown($event, result.folder)"
           tabindex="-1"
         >
@@ -106,11 +106,12 @@
               @mousedown.stop
             >
               <span
-                v-for="child in result.folder.children"
+                v-for="(child, childIndex) in result.folder.children"
                 :key="child.id"
-                class="child-folder"
+                :class="['child-folder', { highlighted: index === highlightedIndex && childIndex === highlightedChildIndex }]"
                 @click.stop="selectChildFolder(child)"
                 @mousedown.stop
+                @mouseenter="highlightedIndex = index; highlightedChildIndex = childIndex"
               >
                 <span class="child-icon"><IconFolder /></span>
                 <span class="child-name">{{ child.title }}</span>
@@ -207,11 +208,16 @@ const {
 	isFuzzyEnabled,
 	loadFuzzyPreference,
 } = useFolderSearch(allFolders);
-const { highlightedIndex, showChildrenFor, handleNavigation, resetNavigation } =
-	useKeyboardNavigation({
-		containerRef: dropdownRef,
-		itemRefs: dropdownItemRefs,
-	});
+const {
+	highlightedIndex,
+	highlightedChildIndex,
+	showChildrenFor,
+	handleNavigation,
+	resetNavigation,
+} = useKeyboardNavigation({
+	containerRef: dropdownRef,
+	itemRefs: dropdownItemRefs,
+});
 
 const currentPosition = computed(() =>
 	highlightedIndex.value >= 0 ? highlightedIndex.value + 1 : 0,
@@ -255,6 +261,7 @@ const initializeFolders = async () => {
 const onSearchInput = () => {
 	searchFolders();
 	dropdownItemRefs.value = [];
+	highlightedChildIndex.value = -1;
 	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
 	showDropdown.value = searchQuery.value.trim().length > 0;
 	if (showDropdown.value) {
@@ -343,7 +350,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 	if (showDropdown.value) {
 		if (props.showToolbarOption) {
-			if (event.key === 'ArrowUp' && highlightedIndex.value <= 0) {
+			if (
+				event.key === 'ArrowUp' &&
+				highlightedIndex.value <= 0 &&
+				highlightedChildIndex.value < 0
+			) {
 				event.preventDefault();
 				highlightedIndex.value = -2;
 				dropdownRef.value?.scrollTo({ top: 0, behavior: 'instant' });
@@ -367,6 +378,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 				searchResults.value.map((r) => r.folder),
 				{
 					onEnter: (item) => selectFolder(item),
+					onEnterChild: (child) => selectChildFolder(child),
 					onEscape: () => {
 						showDropdown.value = false;
 						searchQuery.value = '';
@@ -747,7 +759,8 @@ onMounted(async () => {
   transition: background-color 0.1s ease, color 0.1s ease;
 }
 
-.child-folder:hover {
+.child-folder:hover,
+.child-folder.highlighted {
   background: var(--hover);
   color: var(--text-primary);
 }
