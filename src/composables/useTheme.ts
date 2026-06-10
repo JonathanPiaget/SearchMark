@@ -1,8 +1,9 @@
 import { nextTick, ref } from 'vue';
+import { STORAGE_KEYS } from '../utils/storageKeys';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
-const STORAGE_KEY = 'searchmark_theme';
+const STORAGE_KEY = STORAGE_KEYS.theme;
 const currentTheme = ref<Theme>('auto');
 const appliedTheme = ref<'light' | 'dark'>('light');
 

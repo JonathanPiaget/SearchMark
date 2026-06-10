@@ -2,6 +2,7 @@ import fuzzysort from 'fuzzysort';
 import type { Ref } from 'vue';
 import { ref, watch } from 'vue';
 import { highlightText } from '../utils/highlight';
+import { STORAGE_KEYS } from '../utils/storageKeys';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface FolderSearchResult {
@@ -10,7 +11,7 @@ export interface FolderSearchResult {
 }
 
 const FUZZY_THRESHOLD = 0.3;
-const FUZZY_STORAGE_KEY = 'searchmark_fuzzy_search';
+const FUZZY_STORAGE_KEY = STORAGE_KEYS.fuzzySearch;
 
 export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	const searchQuery = ref('');

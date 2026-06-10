@@ -1,8 +1,9 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '../utils/bookmark';
+import { STORAGE_KEYS } from '../utils/storageKeys';
 
-const STORAGE_KEY = 'searchmark_seeLaterFolder';
+const STORAGE_KEY = STORAGE_KEYS.seeLaterFolder;
 const seeLaterFolderId = ref<string | null>(null);
 let storageListenerInitialized = false;
 

@@ -85,12 +85,13 @@ import IconX from '~icons/lucide/x';
 import type { BookmarkItem } from '../../../composables/useBookmarkFolder';
 import { useBookmarkFolder } from '../../../composables/useBookmarkFolder';
 import { useFolderTree } from '../../../composables/useFolderTree';
+import { STORAGE_KEYS } from '../../../utils/storageKeys';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
 
 const FUZZY_THRESHOLD = 0.3;
-const RECURSIVE_STORAGE_KEY = 'searchmark_recursive_search';
-const FUZZY_FILTER_STORAGE_KEY = 'searchmark_fuzzy_filter';
+const RECURSIVE_STORAGE_KEY = STORAGE_KEYS.recursiveSearch;
+const FUZZY_FILTER_STORAGE_KEY = STORAGE_KEYS.fuzzyFilter;
 const MAX_RESULTS = 100;
 
 const selectedFolderId = ref('');
