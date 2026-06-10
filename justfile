@@ -16,3 +16,4 @@
 # Run linter
 @lint:
     pre-commit run --all-files
+    pnpm run compile
