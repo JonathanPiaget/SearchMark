@@ -1,4 +1,5 @@
 import { nextTick, ref } from 'vue';
+import { logError } from '../utils/logger';
 import { STORAGE_KEYS } from '../utils/storageKeys';
 
 export type Theme = 'light' | 'dark' | 'auto';
@@ -110,7 +111,7 @@ const loadTheme = async (): Promise<Theme> => {
 		const savedTheme = result[STORAGE_KEY] as Theme | undefined;
 		return savedTheme || 'auto';
 	} catch (error) {
-		console.warn('Failed to load theme preference, using auto:', error);
+		logError('Failed to load theme preference, using auto', error);
 		return 'auto';
 	}
 };
@@ -122,7 +123,7 @@ const saveTheme = async (theme: Theme) => {
 	try {
 		await browser.storage.local.set({ [STORAGE_KEY]: theme });
 	} catch (error) {
-		console.error('Failed to save theme:', error);
+		logError('Failed to save theme', error);
 	}
 };
 

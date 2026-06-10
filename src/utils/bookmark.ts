@@ -1,10 +1,12 @@
+import { logError } from './logger';
+
 export const findBookmarksByUrl = async (url: string) => {
 	if (!url) return [];
 	try {
 		const matches = await browser.bookmarks.search({ url });
 		return matches.filter((bookmark) => bookmark.url === url);
 	} catch (error) {
-		console.error('Error searching bookmarks by URL:', error);
+		logError('Error searching bookmarks by URL', error);
 		return [];
 	}
 };

@@ -1,5 +1,6 @@
 import { actionApi } from './action';
 import { findBookmarksByUrl } from './bookmark';
+import { logError } from './logger';
 
 const BOOKMARKED_BADGE_TEXT = '✓';
 const BOOKMARKED_BADGE_COLOR = '#7f45e5';
@@ -21,7 +22,7 @@ export const updateBadgeForTab = async (
 			});
 		}
 	} catch (error) {
-		console.error('Error updating bookmark badge:', error);
+		logError('Error updating bookmark badge', error);
 	}
 };
 

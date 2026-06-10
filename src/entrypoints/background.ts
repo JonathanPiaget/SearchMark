@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import { refreshAllBadges, updateBadgeForTab } from '../utils/badge';
 import { getBookmarkToolbarId } from '../utils/bookmark';
+import { logError } from '../utils/logger';
 
 const showNotification = (message: string) => {
 	browser.notifications.create({
@@ -30,7 +31,7 @@ const quickSave = async () => {
 
 		showNotification(i18n.t('bookmarkSaved'));
 	} catch (error) {
-		console.error('Quick save failed:', error);
+		logError('Quick save failed', error);
 		showNotification(i18n.t('bookmarkError'));
 	}
 };
@@ -43,7 +44,7 @@ export default defineBackground(() => {
 			const tab = await browser.tabs.get(tabId);
 			await updateBadgeForTab(tabId, tab.url);
 		} catch (error) {
-			console.error('Error handling tab activation:', error);
+			logError('Error handling tab activation', error);
 		}
 	});
 

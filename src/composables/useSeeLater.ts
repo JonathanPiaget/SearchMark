@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '../utils/bookmark';
+import { logError } from '../utils/logger';
 import { STORAGE_KEYS } from '../utils/storageKeys';
 
 const STORAGE_KEY = STORAGE_KEYS.seeLaterFolder;
@@ -17,7 +18,7 @@ const loadSeeLaterFolder = async (): Promise<string | null> => {
 		const result = await browser.storage.local.get(STORAGE_KEY);
 		return validateStorageValue(result[STORAGE_KEY]);
 	} catch (error) {
-		console.warn('Failed to load See Later folder preference:', error);
+		logError('Failed to load See Later folder preference', error);
 		return null;
 	}
 };
@@ -26,7 +27,7 @@ const saveSeeLaterFolder = async (folderId: string) => {
 	try {
 		await browser.storage.local.set({ [STORAGE_KEY]: folderId });
 	} catch (error) {
-		console.error('Failed to save See Later folder:', error);
+		logError('Failed to save See Later folder', error);
 	}
 };
 
@@ -35,7 +36,7 @@ const clearSeeLaterFolder = async () => {
 		await browser.storage.local.remove(STORAGE_KEY);
 		seeLaterFolderId.value = null;
 	} catch (error) {
-		console.error('Failed to clear See Later folder:', error);
+		logError('Failed to clear See Later folder', error);
 	}
 };
 
@@ -62,7 +63,7 @@ const getOrCreateSeeLaterFolder = async (): Promise<{
 				return { id: folders[0].id, title: folders[0].title || 'See Later' };
 			}
 		} catch (error) {
-			console.warn('Failed to get stored folder details:', error);
+			logError('Failed to get stored folder details', error);
 		}
 	}
 
