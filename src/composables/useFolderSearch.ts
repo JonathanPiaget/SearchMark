@@ -10,7 +10,7 @@ export interface FolderSearchResult {
 	indexes: readonly number[] | null;
 }
 
-const FUZZY_THRESHOLD = 0.3;
+export const FUZZY_THRESHOLD = 0.3;
 const FUZZY_STORAGE_KEY = STORAGE_KEYS.fuzzySearch;
 
 export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
