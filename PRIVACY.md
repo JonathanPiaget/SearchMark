@@ -1,6 +1,6 @@
 # Privacy Policy for SearchMark
 
-**Last updated:** July 23, 2025
+**Last updated:** June 10, 2026
 
 ## Data Collection
 
@@ -11,7 +11,9 @@ SearchMark does not collect, store, or transmit any personal data. All bookmark 
 SearchMark requests the following permissions:
 
 - **Bookmarks:** To read and create bookmarks in your browser
-- **Active Tab:** To get current page URL and title for saving bookmarks
+- **Tabs:** To get the current page URL and title for saving bookmarks
+- **Storage:** To save your preferences (such as theme) locally in your browser
+- **Notifications:** To show native success/error messages after saving a bookmark
 
 ## Data Usage
 
