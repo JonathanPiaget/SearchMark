@@ -16,7 +16,8 @@
 		"format": "biome format --write",
 		"lint": "biome lint --write",
 		"check": "biome check --write",
-		"test": "vitest",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"screenshots": "wxt build && node screenshots/cli.mjs"
 	},
 	"dependencies": {
