@@ -22,12 +22,13 @@ export interface UseBookmarkFolderReturn {
 	removeBookmark: (id: string) => void;
 }
 
-const fetchBookmarksFromNode = async (
-	node: Browser.bookmarks.BookmarkTreeNode,
-	basePath = '',
+const walkBookmarks = async (
+	parent: Browser.bookmarks.BookmarkTreeNode,
+	basePath: string,
+	canDescend: (child: Browser.bookmarks.BookmarkTreeNode) => boolean,
 ): Promise<BookmarkItem[]> => {
 	const children =
-		node.children || (await browser.bookmarks.getChildren(node.id));
+		parent.children || (await browser.bookmarks.getChildren(parent.id));
 	const results: BookmarkItem[] = [];
 
 	for (const child of children) {
@@ -36,18 +37,18 @@ const fetchBookmarksFromNode = async (
 				id: child.id,
 				title: child.title,
 				url: child.url,
-				parentId: child.parentId || node.id,
+				parentId: child.parentId || parent.id,
 				parentPath: basePath,
 				dateAdded: child.dateAdded,
 			});
-		} else if (child.title) {
+		} else if (canDescend(child)) {
 			const subfolderPath = basePath
 				? `${basePath} > ${child.title}`
 				: child.title;
-			const subBookmarks = await fetchBookmarksFromNode(child, subfolderPath);
-			results.push(...subBookmarks);
+			results.push(...(await walkBookmarks(child, subfolderPath, canDescend)));
 		}
 	}
+
 	return results;
 };
 
@@ -57,42 +58,6 @@ export function useBookmarkFolder(
 	const bookmarks = ref<BookmarkItem[]>([]);
 	const isLoading = ref(false);
 	const error = ref<BookmarkErrorKey | null>(null);
-
-	const fetchBookmarksRecursive = async (
-		folderId: string,
-		basePath = '',
-	): Promise<BookmarkItem[]> => {
-		const folder = folderMap.value.get(folderId);
-		if (!folder) return [];
-
-		const children = await browser.bookmarks.getChildren(folderId);
-
-		const results: BookmarkItem[] = [];
-
-		for (const child of children) {
-			if (child.url) {
-				results.push({
-					id: child.id,
-					title: child.title,
-					url: child.url,
-					parentId: child.parentId || folderId,
-					parentPath: basePath || folder.title,
-					dateAdded: child.dateAdded,
-				});
-			} else {
-				const subfolderPath = basePath
-					? `${basePath} > ${child.title}`
-					: child.title;
-				const subBookmarks = await fetchBookmarksRecursive(
-					child.id,
-					subfolderPath,
-				);
-				results.push(...subBookmarks);
-			}
-		}
-
-		return results;
-	};
 
 	const loadBookmarks = async (
 		folderId: string,
@@ -112,7 +77,11 @@ export function useBookmarkFolder(
 				: folder?.title || '';
 
 			if (recursive) {
-				bookmarks.value = await fetchBookmarksRecursive(folderId, fullPath);
+				bookmarks.value = await walkBookmarks(
+					{ id: folderId } as Browser.bookmarks.BookmarkTreeNode,
+					fullPath,
+					(child) => folderMap.value.has(child.id),
+				);
 			} else {
 				const children = await browser.bookmarks.getChildren(folderId);
 
@@ -150,9 +119,10 @@ export function useBookmarkFolder(
 
 			for (const rootFolder of rootFolders) {
 				if (!rootFolder.url && rootFolder.id !== '0') {
-					const subBookmarks = await fetchBookmarksFromNode(
+					const subBookmarks = await walkBookmarks(
 						rootFolder,
 						rootFolder.title,
+						(child) => Boolean(child.title),
 					);
 					allResults.push(...subBookmarks);
 				}
