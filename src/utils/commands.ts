@@ -1,7 +1,13 @@
-export const getOpenShortcut = async (): Promise<string | undefined> => {
+const getCommandShortcut = async (
+	names: string[],
+): Promise<string | undefined> => {
 	const commands = await browser.commands.getAll();
-	const openCommand = commands.find(
-		(c) => c.name === '_execute_action' || c.name === '_execute_browser_action',
-	);
-	return openCommand?.shortcut;
+	const command = commands.find((c) => names.includes(c.name ?? ''));
+	return command?.shortcut || undefined;
 };
+
+export const getOpenShortcut = (): Promise<string | undefined> =>
+	getCommandShortcut(['_execute_action', '_execute_browser_action']);
+
+export const getQuickSaveShortcut = (): Promise<string | undefined> =>
+	getCommandShortcut(['quick-save']);

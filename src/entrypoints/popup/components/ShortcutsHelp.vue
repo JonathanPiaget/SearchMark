@@ -30,6 +30,17 @@
           <ShortcutKeys :shortcut="item.keys" />
         </li>
       </ul>
+
+      <div class="shortcuts-footer">
+        <p class="shortcuts-hint">
+          {{ isFirefox ? i18n.t('shortcutDescriptionFirefox') : i18n.t('shortcutDescriptionChrome') }}
+        </p>
+        <button
+          v-if="!isFirefox"
+          class="shortcuts-change"
+          @click="openShortcutsPage"
+        >{{ i18n.t('shortcutChange') }}</button>
+      </div>
     </div>
   </div>
 </template>
@@ -39,19 +50,24 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import IconKeyboard from '~icons/lucide/keyboard';
 import IconX from '~icons/lucide/x';
-import { getOpenShortcut } from '../../../utils/commands';
+import { getOpenShortcut, getQuickSaveShortcut } from '../../../utils/commands';
 import ShortcutKeys from './ShortcutKeys.vue';
 
 const isOpen = ref(false);
 const isMac = navigator.userAgent.includes('Mac');
+const isFirefox = navigator.userAgent.includes('Firefox');
 const openShortcut = ref(isMac ? 'Command+Shift+X' : 'Ctrl+Shift+X');
-const quickSaveShortcut = isMac ? 'Command+Shift+B' : 'Ctrl+Shift+B';
+const quickSaveShortcut = ref(isMac ? 'Command+Shift+B' : 'Ctrl+Shift+B');
 
 const shortcuts = computed(() => [
 	{ label: i18n.t('openShortcut'), keys: openShortcut.value },
-	{ label: i18n.t('shortcutQuickSave'), keys: quickSaveShortcut },
+	{ label: i18n.t('shortcutQuickSave'), keys: quickSaveShortcut.value },
 	{ label: i18n.t('shortcutSwitchView'), keys: 'Alt+← / →' },
 ]);
+
+const openShortcutsPage = async () => {
+	await browser.tabs.create({ url: 'chrome://extensions/shortcuts' });
+};
 
 const handleKeydown = (event: KeyboardEvent) => {
 	if (event.key === 'Escape') {
@@ -72,8 +88,12 @@ const close = () => {
 };
 
 onMounted(async () => {
-	const shortcut = await getOpenShortcut();
-	if (shortcut) openShortcut.value = shortcut;
+	const [open, quickSave] = await Promise.all([
+		getOpenShortcut(),
+		getQuickSaveShortcut(),
+	]);
+	if (open) openShortcut.value = open;
+	if (quickSave) quickSaveShortcut.value = quickSave;
 });
 
 onUnmounted(() => {
@@ -194,5 +214,39 @@ onUnmounted(() => {
 .shortcuts-label {
   font-size: 14px;
   color: var(--text-primary);
+}
+
+.shortcuts-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shortcuts-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.shortcuts-change {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shortcuts-change:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 </style>

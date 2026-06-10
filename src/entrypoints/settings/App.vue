@@ -53,36 +53,6 @@
         </div>
       </section>
 
-      <section class="settings-section">
-        <h2>{{ i18n.t('shortcuts') }}</h2>
-
-        <div class="setting-item">
-          <div class="setting-info">
-            <label class="setting-label">{{ i18n.t('openShortcut') }}</label>
-            <p class="setting-description">
-              {{ isFirefox ? i18n.t('shortcutDescriptionFirefox') : i18n.t('shortcutDescriptionChrome') }}
-            </p>
-          </div>
-          <div class="shortcut-control">
-            <span v-if="shortcutKeys.length" class="shortcut-keys">
-              <template v-for="(key, index) in shortcutKeys" :key="index">
-                <kbd class="shortcut-key">
-                  <span v-if="key.symbol" class="shortcut-symbol">{{ key.symbol }}</span>
-                  <span>{{ key.label }}</span>
-                </kbd>
-                <span v-if="index < shortcutKeys.length - 1" class="shortcut-plus">+</span>
-              </template>
-            </span>
-            <span v-else class="shortcut-key shortcut-unset">{{ i18n.t('shortcutUnset') }}</span>
-            <button
-              v-if="!isFirefox"
-              class="reset-button"
-              @click="openShortcutsPage"
-            >{{ i18n.t('shortcutChange') }}</button>
-          </div>
-        </div>
-      </section>
-
       <section class="settings-section support-section">
         <h2>{{ i18n.t('support') }}</h2>
 
@@ -136,7 +106,6 @@ import IconStar from '~icons/lucide/star';
 import { useSeeLater } from '../../composables/useSeeLater';
 import type { Theme } from '../../composables/useTheme';
 import { useTheme } from '../../composables/useTheme';
-import { getOpenShortcut } from '../../utils/commands';
 import FolderSelector from '../popup/components/FolderSelector.vue';
 
 const STORE_URLS = {
@@ -154,46 +123,9 @@ const {
 } = useSeeLater();
 const selectedTheme = ref<Theme>('auto');
 const selectedFolderId = ref(seeLaterFolderId.value || '');
-const popupShortcut = ref('');
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
 
-const MODIFIER_INFO: Record<string, { symbol: string; label: string }> = {
-	command: { symbol: '⌘', label: 'Command' },
-	cmd: { symbol: '⌘', label: 'Command' },
-	'⌘': { symbol: '⌘', label: 'Command' },
-	ctrl: { symbol: '⌃', label: 'Ctrl' },
-	control: { symbol: '⌃', label: 'Ctrl' },
-	macctrl: { symbol: '⌃', label: 'Ctrl' },
-	'⌃': { symbol: '⌃', label: 'Ctrl' },
-	shift: { symbol: '⇧', label: 'Shift' },
-	'⇧': { symbol: '⇧', label: 'Shift' },
-	alt: { symbol: '⌥', label: 'Alt' },
-	option: { symbol: '⌥', label: 'Alt' },
-	'⌥': { symbol: '⌥', label: 'Alt' },
-};
-
-const MODIFIER_SYMBOLS = ['⌘', '⌃', '⇧', '⌥'];
-
-const tokenizeShortcut = (shortcut: string): string[] => {
-	if (!shortcut) return [];
-	if (shortcut.includes('+')) return shortcut.split('+');
-	const tokens: string[] = [];
-	let rest = shortcut;
-	while (rest && MODIFIER_SYMBOLS.includes(rest[0])) {
-		tokens.push(rest[0]);
-		rest = rest.slice(1);
-	}
-	if (rest) tokens.push(rest);
-	return tokens;
-};
-
-const shortcutKeys = computed(() =>
-	tokenizeShortcut(popupShortcut.value).map(
-		(token) =>
-			MODIFIER_INFO[token.toLowerCase()] ?? { symbol: '', label: token },
-	),
-);
 const storeUrl = computed(() =>
 	isFirefox.value ? STORE_URLS.firefox : STORE_URLS.chrome,
 );
@@ -209,15 +141,10 @@ const handleSeeLaterFolderChange = async (folder: {
 	await saveSeeLaterFolder(folder.id);
 };
 
-const openShortcutsPage = async () => {
-	await browser.tabs.create({ url: 'chrome://extensions/shortcuts' });
-};
-
 onMounted(async () => {
 	await initTheme();
 	await initSeeLater();
 	selectedTheme.value = currentTheme.value;
-	popupShortcut.value = (await getOpenShortcut()) ?? '';
 });
 
 const handleUseDefaultFolder = async () => {
@@ -361,56 +288,6 @@ const handleUseDefaultFolder = async () => {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--shadow-primary);
-}
-
-.shortcut-control {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.shortcut-keys {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.shortcut-key {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: 6px;
-  box-shadow: inset 0 -2px 0 var(--border-primary);
-  white-space: nowrap;
-}
-
-.shortcut-symbol {
-  font-size: 14px;
-  color: var(--accent-primary);
-}
-
-.shortcut-plus {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.shortcut-unset {
-  font-weight: 500;
-  color: var(--text-secondary);
-  box-shadow: none;
 }
 
 .folder-selector-wrapper {
