@@ -1,6 +1,6 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import { findBookmarksByUrl } from '../utils/bookmark';
+import { findBookmarksByUrl, joinFolderPath } from '../utils/bookmark';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface BookmarkLocation {
@@ -24,12 +24,7 @@ export const buildFolderPath = (
 	const folder = folderMap.get(folderId);
 	if (!folder) return '';
 
-	// If the folder has a path, combine it with the folder title
-	// Otherwise, just return the folder title
-	if (folder.path) {
-		return `${folder.path} > ${folder.title}`;
-	}
-	return folder.title;
+	return joinFolderPath(folder.path, folder.title);
 };
 
 /**

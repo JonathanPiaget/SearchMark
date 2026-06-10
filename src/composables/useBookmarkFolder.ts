@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import { joinFolderPath } from '../utils/bookmark';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface BookmarkItem {
@@ -42,9 +43,7 @@ const walkBookmarks = async (
 				dateAdded: child.dateAdded,
 			});
 		} else if (canDescend(child)) {
-			const subfolderPath = basePath
-				? `${basePath} > ${child.title}`
-				: child.title;
+			const subfolderPath = joinFolderPath(basePath, child.title);
 			results.push(...(await walkBookmarks(child, subfolderPath, canDescend)));
 		}
 	}
@@ -72,9 +71,7 @@ export function useBookmarkFolder(
 			}
 
 			const folder = folderMap.value.get(folderId);
-			const fullPath = folder?.path
-				? `${folder.path} > ${folder.title}`
-				: folder?.title || '';
+			const fullPath = joinFolderPath(folder?.path ?? '', folder?.title ?? '');
 
 			if (recursive) {
 				bookmarks.value = await walkBookmarks(

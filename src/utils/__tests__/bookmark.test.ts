@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
-import { findBookmarksByUrl, getBookmarkToolbarId } from '../bookmark';
+import {
+	findBookmarksByUrl,
+	getBookmarkToolbarId,
+	joinFolderPath,
+} from '../bookmark';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
@@ -23,6 +27,18 @@ function stubUserAgent(userAgent: string): void {
 afterEach(() => {
 	vi.restoreAllMocks();
 	vi.unstubAllGlobals();
+});
+
+describe('joinFolderPath', () => {
+	it('joins a parent path with the title using the separator', () => {
+		expect(joinFolderPath('Bar > Dev', 'Frontend')).toBe(
+			'Bar > Dev > Frontend',
+		);
+	});
+
+	it('returns the title alone when the parent path is empty', () => {
+		expect(joinFolderPath('', 'Toolbar')).toBe('Toolbar');
+	});
 });
 
 describe('findBookmarksByUrl', () => {

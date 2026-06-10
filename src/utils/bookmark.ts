@@ -1,5 +1,8 @@
 import { logError } from './logger';
 
+export const joinFolderPath = (parentPath: string, title: string): string =>
+	parentPath ? `${parentPath} > ${title}` : title;
+
 export const findBookmarksByUrl = async (url: string) => {
 	if (!url) return [];
 	try {

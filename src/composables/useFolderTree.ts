@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import type { Browser } from 'wxt/browser';
+import { joinFolderPath } from '../utils/bookmark';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
@@ -31,9 +32,7 @@ export const buildFolderTree = (
 		folders.push(folder);
 
 		if (node.children && node.children.length > 0) {
-			const currentPath = parentPath
-				? `${parentPath} > ${node.title}`
-				: node.title;
+			const currentPath = joinFolderPath(parentPath, node.title);
 
 			const childFolders = buildFolderTree(node.children, currentPath);
 
