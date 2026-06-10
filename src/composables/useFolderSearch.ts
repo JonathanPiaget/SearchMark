@@ -2,7 +2,6 @@ import fuzzysort from 'fuzzysort';
 import type { Ref } from 'vue';
 import { ref, watch } from 'vue';
 import { highlightText } from '../utils/highlight';
-import { STORAGE_KEYS } from '../utils/storageKeys';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface FolderSearchResult {
@@ -11,7 +10,10 @@ export interface FolderSearchResult {
 }
 
 export const FUZZY_THRESHOLD = 0.3;
-const FUZZY_STORAGE_KEY = STORAGE_KEYS.fuzzySearch;
+const fuzzySearchItem = storage.defineItem<boolean>(
+	'local:searchmark_fuzzy_search',
+	{ fallback: true },
+);
 
 export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	const searchQuery = ref('');
@@ -19,14 +21,11 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	const isFuzzyEnabled = ref(true);
 
 	const loadFuzzyPreference = async (): Promise<void> => {
-		const result = await browser.storage.local.get(FUZZY_STORAGE_KEY);
-		if (result[FUZZY_STORAGE_KEY] !== undefined) {
-			isFuzzyEnabled.value = Boolean(result[FUZZY_STORAGE_KEY]);
-		}
+		isFuzzyEnabled.value = await fuzzySearchItem.getValue();
 	};
 
 	watch(isFuzzyEnabled, (newValue) => {
-		browser.storage.local.set({ [FUZZY_STORAGE_KEY]: newValue });
+		fuzzySearchItem.setValue(newValue);
 	});
 
 	const searchFolders = (): void => {
