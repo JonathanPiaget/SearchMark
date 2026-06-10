@@ -3,10 +3,10 @@ import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '../utils/bookmark';
 import { logError } from '../utils/logger';
 import { STORAGE_KEYS } from '../utils/storageKeys';
+import { useStorageSync } from './useStorageSync';
 
 const STORAGE_KEY = STORAGE_KEYS.seeLaterFolder;
 const seeLaterFolderId = ref<string | null>(null);
-let storageListenerInitialized = false;
 
 // Type guard for storage values
 const validateStorageValue = (value: unknown): string | null => {
@@ -91,16 +91,9 @@ export const useSeeLater = () => {
 			await clearSeeLaterFolder();
 		}
 
-		if (!storageListenerInitialized && browser?.storage) {
-			browser.storage.onChanged.addListener((changes, areaName) => {
-				if (areaName === 'local' && changes[STORAGE_KEY]) {
-					seeLaterFolderId.value = validateStorageValue(
-						changes[STORAGE_KEY].newValue,
-					);
-				}
-			});
-			storageListenerInitialized = true;
-		}
+		useStorageSync(STORAGE_KEY, (newValue) => {
+			seeLaterFolderId.value = validateStorageValue(newValue);
+		});
 	};
 
 	return {

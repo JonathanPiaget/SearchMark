@@ -1,15 +1,13 @@
 import { nextTick, ref } from 'vue';
 import { logError } from '../utils/logger';
 import { STORAGE_KEYS } from '../utils/storageKeys';
+import { useStorageSync } from './useStorageSync';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
 const STORAGE_KEY = STORAGE_KEYS.theme;
 const currentTheme = ref<Theme>('auto');
 const appliedTheme = ref<'light' | 'dark'>('light');
-
-// Track if listeners have been initialized to prevent duplicates
-let storageListenerInitialized = false;
 
 /**
  * Get system color scheme preference
@@ -185,22 +183,11 @@ export const useTheme = () => {
 		}
 
 		// Watch for external theme changes (e.g., from settings page)
-		// Initialize only once to prevent duplicate listeners
-		if (
-			!storageListenerInitialized &&
-			typeof browser !== 'undefined' &&
-			browser.storage
-		) {
-			browser.storage.onChanged.addListener((changes, areaName) => {
-				if (areaName === 'local' && changes[STORAGE_KEY]) {
-					const newTheme = changes[STORAGE_KEY].newValue as Theme;
-					currentTheme.value = newTheme;
-					const computed = calculateAppliedTheme(newTheme);
-					applyTheme(computed);
-				}
-			});
-			storageListenerInitialized = true;
-		}
+		useStorageSync(STORAGE_KEY, (newValue) => {
+			const newTheme = newValue as Theme;
+			currentTheme.value = newTheme;
+			applyTheme(calculateAppliedTheme(newTheme));
+		});
 
 		return mediaQueryCleanup;
 	};
