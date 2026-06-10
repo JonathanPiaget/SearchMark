@@ -86,12 +86,17 @@ import type { BookmarkItem } from '../../../composables/useBookmarkFolder';
 import { useBookmarkFolder } from '../../../composables/useBookmarkFolder';
 import { FUZZY_THRESHOLD } from '../../../composables/useFolderSearch';
 import { useFolderTree } from '../../../composables/useFolderTree';
-import { STORAGE_KEYS } from '../../../utils/storageKeys';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
 
-const RECURSIVE_STORAGE_KEY = STORAGE_KEYS.recursiveSearch;
-const FUZZY_FILTER_STORAGE_KEY = STORAGE_KEYS.fuzzyFilter;
+const recursiveSearchItem = storage.defineItem<boolean>(
+	'local:searchmark_recursive_search',
+	{ fallback: true },
+);
+const fuzzyFilterItem = storage.defineItem<boolean>(
+	'local:searchmark_fuzzy_filter',
+	{ fallback: true },
+);
 const MAX_RESULTS = 100;
 
 const selectedFolderId = ref('');
@@ -177,9 +182,7 @@ const hasMoreResults = computed(
 );
 
 const saveFuzzyPreference = () => {
-	browser.storage.local.set({
-		[FUZZY_FILTER_STORAGE_KEY]: isFuzzyFilter.value,
-	});
+	fuzzyFilterItem.setValue(isFuzzyFilter.value);
 };
 
 const ensureAllBookmarksLoaded = async () => {
@@ -220,22 +223,12 @@ defineExpose({ focus });
 
 onMounted(async () => {
 	await loadFolders();
-	const result = await browser.storage.local.get([
-		RECURSIVE_STORAGE_KEY,
-		FUZZY_FILTER_STORAGE_KEY,
-	]);
-	if (result[RECURSIVE_STORAGE_KEY] !== undefined) {
-		isRecursive.value = Boolean(result[RECURSIVE_STORAGE_KEY]);
-	}
-	if (result[FUZZY_FILTER_STORAGE_KEY] !== undefined) {
-		isFuzzyFilter.value = Boolean(result[FUZZY_FILTER_STORAGE_KEY]);
-	}
+	isRecursive.value = await recursiveSearchItem.getValue();
+	isFuzzyFilter.value = await fuzzyFilterItem.getValue();
 });
 
 const handleRecursiveChange = async () => {
-	await browser.storage.local.set({
-		[RECURSIVE_STORAGE_KEY]: isRecursive.value,
-	});
+	await recursiveSearchItem.setValue(isRecursive.value);
 	if (selectedFolderId.value) {
 		await loadBookmarks(selectedFolderId.value, isRecursive.value);
 	}
