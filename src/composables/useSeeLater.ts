@@ -2,10 +2,12 @@ import { ref } from 'vue';
 import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '../utils/bookmark';
 import { logError } from '../utils/logger';
-import { STORAGE_KEYS } from '../utils/storageKeys';
-import { useStorageSync } from './useStorageSync';
 
-const STORAGE_KEY = STORAGE_KEYS.seeLaterFolder;
+const seeLaterFolderItem = storage.defineItem<string | null>(
+	'local:searchmark_seeLaterFolder',
+	{ fallback: null },
+);
+
 const seeLaterFolderId = ref<string | null>(null);
 
 // Type guard for storage values
@@ -14,30 +16,16 @@ const validateStorageValue = (value: unknown): string | null => {
 };
 
 const loadSeeLaterFolder = async (): Promise<string | null> => {
-	try {
-		const result = await browser.storage.local.get(STORAGE_KEY);
-		return validateStorageValue(result[STORAGE_KEY]);
-	} catch (error) {
-		logError('Failed to load See Later folder preference', error);
-		return null;
-	}
+	return validateStorageValue(await seeLaterFolderItem.getValue());
 };
 
 const saveSeeLaterFolder = async (folderId: string) => {
-	try {
-		await browser.storage.local.set({ [STORAGE_KEY]: folderId });
-	} catch (error) {
-		logError('Failed to save See Later folder', error);
-	}
+	await seeLaterFolderItem.setValue(folderId);
 };
 
 const clearSeeLaterFolder = async () => {
-	try {
-		await browser.storage.local.remove(STORAGE_KEY);
-		seeLaterFolderId.value = null;
-	} catch (error) {
-		logError('Failed to clear See Later folder', error);
-	}
+	await seeLaterFolderItem.removeValue();
+	seeLaterFolderId.value = null;
 };
 
 const verifyFolderExists = async (folderId: string): Promise<boolean> => {
@@ -91,7 +79,7 @@ export const useSeeLater = () => {
 			await clearSeeLaterFolder();
 		}
 
-		useStorageSync(STORAGE_KEY, (newValue) => {
+		seeLaterFolderItem.watch((newValue) => {
 			seeLaterFolderId.value = validateStorageValue(newValue);
 		});
 	};

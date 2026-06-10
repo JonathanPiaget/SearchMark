@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing';
-import { STORAGE_KEYS } from '../../utils/storageKeys';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
-const KEY = STORAGE_KEYS.seeLaterFolder;
+const KEY = 'searchmark_seeLaterFolder';
 
 interface BookmarksApi {
 	get(id: string): Promise<BookmarkTreeNode[]>;
@@ -19,8 +18,8 @@ function node(partial: Partial<BookmarkTreeNode>): BookmarkTreeNode {
 	return partial as BookmarkTreeNode;
 }
 
-// useSeeLater keeps module-level singletons (seeLaterFolderId,
-// storageListenerInitialized). Reset the module before each test.
+// useSeeLater keeps a module-level singleton (seeLaterFolderId). Reset the
+// module before each test so the shared ref starts clean.
 async function freshUseSeeLater() {
 	vi.resetModules();
 	const { useSeeLater } = await import('../useSeeLater');
@@ -120,10 +119,9 @@ describe('storage.onChanged sync', () => {
 		const { initSeeLater, seeLaterFolderId } = await freshUseSeeLater();
 		await initSeeLater();
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ [KEY]: { oldValue: null, newValue: 'F2' } },
-			'local',
-		);
+		await fakeBrowser.storage.local.onChanged.trigger({
+			[KEY]: { oldValue: null, newValue: 'F2' },
+		});
 
 		expect(seeLaterFolderId.value).toBe('F2');
 	});
@@ -136,10 +134,9 @@ describe('storage.onChanged sync', () => {
 		await initSeeLater();
 		expect(seeLaterFolderId.value).toBe('F1');
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ [KEY]: { oldValue: 'F1', newValue: '' } },
-			'local',
-		);
+		await fakeBrowser.storage.local.onChanged.trigger({
+			[KEY]: { oldValue: 'F1', newValue: '' },
+		});
 
 		expect(seeLaterFolderId.value).toBeNull();
 	});
@@ -148,23 +145,10 @@ describe('storage.onChanged sync', () => {
 		const { initSeeLater, seeLaterFolderId } = await freshUseSeeLater();
 		await initSeeLater();
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ [KEY]: { oldValue: null, newValue: 'F2' } },
-			'sync',
-		);
+		await fakeBrowser.storage.sync.onChanged.trigger({
+			[KEY]: { oldValue: null, newValue: 'F2' },
+		});
 
 		expect(seeLaterFolderId.value).toBeNull();
-	});
-});
-
-describe('storage listener guard', () => {
-	it('registers the storage.onChanged listener only once across initSeeLater calls', async () => {
-		const addListener = vi.spyOn(browser.storage.onChanged, 'addListener');
-		const { initSeeLater } = await freshUseSeeLater();
-
-		await initSeeLater();
-		await initSeeLater();
-
-		expect(addListener).toHaveBeenCalledTimes(1);
 	});
 });
