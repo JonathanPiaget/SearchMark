@@ -1,11 +1,11 @@
 import { nextTick, ref } from 'vue';
-import { logError } from '../utils/logger';
-import { STORAGE_KEYS } from '../utils/storageKeys';
-import { useStorageSync } from './useStorageSync';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
-const STORAGE_KEY = STORAGE_KEYS.theme;
+const themeItem = storage.defineItem<Theme>('local:searchmark_theme', {
+	fallback: 'auto',
+});
+
 const currentTheme = ref<Theme>('auto');
 const appliedTheme = ref<'light' | 'dark'>('light');
 
@@ -101,31 +101,6 @@ const applyThemeAnimated = async (
 };
 
 /**
- * Load theme from storage
- */
-const loadTheme = async (): Promise<Theme> => {
-	try {
-		const result = await browser.storage.local.get(STORAGE_KEY);
-		const savedTheme = result[STORAGE_KEY] as Theme | undefined;
-		return savedTheme || 'auto';
-	} catch (error) {
-		logError('Failed to load theme preference, using auto', error);
-		return 'auto';
-	}
-};
-
-/**
- * Save theme to storage
- */
-const saveTheme = async (theme: Theme) => {
-	try {
-		await browser.storage.local.set({ [STORAGE_KEY]: theme });
-	} catch (error) {
-		logError('Failed to save theme', error);
-	}
-};
-
-/**
  * Composable for theme management
  */
 export const useTheme = () => {
@@ -136,7 +111,7 @@ export const useTheme = () => {
 		currentTheme.value = theme;
 		const computed = calculateAppliedTheme(theme);
 		await applyThemeAnimated(computed, event);
-		await saveTheme(theme);
+		await themeItem.setValue(theme);
 	};
 
 	/**
@@ -152,7 +127,7 @@ export const useTheme = () => {
 	 */
 	const initTheme = async () => {
 		// Load saved preference
-		const saved = await loadTheme();
+		const saved = await themeItem.getValue();
 		currentTheme.value = saved;
 
 		// Apply initial theme
@@ -183,8 +158,7 @@ export const useTheme = () => {
 		}
 
 		// Watch for external theme changes (e.g., from settings page)
-		useStorageSync(STORAGE_KEY, (newValue) => {
-			const newTheme = newValue as Theme;
+		themeItem.watch((newTheme) => {
 			currentTheme.value = newTheme;
 			applyTheme(calculateAppliedTheme(newTheme));
 		});

@@ -1,12 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing';
-import { STORAGE_KEYS } from '../../utils/storageKeys';
 
-const KEY = STORAGE_KEYS.theme;
+const KEY = 'searchmark_theme';
 
-// useTheme keeps module-level singletons (currentTheme, appliedTheme,
-// storageListenerInitialized). Reset the module before each test so the guard
-// and the shared refs start clean.
+// useTheme keeps module-level singletons (currentTheme, appliedTheme). Reset the
+// module before each test so the shared refs start clean.
 async function freshUseTheme() {
 	vi.resetModules();
 	const { useTheme } = await import('../useTheme');
@@ -65,10 +63,9 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ [KEY]: { oldValue: 'auto', newValue: 'dark' } },
-			'local',
-		);
+		await fakeBrowser.storage.local.onChanged.trigger({
+			[KEY]: { oldValue: 'auto', newValue: 'dark' },
+		});
 
 		expect(currentTheme.value).toBe('dark');
 	});
@@ -77,10 +74,9 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ [KEY]: { oldValue: 'auto', newValue: 'dark' } },
-			'sync',
-		);
+		await fakeBrowser.storage.sync.onChanged.trigger({
+			[KEY]: { oldValue: 'auto', newValue: 'dark' },
+		});
 
 		expect(currentTheme.value).toBe('auto');
 	});
@@ -89,23 +85,10 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.onChanged.trigger(
-			{ somethingElse: { oldValue: 1, newValue: 2 } },
-			'local',
-		);
+		await fakeBrowser.storage.local.onChanged.trigger({
+			somethingElse: { oldValue: 1, newValue: 2 },
+		});
 
 		expect(currentTheme.value).toBe('auto');
-	});
-});
-
-describe('storage listener guard', () => {
-	it('registers the storage.onChanged listener only once across initTheme calls', async () => {
-		const addListener = vi.spyOn(browser.storage.onChanged, 'addListener');
-		const { initTheme } = await freshUseTheme();
-
-		await initTheme();
-		await initTheme();
-
-		expect(addListener).toHaveBeenCalledTimes(1);
 	});
 });
