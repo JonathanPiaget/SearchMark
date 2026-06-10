@@ -709,16 +709,6 @@ onMounted(async () => {
   transition: color 0.2s ease;
 }
 
-.child-indicator {
-  font-size: 11px;
-  color: var(--text-secondary);
-  background: var(--bg-tertiary);
-  padding: 1px 4px;
-  border-radius: 3px;
-  margin-left: auto;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
 .folder-breadcrumb {
   font-size: 12px;
   color: var(--text-secondary);
