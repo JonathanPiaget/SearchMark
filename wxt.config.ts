@@ -10,7 +10,8 @@ export default defineConfig({
 	}),
 	manifest: ({ manifestVersion }) => ({
 		default_locale: 'en',
-		permissions: ['bookmarks', 'tabs', 'storage', 'notifications'],
+		permissions: ['bookmarks', 'tabs', 'storage'],
+		optional_permissions: ['notifications'],
 		options_ui: {
 			page: 'settings.html',
 			open_in_tab: true,

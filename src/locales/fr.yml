@@ -27,6 +27,8 @@ themeDescription: Choisissez l'apparence de SearchMark
 themeAuto: Auto (suivre le système)
 themeLight: Clair
 themeDark: Sombre
+notifications: Notifications
+notificationsDescription: Afficher une notification système après l'enregistrement d'un marque-page
 alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Marque-page supprimé avec succès
 delete: Supprimer le marque-page

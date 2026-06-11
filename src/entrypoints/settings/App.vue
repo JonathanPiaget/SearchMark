@@ -51,6 +51,20 @@
             />
           </div>
         </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="notifications-toggle" class="setting-label">{{ i18n.t('notifications') }}</label>
+            <p class="setting-description">{{ i18n.t('notificationsDescription') }}</p>
+          </div>
+          <input
+            id="notifications-toggle"
+            v-model="notificationsEnabled"
+            type="checkbox"
+            class="toggle-checkbox"
+            @change="handleNotificationsToggle"
+          >
+        </div>
       </section>
 
       <section class="settings-section support-section">
@@ -123,6 +137,7 @@ const {
 } = useSeeLater();
 const selectedTheme = ref<Theme>('auto');
 const selectedFolderId = ref(seeLaterFolderId.value || '');
+const notificationsEnabled = ref(false);
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
 
@@ -141,10 +156,23 @@ const handleSeeLaterFolderChange = async (folder: {
 	await saveSeeLaterFolder(folder.id);
 };
 
+const handleNotificationsToggle = async () => {
+	if (notificationsEnabled.value) {
+		notificationsEnabled.value = await browser.permissions.request({
+			permissions: ['notifications'],
+		});
+	} else {
+		await browser.permissions.remove({ permissions: ['notifications'] });
+	}
+};
+
 onMounted(async () => {
 	await initTheme();
 	await initSeeLater();
 	selectedTheme.value = currentTheme.value;
+	notificationsEnabled.value = await browser.permissions.contains({
+		permissions: ['notifications'],
+	});
 });
 
 const handleUseDefaultFolder = async () => {
@@ -240,6 +268,14 @@ const handleUseDefaultFolder = async () => {
   color: var(--text-secondary);
   margin: 0;
   transition: color 0.2s ease;
+}
+
+.toggle-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .theme-select {

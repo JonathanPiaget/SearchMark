@@ -27,6 +27,8 @@ themeDescription: Choose how SearchMark looks
 themeAuto: Auto (follow system)
 themeLight: Light
 themeDark: Dark
+notifications: Notifications
+notificationsDescription: Show a system notification after saving a bookmark
 alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark

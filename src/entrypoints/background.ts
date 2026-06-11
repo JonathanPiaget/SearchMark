@@ -4,7 +4,13 @@ import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { logError } from '@/utils/logger';
 import type { ExtensionMessage } from '@/utils/notify';
 
-const showNotification = (message: string) => {
+const showNotification = async (message: string) => {
+	const granted = await browser.permissions.contains({
+		permissions: ['notifications'],
+	});
+	if (!granted) {
+		return;
+	}
 	browser.notifications.create({
 		type: 'basic',
 		iconUrl: browser.runtime.getURL('/icon/128.png'),
