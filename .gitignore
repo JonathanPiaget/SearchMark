@@ -21,6 +21,3 @@ stats-*.json
 *.njsproj
 *.sln
 *.sw?
-
-CLAUDE.md
-.claude
