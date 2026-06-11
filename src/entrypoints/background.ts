@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import { refreshAllBadges, updateBadgeForTab } from '../utils/badge';
 import { getBookmarkToolbarId } from '../utils/bookmark';
 import { logError } from '../utils/logger';
+import type { ExtensionMessage } from '../utils/notify';
 
 const showNotification = (message: string) => {
 	browser.notifications.create({
@@ -64,7 +65,7 @@ export default defineBackground(() => {
 		}
 	});
 
-	browser.runtime.onMessage.addListener((message) => {
+	browser.runtime.onMessage.addListener((message: ExtensionMessage) => {
 		if (message.type === 'NOTIFY') {
 			showNotification(message.message);
 		}
