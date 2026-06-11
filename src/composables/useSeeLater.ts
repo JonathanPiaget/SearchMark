@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
-import { getBookmarkToolbarId } from '../utils/bookmark';
-import { logError } from '../utils/logger';
+import { getBookmarkToolbarId } from '@/utils/bookmark';
+import { logError } from '@/utils/logger';
 
 const seeLaterFolderItem = storage.defineItem<string | null>(
 	'local:searchmark_seeLaterFolder',

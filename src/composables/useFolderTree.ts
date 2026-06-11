@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import type { Browser } from 'wxt/browser';
-import { joinFolderPath } from '../utils/bookmark';
+import { joinFolderPath } from '@/utils/bookmark';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 

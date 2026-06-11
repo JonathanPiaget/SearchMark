@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createFolder } from '../../test-utils/bookmarkFactory';
-import { buildFolderPath } from '../useBookmarkSearch';
-import type { BookmarkFolder } from '../useFolderTree';
+import { buildFolderPath } from '@/composables/useBookmarkSearch';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { createFolder } from '@/test-utils/bookmarkFactory';
 
 describe('buildFolderPath', () => {
 	it('returns empty string when folder not found', () => {

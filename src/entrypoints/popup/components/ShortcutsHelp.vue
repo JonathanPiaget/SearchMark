@@ -48,9 +48,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { getOpenShortcut, getQuickSaveShortcut } from '@/utils/commands';
 import IconKeyboard from '~icons/lucide/keyboard';
 import IconX from '~icons/lucide/x';
-import { getOpenShortcut, getQuickSaveShortcut } from '../../../utils/commands';
 import ShortcutKeys from './ShortcutKeys.vue';
 
 const isOpen = ref(false);

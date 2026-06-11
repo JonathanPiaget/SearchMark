@@ -81,11 +81,11 @@ import fuzzysort from 'fuzzysort';
 import type { ComponentPublicInstance } from 'vue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import type { BookmarkItem } from '@/composables/useBookmarkFolder';
+import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
+import { FUZZY_THRESHOLD } from '@/composables/useFolderSearch';
+import { useFolderTree } from '@/composables/useFolderTree';
 import IconX from '~icons/lucide/x';
-import type { BookmarkItem } from '../../../composables/useBookmarkFolder';
-import { useBookmarkFolder } from '../../../composables/useBookmarkFolder';
-import { FUZZY_THRESHOLD } from '../../../composables/useFolderSearch';
-import { useFolderTree } from '../../../composables/useFolderTree';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
 

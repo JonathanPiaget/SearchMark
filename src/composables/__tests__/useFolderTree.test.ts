@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { buildFolderTree } from '@/composables/useFolderTree';
 import {
 	createNestedTreeNodes,
 	createSimpleTreeNodes,
-} from '../../test-utils/bookmarkFactory';
-import { buildFolderTree } from '../useFolderTree';
+} from '@/test-utils/bookmarkFactory';
 
 describe('buildFolderTree', () => {
 	it('filters out bookmarks and returns only folders', () => {

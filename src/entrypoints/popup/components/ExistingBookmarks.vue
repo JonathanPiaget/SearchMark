@@ -37,12 +37,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkActions } from '@/composables/useBookmarkActions';
+import type { BookmarkLocation } from '@/composables/useBookmarkSearch';
 import IconFolder from '~icons/lucide/folder';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconPin from '~icons/lucide/pin';
 import IconTrash from '~icons/lucide/trash-2';
-import { useBookmarkActions } from '../../../composables/useBookmarkActions';
-import type { BookmarkLocation } from '../../../composables/useBookmarkSearch';
 import ConfirmDialog from './ConfirmDialog.vue';
 
 interface Props {

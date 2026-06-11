@@ -14,9 +14,9 @@
 
 <script lang="ts" setup>
 import { i18n } from '#i18n';
+import { useTheme } from '@/composables/useTheme';
 import IconMoon from '~icons/lucide/moon';
 import IconSun from '~icons/lucide/sun';
-import { useTheme } from '../../../composables/useTheme';
 
 const { appliedTheme, toggleTheme } = useTheme();
 </script>

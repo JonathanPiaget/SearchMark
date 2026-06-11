@@ -102,11 +102,11 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useSeeLater } from '@/composables/useSeeLater';
+import type { Theme } from '@/composables/useTheme';
+import { useTheme } from '@/composables/useTheme';
+import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
 import IconStar from '~icons/lucide/star';
-import { useSeeLater } from '../../composables/useSeeLater';
-import type { Theme } from '../../composables/useTheme';
-import { useTheme } from '../../composables/useTheme';
-import FolderSelector from '../popup/components/FolderSelector.vue';
 
 const STORE_URLS = {
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/searchmark/',

@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
-import { notify } from '../utils/notify';
+import { notify } from '@/utils/notify';
 
 export function useBookmarkActions() {
 	const isDeleting = ref(false);

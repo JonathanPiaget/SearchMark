@@ -1,5 +1,5 @@
 import type { Browser } from 'wxt/browser';
-import type { BookmarkFolder } from '../composables/useFolderTree';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 

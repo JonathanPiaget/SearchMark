@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import type { Browser } from 'wxt/browser';
-import { useBookmarkFolder } from '../useBookmarkFolder';
-import type { BookmarkFolder } from '../useFolderTree';
+import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 

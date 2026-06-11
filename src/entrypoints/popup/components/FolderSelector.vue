@@ -153,6 +153,12 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
+import { useDropdownFit } from '@/composables/useDropdownFit';
+import { useFolderSearch } from '@/composables/useFolderSearch';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { useFolderTree } from '@/composables/useFolderTree';
+import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation';
+import { getBookmarkToolbarId } from '@/utils/bookmark';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';
@@ -160,12 +166,6 @@ import IconLibrary from '~icons/lucide/library';
 import IconSearchX from '~icons/lucide/search-x';
 import IconSpace from '~icons/lucide/space';
 import IconX from '~icons/lucide/x';
-import { useDropdownFit } from '../../../composables/useDropdownFit';
-import { useFolderSearch } from '../../../composables/useFolderSearch';
-import type { BookmarkFolder } from '../../../composables/useFolderTree';
-import { useFolderTree } from '../../../composables/useFolderTree';
-import { useKeyboardNavigation } from '../../../composables/useKeyboardNavigation';
-import { getBookmarkToolbarId } from '../../../utils/bookmark';
 
 interface Props {
 	modelValue: string;

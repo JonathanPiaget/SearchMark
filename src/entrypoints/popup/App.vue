@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
+import { useFolderTree } from '@/composables/useFolderTree';
+import { useSeeLater } from '@/composables/useSeeLater';
+import { useTheme } from '@/composables/useTheme';
+import { getBookmarkToolbarId } from '@/utils/bookmark';
+import { notify } from '@/utils/notify';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
-import { useBookmarkSearch } from '../../composables/useBookmarkSearch';
-import { useFolderTree } from '../../composables/useFolderTree';
-import { useSeeLater } from '../../composables/useSeeLater';
-import { useTheme } from '../../composables/useTheme';
-import { getBookmarkToolbarId } from '../../utils/bookmark';
-import { notify } from '../../utils/notify';
 import BookmarkForm from './components/BookmarkForm.vue';
 import ExistingBookmarks from './components/ExistingBookmarks.vue';
 import FolderSelector from './components/FolderSelector.vue';

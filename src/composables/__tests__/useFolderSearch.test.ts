@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { ref } from 'vue';
-import { createWorkBookmarks } from '../../test-utils/bookmarkFactory';
-import { useFolderSearch } from '../useFolderSearch';
-import type { BookmarkFolder } from '../useFolderTree';
+import { useFolderSearch } from '@/composables/useFolderSearch';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { createWorkBookmarks } from '@/test-utils/bookmarkFactory';
 
 describe('useFolderSearch', () => {
 	describe('exact mode', () => {

@@ -3,7 +3,7 @@ import {
 	highlightByIndexes,
 	highlightBySubstring,
 	highlightText,
-} from '../highlight';
+} from '@/utils/highlight';
 
 describe('highlightByIndexes', () => {
 	it('returns a single non-highlighted part when there are no indexes', () => {

@@ -4,7 +4,7 @@ import {
 	findBookmarksByUrl,
 	getBookmarkToolbarId,
 	joinFolderPath,
-} from '../bookmark';
+} from '@/utils/bookmark';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 

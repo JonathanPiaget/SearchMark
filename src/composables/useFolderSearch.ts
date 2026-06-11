@@ -1,7 +1,7 @@
 import fuzzysort from 'fuzzysort';
 import type { Ref } from 'vue';
 import { ref, watch } from 'vue';
-import { highlightText } from '../utils/highlight';
+import { highlightText } from '@/utils/highlight';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface FolderSearchResult {

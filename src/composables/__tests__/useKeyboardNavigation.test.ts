@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { BookmarkFolder } from '../useFolderTree';
-import { useKeyboardNavigation } from '../useKeyboardNavigation';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation';
 
 function folder(id: string, children?: BookmarkFolder[]): BookmarkFolder {
 	return { id, title: id, path: '', children };

@@ -15,9 +15,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import { useSeeLater } from '@/composables/useSeeLater';
+import { notify } from '@/utils/notify';
 import IconClock from '~icons/lucide/clock';
-import { useSeeLater } from '../../../composables/useSeeLater';
-import { notify } from '../../../utils/notify';
 
 const { getOrCreateSeeLaterFolder } = useSeeLater();
 const isLoading = ref(false);
