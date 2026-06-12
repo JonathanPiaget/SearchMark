@@ -30,25 +30,30 @@ const walkBookmarks = async (
 ): Promise<BookmarkItem[]> => {
 	const children =
 		parent.children || (await browser.bookmarks.getChildren(parent.id));
-	const results: BookmarkItem[] = [];
 
-	for (const child of children) {
-		if (child.url) {
-			results.push({
-				id: child.id,
-				title: child.title,
-				url: child.url,
-				parentId: child.parentId || parent.id,
-				parentPath: basePath,
-				dateAdded: child.dateAdded,
-			});
-		} else if (canDescend(child)) {
-			const subfolderPath = joinFolderPath(basePath, child.title);
-			results.push(...(await walkBookmarks(child, subfolderPath, canDescend)));
-		}
-	}
+	const results = await Promise.all(
+		children.map((child): Promise<BookmarkItem[]> | BookmarkItem[] => {
+			if (child.url) {
+				return [
+					{
+						id: child.id,
+						title: child.title,
+						url: child.url,
+						parentId: child.parentId || parent.id,
+						parentPath: basePath,
+						dateAdded: child.dateAdded,
+					},
+				];
+			}
+			if (canDescend(child)) {
+				const subfolderPath = joinFolderPath(basePath, child.title);
+				return walkBookmarks(child, subfolderPath, canDescend);
+			}
+			return [];
+		}),
+	);
 
-	return results;
+	return results.flat();
 };
 
 export function useBookmarkFolder(
@@ -95,21 +100,19 @@ export function useBookmarkFolder(
 	const loadAllBookmarks = (): Promise<void> =>
 		runLoad(async () => {
 			const [tree] = await browser.bookmarks.getTree();
-			const rootFolders = tree.children || [];
-			const allResults: BookmarkItem[] = [];
+			const rootFolders = (tree.children || []).filter(
+				(rootFolder) => !rootFolder.url && rootFolder.id !== '0',
+			);
 
-			for (const rootFolder of rootFolders) {
-				if (!rootFolder.url && rootFolder.id !== '0') {
-					const subBookmarks = await walkBookmarks(
-						rootFolder,
-						rootFolder.title,
-						(child) => Boolean(child.title),
-					);
-					allResults.push(...subBookmarks);
-				}
-			}
+			const results = await Promise.all(
+				rootFolders.map((rootFolder) =>
+					walkBookmarks(rootFolder, rootFolder.title, (child) =>
+						Boolean(child.title),
+					),
+				),
+			);
 
-			return allResults;
+			return results.flat();
 		});
 
 	const removeBookmark = (id: string) => {
