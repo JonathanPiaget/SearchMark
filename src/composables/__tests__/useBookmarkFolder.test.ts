@@ -31,6 +31,12 @@ function stubChildren(byId: Record<string, BookmarkTreeNode[]>) {
 	);
 }
 
+function stubTree(rootChildren: BookmarkTreeNode[]) {
+	vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
+		node({ id: 'root', title: '', children: rootChildren }),
+	]);
+}
+
 afterEach(() => {
 	vi.restoreAllMocks();
 });
@@ -139,26 +145,20 @@ describe('loadBookmarks — direct (recursive = false)', () => {
 
 describe('loadAllBookmarks', () => {
 	it('walks root folders, skipping the root id "0" and url nodes', async () => {
-		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
+		stubTree([
 			node({
-				id: 'root',
-				title: '',
+				id: '1',
+				title: 'Toolbar',
 				children: [
-					node({
-						id: '1',
-						title: 'Toolbar',
-						children: [
-							node({ id: 'b1', title: 'A', url: 'https://a', parentId: '1' }),
-						],
-					}),
-					node({
-						id: '0',
-						title: 'Zero',
-						children: [node({ id: 'b2', title: 'B', url: 'https://b' })],
-					}),
-					node({ id: 'u', title: 'U', url: 'https://u' }),
+					node({ id: 'b1', title: 'A', url: 'https://a', parentId: '1' }),
 				],
 			}),
+			node({
+				id: '0',
+				title: 'Zero',
+				children: [node({ id: 'b2', title: 'B', url: 'https://b' })],
+			}),
+			node({ id: 'u', title: 'U', url: 'https://u' }),
 		]);
 
 		const { loadAllBookmarks, bookmarks: items } = useBookmarkFolder(
@@ -172,26 +172,20 @@ describe('loadAllBookmarks', () => {
 	});
 
 	it('builds nested parentPath from the walked node titles', async () => {
-		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
+		stubTree([
 			node({
-				id: 'root',
-				title: '',
+				id: '1',
+				title: 'Toolbar',
 				children: [
 					node({
-						id: '1',
-						title: 'Toolbar',
+						id: '2',
+						title: 'Dev',
 						children: [
 							node({
-								id: '2',
-								title: 'Dev',
-								children: [
-									node({
-										id: 'b1',
-										title: 'A',
-										url: 'https://a',
-										parentId: '2',
-									}),
-								],
+								id: 'b1',
+								title: 'A',
+								url: 'https://a',
+								parentId: '2',
 							}),
 						],
 					}),

@@ -105,46 +105,6 @@ export function createMultilingualFolders(): BookmarkFolder[] {
 }
 
 /**
- * Preset: Nested folder structure (tests hierarchy and path)
- */
-export function createNestedFolders(): BookmarkFolder[] {
-	return [
-		createFolder({
-			id: '1',
-			title: 'Books',
-			path: '',
-			children: [
-				createFolder({
-					id: '2',
-					title: 'Fiction',
-					path: 'Books',
-					parentId: '1',
-				}),
-				createFolder({
-					id: '3',
-					title: 'Non-Fiction',
-					path: 'Books',
-					parentId: '1',
-				}),
-			],
-		}),
-		createFolder({ id: '2', title: 'Fiction', path: 'Books', parentId: '1' }),
-		createFolder({
-			id: '3',
-			title: 'Non-Fiction',
-			path: 'Books',
-			parentId: '1',
-		}),
-		createFolder({
-			id: '4',
-			title: 'Sci-Fi',
-			path: 'Books > Fiction',
-			parentId: '2',
-		}),
-	];
-}
-
-/**
  * Preset: Empty/minimal folders (edge cases)
  */
 export function createEdgeCaseFolders(): BookmarkFolder[] {
