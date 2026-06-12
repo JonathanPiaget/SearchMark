@@ -16,7 +16,7 @@ export interface CreateFolderOptions {
 	children?: BookmarkFolder[];
 }
 
-export interface CreateNodeOptions {
+interface CreateNodeOptions {
 	id?: string;
 	title: string;
 	url?: string;
@@ -40,7 +40,7 @@ export function createFolder(options: CreateFolderOptions): BookmarkFolder {
 /**
  * Creates a single BookmarkTreeNode (raw browser format)
  */
-export function createNode(options: CreateNodeOptions): BookmarkTreeNode {
+function createNode(options: CreateNodeOptions): BookmarkTreeNode {
 	return {
 		id: options.id || `node-${Math.random().toString(36).substr(2, 9)}`,
 		title: options.title,
@@ -49,21 +49,6 @@ export function createNode(options: CreateNodeOptions): BookmarkTreeNode {
 		parentId: options.parentId,
 		children: options.children,
 	};
-}
-
-/**
- * Creates an array of folders matching a common pattern
- * Useful for testing search with many results
- */
-export function createFolders(
-	count: number,
-	prefix = 'Folder',
-): BookmarkFolder[] {
-	const folders: BookmarkFolder[] = [];
-	for (let i = 0; i < count; i++) {
-		folders.push(createFolder({ title: `${prefix} ${i}` }));
-	}
-	return folders;
 }
 
 /**
@@ -76,43 +61,6 @@ export function createWorkBookmarks(): BookmarkFolder[] {
 		createFolder({ id: '3', title: 'Code Reviews', path: 'Work Projects' }),
 		createFolder({ id: '4', title: 'Personal', path: '' }),
 		createFolder({ id: '5', title: 'work notes', path: 'Personal' }),
-	];
-}
-
-/**
- * Preset: Folders with special characters (tests regex escaping)
- */
-export function createSpecialCharFolders(): BookmarkFolder[] {
-	return [
-		createFolder({ title: 'Price: $100 (USD)' }),
-		createFolder({ title: 'Regex [.*+?^$' + '{}]' }), // Split to avoid template warning
-		createFolder({ title: 'Normal Folder' }),
-		createFolder({ title: 'Path/To/Files' }),
-	];
-}
-
-/**
- * Preset: Multilingual folders (tests unicode and case-insensitive search)
- */
-export function createMultilingualFolders(): BookmarkFolder[] {
-	return [
-		createFolder({ title: 'Développement' }),
-		createFolder({ title: 'DÉVELOPPEMENT' }),
-		createFolder({ title: '日本語ブックマーク' }),
-		createFolder({ title: 'Español Favoritos' }),
-		createFolder({ title: 'Development' }),
-	];
-}
-
-/**
- * Preset: Empty/minimal folders (edge cases)
- */
-export function createEdgeCaseFolders(): BookmarkFolder[] {
-	return [
-		createFolder({ title: '' }), // Empty title
-		createFolder({ title: ' ' }), // Whitespace only
-		createFolder({ title: 'A' }), // Single character
-		createFolder({ title: 'a' }), // Lowercase single char
 	];
 }
 

@@ -33,7 +33,7 @@ export const buildFolderPath = (
  * @param folderMap - Map of folder IDs to BookmarkFolder objects
  * @returns Array of bookmark locations with complete folder paths
  */
-export const searchBookmarksByUrl = async (
+const searchBookmarksByUrl = async (
 	url: string,
 	folderMap: Map<string, BookmarkFolder>,
 ): Promise<BookmarkLocation[]> => {
