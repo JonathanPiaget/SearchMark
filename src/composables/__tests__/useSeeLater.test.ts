@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing';
+import { triggerStorageChange } from '@/test-utils/storageEvents';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
@@ -119,7 +120,7 @@ describe('storage.onChanged sync', () => {
 		const { initSeeLater, seeLaterFolderId } = await freshUseSeeLater();
 		await initSeeLater();
 
-		await fakeBrowser.storage.local.onChanged.trigger({
+		await triggerStorageChange('local', {
 			[KEY]: { oldValue: null, newValue: 'F2' },
 		});
 
@@ -134,7 +135,7 @@ describe('storage.onChanged sync', () => {
 		await initSeeLater();
 		expect(seeLaterFolderId.value).toBe('F1');
 
-		await fakeBrowser.storage.local.onChanged.trigger({
+		await triggerStorageChange('local', {
 			[KEY]: { oldValue: 'F1', newValue: '' },
 		});
 
@@ -145,7 +146,7 @@ describe('storage.onChanged sync', () => {
 		const { initSeeLater, seeLaterFolderId } = await freshUseSeeLater();
 		await initSeeLater();
 
-		await fakeBrowser.storage.sync.onChanged.trigger({
+		await triggerStorageChange('sync', {
 			[KEY]: { oldValue: null, newValue: 'F2' },
 		});
 

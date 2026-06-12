@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing';
+import { triggerStorageChange } from '@/test-utils/storageEvents';
 
 const KEY = 'searchmark_theme';
 
@@ -63,7 +64,7 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.local.onChanged.trigger({
+		await triggerStorageChange('local', {
 			[KEY]: { oldValue: 'auto', newValue: 'dark' },
 		});
 
@@ -74,7 +75,7 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.sync.onChanged.trigger({
+		await triggerStorageChange('sync', {
 			[KEY]: { oldValue: 'auto', newValue: 'dark' },
 		});
 
@@ -85,7 +86,7 @@ describe('storage.onChanged sync', () => {
 		const { currentTheme, initTheme } = await freshUseTheme();
 		await initTheme();
 
-		await fakeBrowser.storage.local.onChanged.trigger({
+		await triggerStorageChange('local', {
 			somethingElse: { oldValue: 1, newValue: 2 },
 		});
 
