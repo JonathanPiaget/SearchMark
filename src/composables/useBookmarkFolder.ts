@@ -58,46 +58,16 @@ export function useBookmarkFolder(
 	const isLoading = ref(false);
 	const error = ref<BookmarkErrorKey | null>(null);
 
-	const loadBookmarks = async (
-		folderId: string,
-		recursive = true,
+	const runLoad = async (
+		load: () => Promise<BookmarkItem[]>,
 	): Promise<void> => {
 		isLoading.value = true;
 		error.value = null;
 
 		try {
-			if (!folderMap.value.has(folderId)) {
-				throw new Error('Folder not found');
-			}
-
-			const folder = folderMap.value.get(folderId);
-			const fullPath = joinFolderPath(folder?.path ?? '', folder?.title ?? '');
-
-			if (recursive) {
-				bookmarks.value = await walkBookmarks(
-					{ id: folderId } as Browser.bookmarks.BookmarkTreeNode,
-					fullPath,
-					(child) => folderMap.value.has(child.id),
-				);
-			} else {
-				const children = await browser.bookmarks.getChildren(folderId);
-
-				bookmarks.value = children
-					.filter((child) => child.url)
-					.map((child) => ({
-						id: child.id,
-						title: child.title,
-						url: child.url || '',
-						parentId: child.parentId || folderId,
-						parentPath: fullPath,
-						dateAdded: child.dateAdded,
-					}));
-			}
+			bookmarks.value = await load();
 		} catch (err) {
-			error.value =
-				err instanceof Error && err.message === 'Folder not found'
-					? 'folderNotFound'
-					: 'errorLoadingBookmarks';
+			error.value ??= 'errorLoadingBookmarks';
 			bookmarks.value = [];
 			throw err;
 		} finally {
@@ -105,11 +75,25 @@ export function useBookmarkFolder(
 		}
 	};
 
-	const loadAllBookmarks = async (): Promise<void> => {
-		isLoading.value = true;
-		error.value = null;
+	const loadBookmarks = (folderId: string, recursive = true): Promise<void> =>
+		runLoad(async () => {
+			const folder = folderMap.value.get(folderId);
+			if (!folder) {
+				error.value = 'folderNotFound';
+				throw new Error('Folder not found');
+			}
 
-		try {
+			const fullPath = joinFolderPath(folder.path, folder.title);
+
+			return walkBookmarks(
+				{ id: folderId } as Browser.bookmarks.BookmarkTreeNode,
+				fullPath,
+				(child) => recursive && folderMap.value.has(child.id),
+			);
+		});
+
+	const loadAllBookmarks = (): Promise<void> =>
+		runLoad(async () => {
 			const [tree] = await browser.bookmarks.getTree();
 			const rootFolders = tree.children || [];
 			const allResults: BookmarkItem[] = [];
@@ -125,15 +109,8 @@ export function useBookmarkFolder(
 				}
 			}
 
-			bookmarks.value = allResults;
-		} catch (err) {
-			error.value = 'errorLoadingBookmarks';
-			bookmarks.value = [];
-			throw err;
-		} finally {
-			isLoading.value = false;
-		}
-	};
+			return allResults;
+		});
 
 	const removeBookmark = (id: string) => {
 		bookmarks.value = bookmarks.value.filter((b) => b.id !== id);
