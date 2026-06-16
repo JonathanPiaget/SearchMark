@@ -37,7 +37,7 @@
 		"playwright": "^1.60.0",
 		"typescript": "6.0.3",
 		"unplugin-icons": "^23.0.1",
-		"vite": "^8.0.14",
+		"vite": "^8.0.16",
 		"vitest": "^4.1.7",
 		"vue-tsc": "^3.3.1",
 		"wxt": "^0.20.26"
