@@ -24,6 +24,9 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.111
         version: 1.2.111
+      '@playwright/test':
+        specifier: ^1.60.0
+        version: 1.60.0
       '@wxt-dev/module-vue':
         specifier: ^1.0.3
         version: 1.0.3(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0))(vue@3.5.34(typescript@6.0.3))(wxt@0.20.26(@types/node@25.9.1)(jiti@2.7.0)(rolldown@1.0.2))
@@ -372,6 +375,11 @@ packages:
 
   '@oxc-project/types@0.132.0':
     resolution: {integrity: sha512-FESMOxil5Se014ui/Eq8fT5uHJo6nIRwH0PfJrZJXs6Gek3ZVFOrpUv3YIZT20m+extU98Hg1Ym72U58rlsxUQ==}
+
+  '@playwright/test@1.60.0':
+    resolution: {integrity: sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@pnpm/config.env-replace@1.1.0':
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -2346,6 +2354,10 @@ snapshots:
       fastq: 1.20.1
 
   '@oxc-project/types@0.132.0': {}
+
+  '@playwright/test@1.60.0':
+    dependencies:
+      playwright: 1.60.0
 
   '@pnpm/config.env-replace@1.1.0': {}
 

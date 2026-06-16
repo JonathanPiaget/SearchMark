@@ -12,6 +12,8 @@ node_modules
 stats.html
 stats-*.json
 .wxt
+playwright-report
+test-results
 
 # Editor directories and files
 .idea

@@ -19,6 +19,9 @@
 		"check": "biome check --write",
 		"test": "vitest run",
 		"test:watch": "vitest",
+		"test:e2e": "wxt build && playwright test",
+		"test:e2e:headed": "wxt build && HEADED=1 playwright test",
+		"test:e2e:ui": "wxt build && playwright test --ui",
 		"screenshots": "wxt build && node screenshots/cli.mjs"
 	},
 	"dependencies": {
@@ -29,6 +32,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.15",
 		"@iconify-json/lucide": "^1.2.111",
+		"@playwright/test": "^1.60.0",
 		"@wxt-dev/module-vue": "^1.0.3",
 		"playwright": "^1.60.0",
 		"typescript": "6.0.3",
