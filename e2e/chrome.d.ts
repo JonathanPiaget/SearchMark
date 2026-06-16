@@ -67,3 +67,5 @@ declare const chrome: {
 };
 
 declare var __notificationPermissionChecks: boolean[] | undefined;
+
+declare var __sentMessages: { type: string; message: string }[] | undefined;
