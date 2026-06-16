@@ -42,9 +42,28 @@ interface ChromeAction {
 	getBadgeText(details: { tabId?: number }): Promise<string>;
 }
 
+interface ChromePermissionsQuery {
+	permissions?: string[];
+	origins?: string[];
+}
+
+interface ChromePermissions {
+	contains(query: ChromePermissionsQuery): Promise<boolean>;
+	request(query: ChromePermissionsQuery): Promise<boolean>;
+	remove(query: ChromePermissionsQuery): Promise<boolean>;
+}
+
+interface ChromeRuntime {
+	sendMessage(message: unknown): Promise<unknown>;
+}
+
 declare const chrome: {
 	bookmarks: ChromeBookmarks;
 	tabs: ChromeTabs;
 	storage: { local: ChromeStorageArea };
 	action: ChromeAction;
+	permissions: ChromePermissions;
+	runtime: ChromeRuntime;
 };
+
+declare var __notificationPermissionChecks: boolean[] | undefined;
