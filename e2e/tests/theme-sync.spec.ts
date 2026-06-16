@@ -1,5 +1,5 @@
-import { expect, test } from './fixtures';
-import { openPopup, openSettings } from './helpers';
+import { expect, test } from '../fixtures';
+import { openPopup, openSettings } from '../helpers';
 
 const themeOf = (page: import('@playwright/test').Page) =>
 	page.evaluate(() => document.documentElement.getAttribute('data-theme'));

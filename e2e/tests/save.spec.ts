@@ -1,5 +1,5 @@
-import { expect, test } from './fixtures';
-import { listBookmarks, openPopup, seedBookmarks } from './helpers';
+import { expect, test } from '../fixtures';
+import { listBookmarks, openPopup, seedBookmarks } from '../helpers';
 
 const TAB = { url: 'https://example.com/article', title: 'Example Article' };
 

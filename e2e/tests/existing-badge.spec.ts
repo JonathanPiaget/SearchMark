@@ -1,11 +1,11 @@
-import { expect, test } from './fixtures';
+import { expect, test } from '../fixtures';
 import {
 	findTabIdByUrl,
 	getBadgeText,
 	openPopup,
 	openTab,
 	seedBookmarks,
-} from './helpers';
+} from '../helpers';
 
 const URL = 'https://example.com/saved';
 

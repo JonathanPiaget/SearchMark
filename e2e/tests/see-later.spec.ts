@@ -1,10 +1,10 @@
-import { expect, test } from './fixtures';
+import { expect, test } from '../fixtures';
 import {
 	getToolbarId,
 	listBookmarks,
 	openPopup,
 	removeBookmarkTree,
-} from './helpers';
+} from '../helpers';
 
 const TAB = { url: 'https://example.org/page', title: 'Example Page' };
 const SEE_LATER = 'See Later';
