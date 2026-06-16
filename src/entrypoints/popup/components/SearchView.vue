@@ -3,7 +3,6 @@
     <FolderSelector
       ref="folderSelectorRef"
       v-model="selectedFolderId"
-      :autofocus="false"
       :auto-select-default="false"
       :on-arrow-down-with-selection="focusFirstBookmark"
     />
