@@ -19,51 +19,34 @@ test('creates, reuses, then recreates the See Later folder', async ({
 }) => {
 	const toolbarId = await getToolbarId(serviceWorker);
 
-	let popup = await openPopup(context, extensionId, { tab: TAB });
-	await popup.click('.see-later-button');
+	const childCounts = async () => {
+		const folders = seeLaterFolders(
+			await listBookmarks(serviceWorker, toolbarId),
+		);
+		return Promise.all(
+			folders.map((folder) =>
+				listBookmarks(serviceWorker, folder.id).then((items) => items.length),
+			),
+		);
+	};
 
-	await expect
-		.poll(async () =>
-			seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
-		)
-		.toHaveLength(1);
+	const clickSeeLater = async () => {
+		const popup = await openPopup(context, extensionId, { tab: TAB });
+		await popup.click('.see-later-button');
+	};
 
-	let [folder] = seeLaterFolders(await listBookmarks(serviceWorker, toolbarId));
-	expect(await listBookmarks(serviceWorker, folder.id)).toHaveLength(1);
+	await clickSeeLater();
+	await expect.poll(childCounts).toEqual([1]);
 
-	popup = await openPopup(context, extensionId, { tab: TAB });
-	await popup.click('.see-later-button');
+	await clickSeeLater();
+	await expect.poll(childCounts).toEqual([2]);
 
-	await expect
-		.poll(async () => {
-			const [reused] = seeLaterFolders(
-				await listBookmarks(serviceWorker, toolbarId),
-			);
-			return listBookmarks(serviceWorker, reused.id).then((b) => b.length);
-		})
-		.toBe(2);
-
-	expect(
-		seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
-	).toHaveLength(1);
-
-	[folder] = seeLaterFolders(await listBookmarks(serviceWorker, toolbarId));
-	await removeBookmarkTree(serviceWorker, folder.id);
-	expect(
-		seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
-	).toHaveLength(0);
-
-	popup = await openPopup(context, extensionId, { tab: TAB });
-	await popup.click('.see-later-button');
-
-	await expect
-		.poll(async () =>
-			seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
-		)
-		.toHaveLength(1);
-
-	const [recreated] = seeLaterFolders(
+	const [stale] = seeLaterFolders(
 		await listBookmarks(serviceWorker, toolbarId),
 	);
-	expect(await listBookmarks(serviceWorker, recreated.id)).toHaveLength(1);
+	await removeBookmarkTree(serviceWorker, stale.id);
+	await expect.poll(childCounts).toEqual([]);
+
+	await clickSeeLater();
+	await expect.poll(childCounts).toEqual([1]);
 });
