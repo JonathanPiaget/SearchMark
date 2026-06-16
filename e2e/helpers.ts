@@ -100,7 +100,7 @@ export function findTabIdByUrl(
 export async function openPopup(
 	context: BrowserContext,
 	extensionId: string,
-	options: { tab?: SeedTab } = {},
+	options: { tab?: SeedTab; init?: () => void } = {},
 ): Promise<Page> {
 	const page = await context.newPage();
 	if (options.tab) {
@@ -111,6 +111,9 @@ export async function openPopup(
 				value: () => Promise.resolve(fakeTabs),
 			});
 		}, options.tab);
+	}
+	if (options.init) {
+		await page.addInitScript(options.init);
 	}
 	await page.goto(`chrome-extension://${extensionId}/popup.html`);
 	await page.waitForSelector('.container');

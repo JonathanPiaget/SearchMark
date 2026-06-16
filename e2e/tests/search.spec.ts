@@ -90,3 +90,36 @@ test('global search opens a matching bookmark in a new tab', async ({
 		.poll(() => findTabIdByUrl(serviceWorker, 'https://example.com/alpha'))
 		.not.toBeNull();
 });
+
+test('shows an error box instead of a blank list when bookmarks fail to load', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedBookmarks(serviceWorker, [
+		{
+			folder: 'Work',
+			items: [{ title: 'Work Doc', url: 'https://example.com/doc' }],
+		},
+	]);
+
+	const popup = await openPopup(context, extensionId, {
+		init: () => {
+			Object.defineProperty(chrome.bookmarks, 'getChildren', {
+				configurable: true,
+				value: () => Promise.reject(new Error('load failed')),
+			});
+		},
+	});
+	await switchToSearch(popup);
+
+	await popup.locator('.search-view #folder-search').fill('Work');
+	await popup.waitForSelector('.search-view .dropdown-container');
+	await popup
+		.locator('.search-view .dropdown-item', { hasText: 'Work' })
+		.first()
+		.click();
+
+	await expect(popup.locator('.search-view .error-message')).toBeVisible();
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
+});
