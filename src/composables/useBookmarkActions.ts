@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { i18n } from '#i18n';
+import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
 
 export function useBookmarkActions() {
@@ -20,7 +21,7 @@ export function useBookmarkActions() {
 
 			notify(i18n.t('bookmarkDeleted'));
 		} catch (error) {
-			console.error(`Failed to delete bookmark with ID ${id}:`, error);
+			logError(`Failed to delete bookmark with ID ${id}`, error);
 			deleteError.value = i18n.t('bookmarkError');
 			throw error;
 		} finally {
