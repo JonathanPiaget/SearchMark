@@ -29,3 +29,33 @@ test('saves the current page into the chosen folder', async ({
 		})
 		.toContain(TAB.url);
 });
+
+test('shows an inline error and keeps the popup open when the save fails', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	const ids = await seedBookmarks(serviceWorker, [{ folder: 'Reading' }]);
+
+	const popup = await openPopup(context, extensionId, {
+		tab: TAB,
+		init: () => {
+			Object.defineProperty(chrome.bookmarks, 'create', {
+				configurable: true,
+				value: () => Promise.reject(new Error('create failed')),
+			});
+		},
+	});
+
+	await popup.fill('#folder-search', 'Reading');
+	await popup.waitForSelector('.dropdown-container');
+	await popup.locator('.dropdown-item', { hasText: 'Reading' }).first().click();
+
+	await popup.click('.save-button');
+
+	await expect(popup.locator('.save-view .message.error')).toBeVisible();
+	expect(popup.isClosed()).toBe(false);
+
+	const children = await listBookmarks(serviceWorker, ids.Reading);
+	expect(children).toHaveLength(0);
+});
