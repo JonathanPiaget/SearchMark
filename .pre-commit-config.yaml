@@ -5,7 +5,7 @@ repos:
     -   id: sync-pre-commit-deps
 
 -   repo: https://github.com/biomejs/pre-commit
-    rev: v2.5.0
+    rev: v2.5.1
     hooks:
     -   id: biome-check
         additional_dependencies: ["@biomejs/biome@2.5.0"]
@@ -30,6 +30,6 @@ repos:
     -   id: actionlint
 
 -   repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.25.2
+    rev: v1.26.1
     hooks:
     -   id: zizmor
