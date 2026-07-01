@@ -26,20 +26,20 @@
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.5",
 		"fuzzysort": "^3.1.0",
-		"vue": "^3.5.34"
+		"vue": "^3.5.38"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.15",
-		"@iconify-json/lucide": "^1.2.111",
-		"@playwright/test": "^1.60.0",
+		"@biomejs/biome": "^2.5.1",
+		"@iconify-json/lucide": "^1.2.114",
+		"@playwright/test": "^1.61.1",
 		"@wxt-dev/module-vue": "^1.0.3",
-		"playwright": "^1.60.0",
+		"playwright": "^1.61.1",
 		"typescript": "6.0.3",
 		"unplugin-icons": "^23.0.1",
-		"vite": "^8.0.16",
-		"vitest": "^4.1.7",
-		"vue-tsc": "^3.3.1",
-		"wxt": "^0.20.26"
+		"vite": "^8.1.0",
+		"vitest": "^4.1.9",
+		"vue-tsc": "^3.3.5",
+		"wxt": "^0.20.27"
 	},
 	"packageManager": "pnpm@11.3.0+sha512.2c403d6594527287672b1f7056343a1f7c3634036a67ffabfcc2b3d7595d843768f8787148d1b57cf7956c90606bbd192857c363af19e96d2d0ec9ec5741d215"
 }
