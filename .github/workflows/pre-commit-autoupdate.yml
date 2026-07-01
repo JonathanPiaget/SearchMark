@@ -32,6 +32,9 @@ jobs:
       - name: Autoupdate template
         run: pre-commit autoupdate
 
+      - name: Sync additional_dependencies
+        run: pre-commit run sync-pre-commit-deps --all-files || true
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
