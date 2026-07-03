@@ -5,5 +5,8 @@ export default defineConfig({
 	plugins: [WxtVitest()],
 	test: {
 		exclude: [...configDefaults.exclude, 'e2e/**'],
+		coverage: {
+			include: ['src/composables/**', 'src/utils/**'],
+		},
 	},
 });
