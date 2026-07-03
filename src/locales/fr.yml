@@ -58,7 +58,7 @@ fuzzySearch: Recherche floue
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées, tant qu'elles restent dans l'ordre.
 clearSelection: Effacer la sélection
 shortcutsTitle: Raccourcis clavier
-shortcutQuickSave: Sauvegarde rapide
+shortcutQuickSave: Sauvegarde rapide dans Voir Plus Tard
 shortcutSwitchView: Changer de vue
 openShortcut: Ouvrir SearchMark
 shortcutDescriptionChrome: Raccourci pour ouvrir la popup. Utilisez le bouton pour le modifier.

@@ -30,7 +30,7 @@ export default defineConfig({
 			},
 			'quick-save': {
 				suggested_key: { default: 'Ctrl+Shift+B', mac: 'Command+Shift+B' },
-				description: 'Quick save to bookmark toolbar',
+				description: 'Quick save to See Later folder',
 			},
 		},
 	}),
