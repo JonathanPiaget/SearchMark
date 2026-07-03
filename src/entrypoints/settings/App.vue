@@ -153,7 +153,11 @@ const handleSeeLaterFolderChange = async (folder: {
 	id: string;
 	name: string;
 }) => {
-	await saveSeeLaterFolder(folder.id);
+	if (folder.id) {
+		await saveSeeLaterFolder(folder.id);
+	} else {
+		await clearSeeLaterFolder();
+	}
 };
 
 const handleNotificationsToggle = async () => {
@@ -169,6 +173,7 @@ const handleNotificationsToggle = async () => {
 onMounted(async () => {
 	await initTheme();
 	await initSeeLater();
+	selectedFolderId.value = seeLaterFolderId.value || '';
 	selectedTheme.value = currentTheme.value;
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],

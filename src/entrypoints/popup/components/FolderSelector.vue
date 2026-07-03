@@ -234,6 +234,14 @@ const initializeFolders = async () => {
 	await loadFolders();
 	await loadFuzzyPreference();
 
+	if (props.modelValue) {
+		const folder = allFolders.value.find((f) => f.id === props.modelValue);
+		if (folder) {
+			selectedFolder.value = folder;
+			searchQuery.value = folder.title;
+		}
+	}
+
 	if (props.showToolbarOption) {
 		const toolbarId = await getBookmarkToolbarId();
 		toolbarFolder.value =
