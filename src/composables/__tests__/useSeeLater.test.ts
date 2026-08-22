@@ -11,6 +11,7 @@ interface BookmarksApi {
 	get(id: string): Promise<BookmarkTreeNode[]>;
 	getTree(): Promise<BookmarkTreeNode[]>;
 	create(bookmark: Browser.bookmarks.CreateDetails): Promise<BookmarkTreeNode>;
+	search(query: { title: string }): Promise<BookmarkTreeNode[]>;
 }
 
 const bookmarks = browser.bookmarks as unknown as BookmarksApi;
@@ -56,6 +57,7 @@ describe('getOrCreateSeeLaterFolder', () => {
 	it('clears an invalid stored id, then creates and persists a new folder', async () => {
 		await browser.storage.local.set({ [KEY]: 'gone' });
 		vi.spyOn(bookmarks, 'get').mockRejectedValue(new Error('missing'));
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([]);
 		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
 			node({ id: 'root', children: [node({ id: 'toolbar' })] }),
 		]);
@@ -73,7 +75,59 @@ describe('getOrCreateSeeLaterFolder', () => {
 		expect(stored[KEY]).toBe('NEW');
 	});
 
+	it('adopts an existing "See Later" folder instead of creating a duplicate', async () => {
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([
+			node({ id: 'OLD', title: 'See Later' }),
+		]);
+		const create = vi.spyOn(bookmarks, 'create');
+
+		const { getOrCreateSeeLaterFolder, seeLaterFolderId } =
+			await freshUseSeeLater();
+		const result = await getOrCreateSeeLaterFolder();
+
+		expect(result).toEqual({ id: 'OLD', title: 'See Later' });
+		expect(seeLaterFolderId.value).toBe('OLD');
+		expect(create).not.toHaveBeenCalled();
+		const stored = await browser.storage.local.get(KEY);
+		expect(stored[KEY]).toBe('OLD');
+	});
+
+	it('adopts an existing folder titled in the active locale', async () => {
+		vi.spyOn(browser.i18n, 'getMessage').mockReturnValue('Voir Plus Tard');
+		vi.spyOn(bookmarks, 'search').mockImplementation(async ({ title }) =>
+			title === 'Voir Plus Tard'
+				? [node({ id: 'OLD_FR', title: 'Voir Plus Tard' })]
+				: [],
+		);
+		const create = vi.spyOn(bookmarks, 'create');
+
+		const { getOrCreateSeeLaterFolder } = await freshUseSeeLater();
+		const result = await getOrCreateSeeLaterFolder();
+
+		expect(result).toEqual({ id: 'OLD_FR', title: 'Voir Plus Tard' });
+		expect(create).not.toHaveBeenCalled();
+	});
+
+	it('ignores a bookmark (not a folder) titled "See Later" and creates a folder', async () => {
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([
+			node({ id: 'B1', title: 'See Later', url: 'https://example.com' }),
+		]);
+		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
+			node({ id: 'root', children: [node({ id: 'toolbar' })] }),
+		]);
+		const create = vi
+			.spyOn(bookmarks, 'create')
+			.mockResolvedValue(node({ id: 'NEW', title: 'See Later' }));
+
+		const { getOrCreateSeeLaterFolder } = await freshUseSeeLater();
+		const result = await getOrCreateSeeLaterFolder();
+
+		expect(result.id).toBe('NEW');
+		expect(create).toHaveBeenCalledOnce();
+	});
+
 	it('creates a new folder when nothing is stored', async () => {
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([]);
 		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
 			node({ id: 'root', children: [node({ id: 'toolbar' })] }),
 		]);

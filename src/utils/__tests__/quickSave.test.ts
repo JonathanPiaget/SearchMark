@@ -11,6 +11,7 @@ interface BookmarksApi {
 	get(id: string): Promise<BookmarkTreeNode[]>;
 	getTree(): Promise<BookmarkTreeNode[]>;
 	create(bookmark: Browser.bookmarks.CreateDetails): Promise<BookmarkTreeNode>;
+	search(query: { title: string }): Promise<BookmarkTreeNode[]>;
 }
 
 interface TabsApi {
@@ -64,6 +65,7 @@ describe('quickSaveCurrentTab', () => {
 		vi.spyOn(tabs, 'query').mockResolvedValue([
 			tab({ title: 'Page', url: 'https://example.com' }),
 		]);
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([]);
 		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
 			node({ id: 'root', children: [node({ id: 'toolbar' })] }),
 		]);

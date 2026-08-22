@@ -34,6 +34,16 @@ export const verifyFolderExists = async (
 	}
 };
 
+const findExistingSeeLaterFolder = async () => {
+	const titles = [...new Set([i18n.t('seeLater'), 'See Later'])];
+	for (const title of titles) {
+		const matches = await browser.bookmarks.search({ title });
+		const folder = matches.find((match) => !match.url);
+		if (folder) return folder;
+	}
+	return null;
+};
+
 export const getOrCreateSeeLaterFolder = async (): Promise<{
 	id: string;
 	title: string;
@@ -51,6 +61,12 @@ export const getOrCreateSeeLaterFolder = async (): Promise<{
 	}
 
 	if (stored) await clearSeeLaterFolder();
+
+	const existing = await findExistingSeeLaterFolder();
+	if (existing) {
+		await saveSeeLaterFolder(existing.id);
+		return { id: existing.id, title: existing.title || 'See Later' };
+	}
 
 	const toolbarId = await getBookmarkToolbarId();
 	const folder = await browser.bookmarks.create({
