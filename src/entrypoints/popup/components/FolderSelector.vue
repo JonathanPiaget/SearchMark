@@ -454,6 +454,22 @@ onMounted(async () => {
 		if (props.autofocus) {
 			await nextTick(); // Waits for Vue to update the DOM
 			folderInput.value?.focus();
+			// Firefox focuses the popup frame asynchronously after load and can
+			// steal focus back from the input (Bugzilla 1324255); re-focus until
+			// the frame has focus and the input holds it, up to 500ms.
+			let attempts = 0;
+			const retry = setInterval(() => {
+				const input = folderInput.value;
+				const done =
+					!input ||
+					++attempts > 10 ||
+					(document.hasFocus() && document.activeElement === input);
+				if (done) {
+					clearInterval(retry);
+					return;
+				}
+				input.focus();
+			}, 50);
 		}
 	}
 });
