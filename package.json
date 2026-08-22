@@ -2,7 +2,7 @@
 	"name": "searchmark",
 	"description": "A browser extension for efficient bookmark management with search capabilities",
 	"private": true,
-	"version": "1.13.1",
+	"version": "1.13.2",
 	"type": "module",
 	"scripts": {
 		"dev": "wxt",
