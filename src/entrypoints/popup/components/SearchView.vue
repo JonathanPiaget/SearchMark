@@ -70,7 +70,7 @@
     />
 
     <div v-if="hasMoreResults" class="more-results">
-      {{ i18n.t('moreResults').replace('{count}', String(filteredBookmarks.length - MAX_RESULTS)) }}
+      {{ i18n.t('moreResults', { count: filteredBookmarks.length - MAX_RESULTS }) }}
     </div>
   </div>
 </template>

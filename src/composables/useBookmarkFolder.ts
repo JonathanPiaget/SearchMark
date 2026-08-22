@@ -100,7 +100,7 @@ export function useBookmarkFolder(
 	const loadAllBookmarks = (): Promise<void> =>
 		runLoad(async () => {
 			const [tree] = await browser.bookmarks.getTree();
-			const rootFolders = (tree.children || []).filter(
+			const rootFolders = (tree?.children || []).filter(
 				(rootFolder) => !rootFolder.url && rootFolder.id !== '0',
 			);
 

@@ -1,4 +1,4 @@
-import { fakeBrowser } from 'wxt/testing';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 
 type StorageChanges = Parameters<
 	typeof fakeBrowser.storage.local.onChanged.trigger

@@ -21,7 +21,7 @@ export function highlightByIndexes(
 		} else {
 			if (currentPart)
 				result.push({ text: currentPart, highlighted: currentHighlighted });
-			currentPart = text[i];
+			currentPart = text.charAt(i);
 			currentHighlighted = isHighlighted;
 		}
 	}

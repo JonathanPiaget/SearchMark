@@ -22,9 +22,7 @@ const showNotification = async (message: string) => {
 const quickSave = async () => {
 	try {
 		const { folderTitle } = await quickSaveCurrentTab();
-		showNotification(
-			i18n.t('seeLaterSuccess').replace('{folderName}', folderTitle),
-		);
+		showNotification(i18n.t('seeLaterSuccess', { folderName: folderTitle }));
 	} catch (error) {
 		logError('Quick save failed', error);
 		showNotification(i18n.t('seeLaterError'));

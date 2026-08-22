@@ -12,8 +12,8 @@ describe('buildFolderTree', () => {
 		const tree = buildFolderTree(nodes);
 
 		expect(tree).toHaveLength(2);
-		expect(tree[0].title).toBe('Work');
-		expect(tree[1].title).toBe('Personal');
+		expect(tree[0]?.title).toBe('Work');
+		expect(tree[1]?.title).toBe('Personal');
 	});
 
 	it('sets empty path for root-level folders', () => {
@@ -21,8 +21,8 @@ describe('buildFolderTree', () => {
 
 		const tree = buildFolderTree(nodes);
 
-		expect(tree[0].path).toBe('');
-		expect(tree[1].path).toBe('');
+		expect(tree[0]?.path).toBe('');
+		expect(tree[1]?.path).toBe('');
 	});
 
 	it('builds hierarchical paths using " > " separator', () => {
@@ -43,9 +43,9 @@ describe('buildFolderTree', () => {
 		const fiction = tree.find((f) => f.id === '2');
 
 		expect(books?.children).toHaveLength(1);
-		expect(books?.children?.[0].id).toBe('2');
+		expect(books?.children?.[0]?.id).toBe('2');
 		expect(fiction?.children).toHaveLength(1);
-		expect(fiction?.children?.[0].id).toBe('3');
+		expect(fiction?.children?.[0]?.id).toBe('3');
 	});
 
 	it('flattens all folders into a single array', () => {

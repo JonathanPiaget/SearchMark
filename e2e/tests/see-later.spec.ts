@@ -25,7 +25,9 @@ test('creates, reuses, then recreates the See Later folder', async ({
 		);
 		return Promise.all(
 			folders.map((folder) =>
-				listBookmarks(serviceWorker, folder.id).then((items) => items.length),
+				listBookmarks(serviceWorker, folder?.id ?? '').then(
+					(items) => items.length,
+				),
 			),
 		);
 	};
@@ -44,7 +46,7 @@ test('creates, reuses, then recreates the See Later folder', async ({
 	const [stale] = seeLaterFolders(
 		await listBookmarks(serviceWorker, toolbarId),
 	);
-	await removeBookmarkTree(serviceWorker, stale.id);
+	await removeBookmarkTree(serviceWorker, stale?.id ?? '');
 	await expect.poll(childCounts).toEqual([]);
 
 	await clickSeeLater();
@@ -87,6 +89,6 @@ test('notifies an error and keeps the popup open when there is no active tab', a
 	const [folder] = seeLaterFolders(
 		await listBookmarks(serviceWorker, toolbarId),
 	);
-	const saved = await listBookmarks(serviceWorker, folder.id);
+	const saved = await listBookmarks(serviceWorker, folder?.id ?? '');
 	expect(saved).toHaveLength(0);
 });

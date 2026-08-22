@@ -23,8 +23,8 @@ const tokenize = (shortcut: string): string[] => {
 	const symbols = ['⌘', '⌃', '⇧', '⌥'];
 	const tokens: string[] = [];
 	let rest = shortcut;
-	while (rest && symbols.includes(rest[0])) {
-		tokens.push(rest[0]);
+	while (rest && symbols.includes(rest.charAt(0))) {
+		tokens.push(rest.charAt(0));
 		rest = rest.slice(1);
 	}
 	if (rest) tokens.push(rest);

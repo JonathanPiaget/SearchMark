@@ -93,7 +93,7 @@ describe('loadBookmarks — recursive (default)', () => {
 		const { loadBookmarks, bookmarks: items } = useBookmarkFolder(map);
 		await loadBookmarks('f1');
 
-		expect(items.value[0].parentPath).toBe('Bar > Dev > Frontend');
+		expect(items.value[0]?.parentPath).toBe('Bar > Dev > Frontend');
 	});
 
 	it('skips a subfolder that is absent from the folder map', async () => {
@@ -198,7 +198,7 @@ describe('loadAllBookmarks', () => {
 		);
 		await loadAllBookmarks();
 
-		expect(items.value[0].parentPath).toBe('Toolbar > Dev');
+		expect(items.value[0]?.parentPath).toBe('Toolbar > Dev');
 	});
 
 	it('sets errorLoadingBookmarks and rethrows when the tree fails', async () => {

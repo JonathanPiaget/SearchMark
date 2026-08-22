@@ -119,9 +119,9 @@ const saveBookmark = async () => {
 
 		notify(
 			selectedFolderName.value
-				? i18n
-						.t('bookmarkSavedInFolder')
-						.replace('{folderName}', selectedFolderName.value)
+				? i18n.t('bookmarkSavedInFolder', {
+						folderName: selectedFolderName.value,
+					})
 				: i18n.t('bookmarkSaved'),
 		);
 
