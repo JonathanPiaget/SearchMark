@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
-import { fakeBrowser } from 'wxt/testing';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { quickSaveCurrentTab } from '@/utils/quickSave';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;

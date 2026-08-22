@@ -141,7 +141,7 @@ describe('handleNavigation — Enter', () => {
 
 		nav.handleNavigation(keyEvent('Enter'), r, cb);
 
-		expect(cb.onEnterChild).toHaveBeenCalledWith(r[0].children?.[0]);
+		expect(cb.onEnterChild).toHaveBeenCalledWith(r[0]?.children?.[0]);
 		expect(cb.onEnter).not.toHaveBeenCalled();
 	});
 

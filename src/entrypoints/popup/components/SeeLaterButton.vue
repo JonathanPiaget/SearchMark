@@ -45,7 +45,7 @@ const handleSeeLater = async () => {
 		});
 
 		// 4. Show success notification
-		notify(i18n.t('seeLaterSuccess').replace('{folderName}', folder.title));
+		notify(i18n.t('seeLaterSuccess', { folderName: folder.title }));
 
 		// 5. Close popup
 		window.close();

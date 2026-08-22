@@ -13,7 +13,7 @@ export interface SeedTab {
 export function getToolbarId(serviceWorker: Worker): Promise<string> {
 	return serviceWorker.evaluate(async () => {
 		const [tree] = await chrome.bookmarks.getTree();
-		return tree.children?.[0]?.id ?? '1';
+		return tree?.children?.[0]?.id ?? '1';
 	});
 }
 
@@ -23,7 +23,7 @@ export function seedBookmarks(
 ): Promise<Record<string, string>> {
 	return serviceWorker.evaluate(async (folders) => {
 		const [tree] = await chrome.bookmarks.getTree();
-		const toolbarId = tree.children?.[0]?.id ?? '1';
+		const toolbarId = tree?.children?.[0]?.id ?? '1';
 		const ids: Record<string, string> = {};
 		for (const { folder, items } of folders) {
 			const created = await chrome.bookmarks.create({

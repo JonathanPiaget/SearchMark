@@ -14,7 +14,7 @@ test('folder-scoped search lists subfolder items and filters within the folder',
 }) => {
 	await serviceWorker.evaluate(async () => {
 		const [tree] = await chrome.bookmarks.getTree();
-		const toolbarId = tree.children?.[0]?.id ?? '1';
+		const toolbarId = tree?.children?.[0]?.id ?? '1';
 		const work = await chrome.bookmarks.create({
 			parentId: toolbarId,
 			title: 'Work',

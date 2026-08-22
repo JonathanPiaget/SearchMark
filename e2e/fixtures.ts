@@ -47,7 +47,7 @@ export const test = base.extend<ExtensionFixtures>({
 	},
 
 	extensionId: async ({ serviceWorker }, use) => {
-		await use(serviceWorker.url().split('/')[2]);
+		await use(serviceWorker.url().split('/')[2] ?? '');
 	},
 });
 

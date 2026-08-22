@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fakeBrowser } from 'wxt/testing';
+import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
 import * as logger from '@/utils/logger';
 import * as notifyModule from '@/utils/notify';

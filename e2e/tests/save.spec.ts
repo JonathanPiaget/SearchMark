@@ -24,7 +24,7 @@ test('saves the current page into the chosen folder', async ({
 
 	await expect
 		.poll(async () => {
-			const children = await listBookmarks(serviceWorker, ids.Reading);
+			const children = await listBookmarks(serviceWorker, ids.Reading ?? '');
 			return children.map((bookmark) => bookmark.url);
 		})
 		.toContain(TAB.url);
@@ -56,6 +56,6 @@ test('shows an inline error and keeps the popup open when the save fails', async
 	await expect(popup.locator('.save-view .message.error')).toBeVisible();
 	expect(popup.isClosed()).toBe(false);
 
-	const children = await listBookmarks(serviceWorker, ids.Reading);
+	const children = await listBookmarks(serviceWorker, ids.Reading ?? '');
 	expect(children).toHaveLength(0);
 });

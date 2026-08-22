@@ -58,7 +58,7 @@ describe('findBookmarksByUrl', () => {
 		const matches = await findBookmarksByUrl('https://a.com/');
 
 		expect(matches).toHaveLength(1);
-		expect(matches[0].id).toBe('1');
+		expect(matches[0]?.id).toBe('1');
 	});
 
 	it('returns an empty array when the search throws', async () => {
