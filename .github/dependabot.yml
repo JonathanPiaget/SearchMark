@@ -16,6 +16,7 @@ updates:
       default-days: 7
 
   # Enable version updates for javascript/npm
+  # typescript major is ignored until vue-tsc supports TypeScript 7
   - package-ecosystem: "npm"
     # Look for a `packages.json` in the `root` directory
     directory: "/"
@@ -25,5 +26,8 @@ updates:
       all-npm-dependencies:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     cooldown:
       default-days: 7
