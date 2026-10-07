@@ -47,12 +47,12 @@ describe('getCurrentTab', () => {
 	it('throws when there is no active tab', async () => {
 		vi.spyOn(tabs, 'query').mockResolvedValue([]);
 
-		await expect(getCurrentTab()).rejects.toThrow('No active tab');
+		await expect(getCurrentTab()).rejects.toThrow('No current tab');
 	});
 
 	it('throws when the active tab has no url', async () => {
 		vi.spyOn(tabs, 'query').mockResolvedValue([tab({ title: 'Blank' })]);
 
-		await expect(getCurrentTab()).rejects.toThrow('No active tab');
+		await expect(getCurrentTab()).rejects.toThrow('No current tab');
 	});
 });

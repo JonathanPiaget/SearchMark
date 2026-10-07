@@ -274,7 +274,7 @@ describe('quickSave', () => {
 		vi.spyOn(tabs, 'query').mockResolvedValue([]);
 		const create = vi.spyOn(bookmarks, 'create');
 
-		await expect(quickSave()).rejects.toThrow('No active tab');
+		await expect(quickSave()).rejects.toThrow('No current tab');
 		expect(create).not.toHaveBeenCalled();
 	});
 });

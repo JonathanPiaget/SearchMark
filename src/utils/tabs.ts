@@ -7,7 +7,7 @@ export const getCurrentTab = async (): Promise<{
 		currentWindow: true,
 	});
 	if (!tab?.url) {
-		throw new Error('No active tab');
+		throw new Error('No current tab');
 	}
 	return { url: tab.url, title: tab.title || tab.url };
 };
