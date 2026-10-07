@@ -24,3 +24,6 @@ test-results
 *.sln
 *.sw?
 coverage/
+
+# Store credentials (publish-browser-extension)
+.env.submit

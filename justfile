@@ -25,3 +25,13 @@
 @lint:
     pre-commit run --all-files
     pnpm run compile
+
+# Check Chrome Web Store credentials from .env.submit without uploading
+@submit-chrome-dry:
+    pnpm zip
+    pnpm wxt submit --chrome-zip .output/searchmark-$(jq -r .version package.json)-chrome.zip --dry-run
+
+# Submit the Chrome zip to the Chrome Web Store (credentials from .env.submit)
+@submit-chrome:
+    pnpm zip
+    pnpm wxt submit --chrome-zip .output/searchmark-$(jq -r .version package.json)-chrome.zip
