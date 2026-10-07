@@ -107,4 +107,24 @@ describe('useFolderSearch', () => {
 			expect(result).toContainEqual({ text: 'Script', highlighted: true });
 		});
 	});
+
+	describe('result cap', () => {
+		const manyFolders = (): BookmarkFolder[] =>
+			Array.from({ length: 200 }, (_, i) => ({
+				id: String(i),
+				title: `alpha ${i}`,
+				path: '',
+			}));
+
+		it.each([true, false])('returns at most 50 results (fuzzy=%s)', (fuzzy) => {
+			const { searchQuery, searchResults, searchFolders, isFuzzyEnabled } =
+				useFolderSearch(ref(manyFolders()));
+
+			isFuzzyEnabled.value = fuzzy;
+			searchQuery.value = 'alpha';
+			searchFolders();
+
+			expect(searchResults.value).toHaveLength(50);
+		});
+	});
 });

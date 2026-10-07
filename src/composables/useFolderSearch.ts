@@ -10,6 +10,7 @@ export interface FolderSearchResult {
 }
 
 export const FUZZY_THRESHOLD = 0.3;
+const MAX_RESULTS = 50;
 const fuzzySearchItem = storage.defineItem<boolean>(
 	'local:searchmark_fuzzy_search',
 	{ fallback: true },
@@ -38,6 +39,7 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 			const results = fuzzysort.go(searchQuery.value, allFolders.value, {
 				key: 'title',
 				threshold: FUZZY_THRESHOLD,
+				limit: MAX_RESULTS,
 			});
 			searchResults.value = results.map((r) => ({
 				folder: r.obj,
@@ -47,6 +49,7 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 			const query = searchQuery.value.toLowerCase();
 			searchResults.value = allFolders.value
 				.filter((folder) => folder.title.toLowerCase().includes(query))
+				.slice(0, MAX_RESULTS)
 				.map((folder) => ({ folder, indexes: null }));
 		}
 	};
