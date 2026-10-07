@@ -86,9 +86,7 @@ test('notifies an error and keeps the popup open when there is no active tab', a
 
 	expect(popup.isClosed()).toBe(false);
 
-	const [folder] = seeLaterFolders(
-		await listBookmarks(serviceWorker, toolbarId),
-	);
-	const saved = await listBookmarks(serviceWorker, folder?.id ?? '');
-	expect(saved).toHaveLength(0);
+	expect(
+		seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
+	).toHaveLength(0);
 });
