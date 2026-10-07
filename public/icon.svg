@@ -1,116 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="128"
-   height="128"
-   viewBox="0 0 128 128"
-   version="1.1"
-   id="svg1"
-   sodipodi:docname="logo.svg"
-   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview1"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="px"
-     inkscape:zoom="4.1908613"
-     inkscape:cx="73.254632"
-     inkscape:cy="63.47144"
-     inkscape:window-width="1728"
-     inkscape:window-height="975"
-     inkscape:window-x="105"
-     inkscape:window-y="1238"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     showguides="true" />
-  <defs
-     id="defs1">
-    <linearGradient
-       id="linearGradient10"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#7f45e5;stop-opacity:0.40000001;"
-         offset="0"
-         id="stop10" />
-      <stop
-         style="stop-color:#7f45e5;stop-opacity:1;"
-         offset="0.84444445"
-         id="stop11" />
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bookmark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a97cf6"/>
+      <stop offset="1" stop-color="#6b32d6"/>
     </linearGradient>
-    <inkscape:path-effect
-       effect="fillet_chamfer"
-       id="path-effect3"
-       is_visible="true"
-       lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
-       radius="0"
-       unit="px"
-       method="auto"
-       mode="F"
-       chamfer_steps="1"
-       flexible="false"
-       use_knot_distance="true"
-       apply_no_radius="true"
-       apply_with_radius="true"
-       only_selected="false"
-       hide_knots="false" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient10"
-       id="linearGradient11"
-       x1="18.507315"
-       y1="96.996811"
-       x2="114.96501"
-       y2="239.59464"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(68.992098,38.424984)" />
   </defs>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <g
-       id="g54" />
-    <g
-       id="g59"
-       transform="matrix(0.59271491,0,0,0.58658283,-19.43,-74.12)">
-      <path
-         id="rect1"
-         style="fill:url(#linearGradient11);stroke:none;stroke-width:20;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
-         d="m 87.499418,135.4218 v 200.31242 l 48.668812,-55.08257 47.78889,55.07587 V 135.4218 Z m 96.457702,200.30572 -96.457702,0.007 h 96.457702 z" />
-      <path
-         id="path53"
-         style="fill:#c78929;fill-opacity:1;stroke-width:3.61039;stroke-dasharray:none"
-         d="m 153.8514,250.88227 c 3.16586,-0.88421 5.75667,-3.83846 8.9348,-8.05209 8.27019,15.99998 19.51866,29.31597 33.7454,39.94788 l -8.93479,8.05212 C 179.3266,274.83017 168.07814,261.51421 153.8514,250.88227 Z"
-         sodipodi:nodetypes="ccccc"
-         inkscape:transform-center-x="-1.2596217"
-         inkscape:transform-center-y="-1.2548064" />
-      <ellipse
-         style="fill:none;fill-opacity:1;stroke:#c78929;stroke-width:6.17203;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
-         id="ellipse52"
-         cx="155.14432"
-         cy="207.90279"
-         rx="35.470402"
-         ry="36.540028"
-         transform="matrix(0.99658475,0.08257627,-0.08658863,0.99624415,0,0)" />
-      <ellipse
-         style="opacity:0.3;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.602;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
-         id="path59"
-         cx="120.79665"
-         cy="212.50143"
-         rx="5.7294836"
-         ry="12.218948" />
-    </g>
-  </g>
+  <path fill="url(#bookmark)" d="M20 22a14 14 0 0 1 14-14h60a14 14 0 0 1 14 14v100L64 100 20 122Z"/>
+  <circle cx="58" cy="54" r="24" fill="#fff" fill-opacity="0.18"/>
+  <path d="M41.6 49.6A17 17 0 0 1 50.8 38.6" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="4" stroke-linecap="round"/>
+  <path fill="#f3b541" d="M79.9 68.9C85.3 78.1 92.6 85.4 101.8 90.8L94.8 97.8C89.4 88.6 82.1 81.3 72.9 75.9Z"/>
+  <circle cx="58" cy="54" r="24" fill="none" stroke="#f3b541" stroke-width="7"/>
 </svg>
