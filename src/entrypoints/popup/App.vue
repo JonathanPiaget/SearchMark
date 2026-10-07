@@ -3,10 +3,10 @@ import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
 import { useFolderTree } from '@/composables/useFolderTree';
-import { useSeeLater } from '@/composables/useSeeLater';
 import { useTheme } from '@/composables/useTheme';
 import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { notify } from '@/utils/notify';
+import { getCurrentTab } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
 import BookmarkForm from './components/BookmarkForm.vue';
@@ -55,7 +55,6 @@ const handleViewShortcut = (event: KeyboardEvent) => {
 };
 
 const { initTheme } = useTheme();
-const { initSeeLater } = useSeeLater();
 const { folderMap, loadFolders } = useFolderTree();
 const {
 	bookmarkLocations,
@@ -65,21 +64,14 @@ const {
 
 const loadCurrentTab = async () => {
 	try {
-		const [tab] = await browser.tabs.query({
-			active: true,
-			currentWindow: true,
-		});
-		if (tab?.url) {
-			currentUrl.value = tab.url;
-			currentTitle.value = tab.title || '';
+		const tab = await getCurrentTab();
+		currentUrl.value = tab.url;
+		currentTitle.value = tab.title;
+		bookmarkUrl.value = tab.url;
+		bookmarkTitle.value = tab.title;
 
-			bookmarkUrl.value = currentUrl.value;
-			bookmarkTitle.value = currentTitle.value;
-
-			// Search for existing bookmarks with this URL
-			await loadFolders();
-			await searchByUrl(tab.url);
-		}
+		await loadFolders();
+		await searchByUrl(tab.url);
 	} catch {
 		message.value = i18n.t('bookmarkError');
 		setTimeout(() => {
@@ -90,7 +82,6 @@ const loadCurrentTab = async () => {
 
 onMounted(() => {
 	initTheme();
-	initSeeLater();
 	loadCurrentTab();
 	window.addEventListener('keydown', handleViewShortcut, true);
 });
