@@ -15,46 +15,22 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { i18n } from '#i18n';
-import { useSeeLater } from '@/composables/useSeeLater';
+import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
+import { quickSave } from '@/utils/seeLater';
 import IconClock from '~icons/lucide/clock';
 
-const { getOrCreateSeeLaterFolder } = useSeeLater();
 const isLoading = ref(false);
 
 const handleSeeLater = async () => {
 	isLoading.value = true;
 	try {
-		// 1. Get or create See Later folder (now returns folder object)
-		const folder = await getOrCreateSeeLaterFolder();
-
-		// 2. Get current tab info
-		const [tab] = await browser.tabs.query({
-			active: true,
-			currentWindow: true,
-		});
-		if (!tab?.url || !tab?.title) {
-			throw new Error('No active tab found');
-		}
-
-		// 3. Save bookmark
-		await browser.bookmarks.create({
-			title: tab.title,
-			url: tab.url,
-			parentId: folder.id,
-		});
-
-		// 4. Show success notification
-		notify(i18n.t('seeLaterSuccess', { folderName: folder.title }));
-
-		// 5. Close popup
+		const { folderTitle } = await quickSave();
+		notify(i18n.t('seeLaterSuccess', { folderName: folderTitle }));
 		window.close();
 	} catch (error) {
-		console.error('See Later save failed:', error);
-
+		logError('Quick save failed', error);
 		notify(i18n.t('seeLaterError'));
-
-		// Don't close popup on error - let user try again
 	} finally {
 		isLoading.value = false;
 	}

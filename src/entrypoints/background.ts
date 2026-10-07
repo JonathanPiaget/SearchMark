@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { refreshAllBadges, updateBadgeForTab } from '@/utils/badge';
 import { logError } from '@/utils/logger';
 import type { ExtensionMessage } from '@/utils/notify';
-import { quickSaveCurrentTab } from '@/utils/quickSave';
+import { quickSave } from '@/utils/seeLater';
 
 const showNotification = async (message: string) => {
 	const granted = await browser.permissions.contains({
@@ -19,9 +19,9 @@ const showNotification = async (message: string) => {
 	});
 };
 
-const quickSave = async () => {
+const handleQuickSave = async () => {
 	try {
-		const { folderTitle } = await quickSaveCurrentTab();
+		const { folderTitle } = await quickSave();
 		showNotification(i18n.t('seeLaterSuccess', { folderName: folderTitle }));
 	} catch (error) {
 		logError('Quick save failed', error);
@@ -53,7 +53,7 @@ export default defineBackground(() => {
 
 	browser.commands.onCommand.addListener((command) => {
 		if (command === 'quick-save') {
-			quickSave();
+			handleQuickSave();
 		}
 	});
 
