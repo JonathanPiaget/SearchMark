@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.3]
+
+### Changed
+- Redrawn extension icon, clearer at small sizes
+- Folder dropdown now shows at most 50 matches, keeping the popup fast with large bookmark trees
+
+### Fixed
+- Fuzzy bookmark search in the Search view no longer stops after ten matches
+
 ## [1.13.2]
 
 ### Fixed
