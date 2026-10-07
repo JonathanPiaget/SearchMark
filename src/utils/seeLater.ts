@@ -1,38 +1,41 @@
 import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '@/utils/bookmark';
-import { logError } from '@/utils/logger';
+import { getCurrentTab } from '@/utils/tabs';
 
-export const seeLaterFolderItem = storage.defineItem<string | null>(
+const seeLaterFolderItem = storage.defineItem<string | null>(
 	'local:searchmark_seeLaterFolder',
 	{ fallback: null },
 );
 
-export const validateStorageValue = (value: unknown): string | null => {
-	return typeof value === 'string' && value.length > 0 ? value : null;
+const asFolderId = (value: unknown): string | null =>
+	typeof value === 'string' && value.length > 0 ? value : null;
+
+const getStoredFolder = async () => {
+	const id = asFolderId(await seeLaterFolderItem.getValue());
+	if (!id) return null;
+	const folder = await browser.bookmarks.get(id).then(
+		([node]) => node ?? null,
+		() => null,
+	);
+	if (!folder) await seeLaterFolderItem.removeValue();
+	return folder;
 };
 
-export const loadSeeLaterFolder = async (): Promise<string | null> => {
-	return validateStorageValue(await seeLaterFolderItem.getValue());
-};
+export const getSeeLaterFolderId = async (): Promise<string | null> =>
+	(await getStoredFolder())?.id ?? null;
 
-export const saveSeeLaterFolder = async (folderId: string) => {
-	await seeLaterFolderItem.setValue(folderId);
-};
-
-export const clearSeeLaterFolder = async () => {
-	await seeLaterFolderItem.removeValue();
-};
-
-export const verifyFolderExists = async (
-	folderId: string,
-): Promise<boolean> => {
-	try {
-		await browser.bookmarks.get(folderId);
-		return true;
-	} catch {
-		return false;
+export const setSeeLaterFolderId = async (id: string | null) => {
+	if (id) {
+		await seeLaterFolderItem.setValue(id);
+	} else {
+		await seeLaterFolderItem.removeValue();
 	}
 };
+
+export const watchSeeLaterFolderId = (
+	callback: (id: string | null) => void,
+): (() => void) =>
+	seeLaterFolderItem.watch((value) => callback(asFolderId(value)));
 
 const findExistingSeeLaterFolder = async () => {
 	const titles = [...new Set([i18n.t('seeLater'), 'See Later'])];
@@ -48,32 +51,32 @@ export const getOrCreateSeeLaterFolder = async (): Promise<{
 	id: string;
 	title: string;
 }> => {
-	const stored = await loadSeeLaterFolder();
-	if (stored && (await verifyFolderExists(stored))) {
-		try {
-			const folders = await browser.bookmarks.get(stored);
-			if (folders[0]) {
-				return { id: folders[0].id, title: folders[0].title || 'See Later' };
-			}
-		} catch (error) {
-			logError('Failed to get stored folder details', error);
-		}
+	const stored = await getStoredFolder();
+	if (stored) {
+		return { id: stored.id, title: stored.title || 'See Later' };
 	}
-
-	if (stored) await clearSeeLaterFolder();
 
 	const existing = await findExistingSeeLaterFolder();
 	if (existing) {
-		await saveSeeLaterFolder(existing.id);
+		await setSeeLaterFolderId(existing.id);
 		return { id: existing.id, title: existing.title || 'See Later' };
 	}
 
-	const toolbarId = await getBookmarkToolbarId();
 	const folder = await browser.bookmarks.create({
-		parentId: toolbarId,
+		parentId: await getBookmarkToolbarId(),
 		title: i18n.t('seeLater'),
 	});
-
-	await saveSeeLaterFolder(folder.id);
+	await setSeeLaterFolderId(folder.id);
 	return { id: folder.id, title: folder.title || 'See Later' };
+};
+
+export const quickSave = async (): Promise<{ folderTitle: string }> => {
+	const tab = await getCurrentTab();
+	const folder = await getOrCreateSeeLaterFolder();
+	await browser.bookmarks.create({
+		title: tab.title,
+		url: tab.url,
+		parentId: folder.id,
+	});
+	return { folderTitle: folder.title };
 };
