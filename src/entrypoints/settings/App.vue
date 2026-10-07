@@ -114,12 +114,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
-import { useSeeLater } from '@/composables/useSeeLater';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
 import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
+import {
+	getSeeLaterFolderId,
+	setSeeLaterFolderId,
+	watchSeeLaterFolderId,
+} from '@/utils/seeLater';
 import IconStar from '~icons/lucide/star';
 
 const STORE_URLS = {
@@ -129,14 +133,8 @@ const STORE_URLS = {
 };
 
 const { currentTheme, setTheme, initTheme } = useTheme();
-const {
-	seeLaterFolderId,
-	saveSeeLaterFolder,
-	clearSeeLaterFolder,
-	initSeeLater,
-} = useSeeLater();
 const selectedTheme = ref<Theme>('auto');
-const selectedFolderId = ref(seeLaterFolderId.value || '');
+const selectedFolderId = ref('');
 const notificationsEnabled = ref(false);
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
@@ -153,11 +151,7 @@ const handleSeeLaterFolderChange = async (folder: {
 	id: string;
 	name: string;
 }) => {
-	if (folder.id) {
-		await saveSeeLaterFolder(folder.id);
-	} else {
-		await clearSeeLaterFolder();
-	}
+	await setSeeLaterFolderId(folder.id || null);
 };
 
 const handleNotificationsToggle = async () => {
@@ -172,17 +166,22 @@ const handleNotificationsToggle = async () => {
 
 onMounted(async () => {
 	await initTheme();
-	await initSeeLater();
-	selectedFolderId.value = seeLaterFolderId.value || '';
+	selectedFolderId.value = (await getSeeLaterFolderId()) ?? '';
 	selectedTheme.value = currentTheme.value;
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],
 	});
 });
 
+const unwatchSeeLaterFolder = watchSeeLaterFolderId((id) => {
+	selectedFolderId.value = id ?? '';
+});
+
+onUnmounted(unwatchSeeLaterFolder);
+
 const handleUseDefaultFolder = async () => {
 	selectedFolderId.value = '';
-	await clearSeeLaterFolder();
+	await setSeeLaterFolderId(null);
 };
 </script>
 
