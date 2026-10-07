@@ -123,3 +123,28 @@ test('shows an error box instead of a blank list when bookmarks fail to load', a
 	await expect(popup.locator('.search-view .error-message')).toBeVisible();
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
 });
+
+test('global fuzzy filter lists more than ten matches', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedBookmarks(serviceWorker, [
+		{
+			folder: 'Reading',
+			items: Array.from({ length: 30 }, (_, i) => ({
+				title: `Alpha Guide ${i}`,
+				url: `https://example.com/alpha/${i}`,
+			})),
+		},
+	]);
+
+	const popup = await openPopup(context, extensionId);
+	await switchToSearch(popup);
+
+	await popup
+		.locator('.search-view .filter-container input[type="text"]')
+		.fill('Alpha');
+
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(30);
+});

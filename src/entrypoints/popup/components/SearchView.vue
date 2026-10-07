@@ -153,6 +153,7 @@ const filteredBookmarks = computed(() => {
 		const results = fuzzysort.go(filterQuery.value, bookmarks.value, {
 			key: 'title',
 			threshold: FUZZY_THRESHOLD,
+			limit: MAX_RESULTS,
 		});
 		const indexMap = new Map<string, readonly number[]>();
 		const filtered = results.map((r) => {
