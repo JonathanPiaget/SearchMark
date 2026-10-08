@@ -4,10 +4,6 @@ import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 
-vi.mock('@/utils/bookmark', () => ({
-	getBookmarkToolbarId: async () => 'toolbar',
-}));
-
 const folder = (
 	id: string,
 	title = id,
@@ -41,6 +37,7 @@ const setup = async (
 	const onSubmit = vi.fn();
 	const picker = useFolderPicker({
 		folders: ref(FOLDERS),
+		toolbarId: ref('toolbar'),
 		autoSelectDefault: false,
 		onChange,
 		onSubmit,

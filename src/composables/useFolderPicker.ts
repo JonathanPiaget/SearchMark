@@ -1,7 +1,6 @@
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
-import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { matchByTitle } from '@/utils/matchByTitle';
 
 const MAX_RESULTS = 50;
@@ -24,6 +23,7 @@ export type PickerKeyEvent = Pick<
 export interface FolderPickerOptions {
 	folders: Ref<BookmarkFolder[]>;
 	modelValue: Ref<string>;
+	toolbarId: Ref<string>;
 	autoSelectDefault: boolean;
 	toolbarRowTitle?: string;
 	onChange: (folder: BookmarkFolder | null) => void;
@@ -38,9 +38,9 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const selected = ref<BookmarkFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
-	const toolbar = ref<BookmarkFolder | null>(null);
 
 	const findFolder = (id: string) => folders.value.find((f) => f.id === id);
+	const toolbar = computed(() => findFolder(options.toolbarId.value) ?? null);
 
 	const toolbarRow = computed<PickerRow | null>(() =>
 		toolbar.value && options.toolbarRowTitle !== undefined
@@ -118,11 +118,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		isFuzzy.value = await fuzzySearchItem.getValue();
 		if (modelValue.value) apply(findFolder(modelValue.value) ?? null);
 
-		const autoSelect = options.autoSelectDefault && !modelValue.value;
-		if (options.toolbarRowTitle !== undefined || autoSelect) {
-			toolbar.value = findFolder(await getBookmarkToolbarId()) ?? null;
-		}
-		if (autoSelect) {
+		if (options.autoSelectDefault && !modelValue.value) {
 			if (toolbarRow.value) select(toolbarRow.value);
 			else if (toolbar.value) selectFolder(toolbar.value);
 		}

@@ -189,10 +189,11 @@ const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
 
-const { allFolders, loadFolders } = useFolderTree();
+const { allFolders, toolbarId, loadFolders } = useFolderTree();
 const picker = useFolderPicker({
 	folders: allFolders,
 	modelValue: toRef(props, 'modelValue'),
+	toolbarId,
 	autoSelectDefault: props.autoSelectDefault,
 	toolbarRowTitle: props.showToolbarOption
 		? i18n.t('bookmarkToolbar')

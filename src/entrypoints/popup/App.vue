@@ -4,7 +4,6 @@ import { i18n } from '#i18n';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { useTheme } from '@/composables/useTheme';
-import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { notify } from '@/utils/notify';
 import { getCurrentTab } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
@@ -55,7 +54,7 @@ const handleViewShortcut = (event: KeyboardEvent) => {
 };
 
 const { initTheme } = useTheme();
-const { folderMap, loadFolders } = useFolderTree();
+const { folderMap, toolbarId, loadFolders } = useFolderTree();
 const {
 	bookmarkLocations,
 	isLoading: isSearching,
@@ -100,7 +99,7 @@ const handleBookmarkDeleted = async () => {
 const saveBookmark = async () => {
 	isLoading.value = true;
 	try {
-		const folderId = selectedFolderId.value || (await getBookmarkToolbarId());
+		const folderId = selectedFolderId.value || toolbarId.value;
 
 		await browser.bookmarks.create({
 			title: bookmarkTitle.value,

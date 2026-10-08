@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import type { Browser } from 'wxt/browser';
-import { joinFolderPath } from '@/utils/bookmark';
+import { findToolbarId, joinFolderPath } from '@/utils/bookmark';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
@@ -47,27 +47,30 @@ export const buildFolderTree = (
 	return folders;
 };
 
+const allFolders = ref<BookmarkFolder[]>([]);
+const folderMap = ref<Map<string, BookmarkFolder>>(new Map());
+const toolbarId = ref('');
+let loading: Promise<void> | null = null;
+
+const fetchFolders = async () => {
+	const tree = await browser.bookmarks.getTree();
+	allFolders.value = buildFolderTree(tree).filter(
+		(folder) => folder.title !== '' && folder.id !== '0',
+	);
+	folderMap.value = new Map(
+		allFolders.value.map((folder) => [folder.id, folder]),
+	);
+	toolbarId.value = findToolbarId(tree);
+};
+
+const loadFolders = () => {
+	loading ??= fetchFolders().catch((err) => {
+		loading = null;
+		throw err;
+	});
+	return loading;
+};
+
 export function useFolderTree() {
-	const folderMap = ref<Map<string, BookmarkFolder>>(new Map());
-	const allFolders = ref<BookmarkFolder[]>([]);
-
-	const loadFolders = async () => {
-		const tree = await browser.bookmarks.getTree();
-		const folders = buildFolderTree(tree);
-
-		allFolders.value = folders.filter(
-			(folder) => folder.title !== '' && folder.id !== '0',
-		);
-
-		folderMap.value.clear();
-		for (const folder of allFolders.value) {
-			folderMap.value.set(folder.id, folder);
-		}
-	};
-
-	return {
-		allFolders,
-		folderMap,
-		loadFolders,
-	};
+	return { allFolders, folderMap, toolbarId, loadFolders };
 }

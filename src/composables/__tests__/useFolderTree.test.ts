@@ -1,9 +1,20 @@
-import { describe, expect, it } from 'vitest';
-import { buildFolderTree } from '@/composables/useFolderTree';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { Browser } from 'wxt/browser';
+import { buildFolderTree, useFolderTree } from '@/composables/useFolderTree';
 import {
 	createNestedTreeNodes,
 	createSimpleTreeNodes,
 } from '@/test-utils/bookmarkFactory';
+
+type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
+
+const bookmarks = browser.bookmarks as unknown as {
+	getTree(): Promise<BookmarkTreeNode[]>;
+};
+
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
 describe('buildFolderTree', () => {
 	it('filters out bookmarks and returns only folders', () => {
@@ -56,5 +67,26 @@ describe('buildFolderTree', () => {
 		// Books + Fiction + Sci-Fi = 3 folders
 		expect(tree).toHaveLength(3);
 		expect(tree.map((f) => f.title)).toEqual(['Books', 'Fiction', 'Sci-Fi']);
+	});
+});
+
+describe('useFolderTree', () => {
+	it('fetches the tree once, retrying only after a failure', async () => {
+		const getTree = vi
+			.spyOn(bookmarks, 'getTree')
+			.mockRejectedValueOnce(new Error('boom'))
+			.mockResolvedValue([
+				{ id: '0', title: '', children: createNestedTreeNodes() },
+			] as BookmarkTreeNode[]);
+		const { loadFolders, allFolders, folderMap, toolbarId } = useFolderTree();
+
+		await expect(loadFolders()).rejects.toThrow('boom');
+		await Promise.all([loadFolders(), loadFolders()]);
+		await loadFolders();
+
+		expect(getTree).toHaveBeenCalledTimes(2);
+		expect(allFolders.value.map((f) => f.id)).toEqual(['1', '2', '3']);
+		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction');
+		expect(toolbarId.value).toBe('1');
 	});
 });
