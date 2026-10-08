@@ -223,6 +223,43 @@ describe('useFolderPicker', () => {
 		expect(picker.inputText.value).toBe('Wine');
 	});
 
+	it('prevents default on arrow keys and Enter, not on Escape', async () => {
+		const { picker } = await setup();
+		type(picker, 'w');
+
+		for (const name of ['ArrowDown', 'ArrowUp', 'Enter']) {
+			const event = key(name);
+			type(picker, 'w');
+			picker.onKeydown(event);
+			expect(event.preventDefault, name).toHaveBeenCalled();
+		}
+
+		type(picker, 'w');
+		const escapeEvent = key('Escape');
+		picker.onKeydown(escapeEvent);
+		expect(escapeEvent.preventDefault).not.toHaveBeenCalled();
+	});
+
+	it('returns false for keys it does not handle', async () => {
+		const { picker } = await setup();
+		type(picker, 'w');
+
+		const space = key(' ');
+		expect(picker.onKeydown(space)).toBe(false);
+		expect(space.preventDefault).not.toHaveBeenCalled();
+		expect(picker.onKeydown(key('a'))).toBe(false);
+	});
+
+	it('Shift+Space does nothing when no row is highlighted', async () => {
+		const { picker } = await setup();
+		type(picker, 'work');
+		picker.highlight(-1);
+
+		picker.onKeydown(key(' ', true));
+
+		expect(picker.expandedId.value).toBeNull();
+	});
+
 	it('Shift+Space toggles expansion only for rows with children', async () => {
 		const { picker } = await setup();
 
