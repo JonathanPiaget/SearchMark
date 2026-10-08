@@ -10,7 +10,6 @@ type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
 interface BookmarksApi {
 	getTree(): Promise<BookmarkTreeNode[]>;
-	get(idOrIdList: string | string[]): Promise<BookmarkTreeNode[]>;
 	search(query: string | { url?: string }): Promise<BookmarkTreeNode[]>;
 }
 
@@ -86,28 +85,17 @@ describe('getBookmarkToolbarId', () => {
 		expect(await getBookmarkToolbarId()).toBe('1');
 	});
 
-	it('returns the predefined toolbar id on Firefox when it exists', async () => {
+	it('prefers the predefined toolbar id on Firefox wherever it sits', async () => {
 		stubUserAgent('Mozilla/5.0 Firefox/120');
-		vi.spyOn(bookmarks, 'get').mockResolvedValue([
-			{ id: 'toolbar_____', title: 'Bookmarks Toolbar' },
-		] as BookmarkTreeNode[]);
+		vi.spyOn(bookmarks, 'getTree').mockResolvedValue(
+			rootTree([{ id: 'toolbar_____' }, { id: 'menu' }]),
+		);
 
 		expect(await getBookmarkToolbarId()).toBe('toolbar_____');
 	});
 
-	it('falls back to the second root child on Firefox when get throws', async () => {
+	it('falls back to the second root child on Firefox', async () => {
 		stubUserAgent('Mozilla/5.0 Firefox/120');
-		vi.spyOn(bookmarks, 'get').mockRejectedValue(new Error('no id'));
-		vi.spyOn(bookmarks, 'getTree').mockResolvedValue(
-			rootTree([{ id: 'menu' }, { id: 'ff-toolbar' }]),
-		);
-
-		expect(await getBookmarkToolbarId()).toBe('ff-toolbar');
-	});
-
-	it('falls back to the second root child on Firefox when get returns empty', async () => {
-		stubUserAgent('Mozilla/5.0 Firefox/120');
-		vi.spyOn(bookmarks, 'get').mockResolvedValue([]);
 		vi.spyOn(bookmarks, 'getTree').mockResolvedValue(
 			rootTree([{ id: 'menu' }, { id: 'ff-toolbar' }]),
 		);

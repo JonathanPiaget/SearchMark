@@ -1,4 +1,7 @@
+import type { Browser } from 'wxt/browser';
 import { logError } from './logger';
+
+type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
 export const joinFolderPath = (parentPath: string, title: string): string =>
 	parentPath ? `${parentPath} > ${title}` : title;
@@ -14,30 +17,17 @@ export const findBookmarksByUrl = async (url: string) => {
 	}
 };
 
+export const findToolbarId = (tree: BookmarkTreeNode[]): string => {
+	const roots = tree[0]?.children ?? [];
+	const toolbar = navigator.userAgent.includes('Firefox')
+		? (roots.find((node) => node.id === 'toolbar_____') ?? roots[1])
+		: roots[0];
+	return toolbar?.id ?? '1';
+};
+
 export const getBookmarkToolbarId = async (): Promise<string> => {
 	try {
-		const isFirefox = navigator.userAgent.includes('Firefox');
-
-		if (isFirefox) {
-			// Firefox: Try predefined toolbar ID first
-			try {
-				const toolbarNode = await browser.bookmarks.get('toolbar_____');
-				if (toolbarNode?.[0]) {
-					return 'toolbar_____';
-				}
-			} catch {
-				// Fall back to tree position: [1] = Bookmarks Toolbar
-				const [tree] = await browser.bookmarks.getTree();
-				return tree?.children?.[1]?.id || '1';
-			}
-			// If Firefox toolbar ID exists but is empty, fall back to tree
-			const [tree] = await browser.bookmarks.getTree();
-			return tree?.children?.[1]?.id || '1';
-		}
-
-		// Chrome/Chromium: [0] = Bookmarks Toolbar
-		const [tree] = await browser.bookmarks.getTree();
-		return tree?.children?.[0]?.id || '1';
+		return findToolbarId(await browser.bookmarks.getTree());
 	} catch {
 		return '1';
 	}
