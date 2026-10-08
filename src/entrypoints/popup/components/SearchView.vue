@@ -2,18 +2,17 @@
   <div class="search-view">
     <FolderSelector
       ref="folderSelectorRef"
-      v-model="selectedFolderId"
+      v-model="folderId"
       :auto-select-default="false"
       :on-arrow-down-with-selection="focusFirstBookmark"
     />
 
-    <div v-if="selectedFolderId" class="search-options">
+    <div v-if="folderId" class="search-options">
       <label class="checkbox-label">
         <input
-          v-model="isRecursive"
+          v-model="recursive"
           type="checkbox"
           class="checkbox-input"
-          @change="handleRecursiveChange"
         >
         <span class="checkbox-text">{{ i18n.t('includeSubfolders') }}</span>
       </label>
@@ -27,7 +26,7 @@
           type="text"
           class="form-input"
           :class="{ 'has-clear': filterQuery }"
-          :placeholder="selectedFolderId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
+          :placeholder="folderId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
           @keydown.down.prevent="focusFirstBookmark"
         >
         <button
@@ -42,10 +41,9 @@
       </div>
       <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')" @mousedown.prevent>
         <input
-          v-model="isFuzzyFilter"
+          v-model="fuzzy"
           type="checkbox"
           class="fuzzy-checkbox"
-          @change="saveFuzzyPreference"
         >
         <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
       </label>
@@ -58,140 +56,52 @@
     <BookmarkList
       ref="bookmarkListRef"
       v-if="!error"
-      :bookmarks="displayedBookmarks"
+      :results="results"
       :is-loading="isLoading"
-      :empty-message="selectedFolderId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
+      :empty-message="folderId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
       :filter-query="filterQuery"
-      :filter-indexes-map="filterIndexesMap"
-      :is-fuzzy="isFuzzyFilter"
+      :is-fuzzy="fuzzy"
       @open-bookmark="handleOpenBookmark"
-      @bookmark-deleted="removeBookmark"
+      @bookmark-deleted="remove"
       @escape-top="focusFilterInput"
     />
 
-    <div v-if="hasMoreResults" class="more-results">
-      {{ i18n.t('moreResults', { count: filteredBookmarks.length - MAX_RESULTS }) }}
+    <div v-if="hiddenCount" class="more-results">
+      {{ i18n.t('moreResults', { count: hiddenCount }) }}
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from 'vue';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { useBookmarkBrowser } from '@/composables/useBookmarkBrowser';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
-import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
 import { useFolderTree } from '@/composables/useFolderTree';
-import { matchByTitle } from '@/utils/matchByTitle';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
 
-const recursiveSearchItem = storage.defineItem<boolean>(
-	'local:searchmark_recursive_search',
-	{ fallback: true },
-);
-const fuzzyFilterItem = storage.defineItem<boolean>(
-	'local:searchmark_fuzzy_filter',
-	{ fallback: true },
-);
-const MAX_RESULTS = 100;
-
-const selectedFolderId = ref('');
-const isRecursive = ref(true);
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const filterInputRef = ref<HTMLInputElement | null>(null);
-const filterQuery = ref('');
-const isFuzzyFilter = ref(true);
-const filterIndexesMap = ref<Map<string, readonly number[]>>(new Map());
-let allBookmarksLoaded = false;
-let allBookmarksLoading: Promise<void> | null = null;
 
 const { folderMap, loadFolders } = useFolderTree();
-
 const {
-	bookmarks: allBookmarks,
-	isLoading: isLoadingAll,
-	error: errorAll,
-	loadAllBookmarks,
-	removeBookmark: removeFromAll,
-} = useBookmarkFolder(folderMap);
+	folderId,
+	filterQuery,
+	recursive,
+	fuzzy,
+	results,
+	hiddenCount,
+	isLoading,
+	error,
+	init,
+	remove,
+} = useBookmarkBrowser(folderMap);
 
-const {
-	bookmarks: folderBookmarks,
-	isLoading: isLoadingFolder,
-	error: errorFolder,
-	loadBookmarks,
-	removeBookmark: removeFromFolder,
-} = useBookmarkFolder(folderMap);
-
-const bookmarks = computed(() =>
-	selectedFolderId.value ? folderBookmarks.value : allBookmarks.value,
-);
-const isLoading = computed(() =>
-	selectedFolderId.value ? isLoadingFolder.value : isLoadingAll.value,
-);
-const error = computed(() =>
-	selectedFolderId.value ? errorFolder.value : errorAll.value,
-);
 const errorMessage = computed(() => (error.value ? i18n.t(error.value) : ''));
-
-const removeBookmark = (id: string) => {
-	removeFromAll(id);
-	removeFromFolder(id);
-};
-
-const filteredBookmarks = computed(() => {
-	if (!filterQuery.value.trim()) {
-		filterIndexesMap.value = new Map();
-		return bookmarks.value;
-	}
-
-	const results = matchByTitle(
-		bookmarks.value,
-		filterQuery.value,
-		isFuzzyFilter.value,
-		MAX_RESULTS + 1,
-	);
-	filterIndexesMap.value = new Map(
-		results.flatMap(({ item, indexes }) =>
-			indexes ? [[item.id, indexes] as const] : [],
-		),
-	);
-	return results.map((r) => r.item);
-});
-
-const displayedBookmarks = computed(() => {
-	if (!selectedFolderId.value && !filterQuery.value.trim()) {
-		return [];
-	}
-	return filteredBookmarks.value.slice(0, MAX_RESULTS);
-});
-
-const hasMoreResults = computed(
-	() =>
-		filterQuery.value.trim() && filteredBookmarks.value.length > MAX_RESULTS,
-);
-
-const saveFuzzyPreference = () => {
-	fuzzyFilterItem.setValue(isFuzzyFilter.value);
-};
-
-const ensureAllBookmarksLoaded = async () => {
-	if (allBookmarksLoaded) return;
-	if (!allBookmarksLoading) {
-		allBookmarksLoading = loadAllBookmarks()
-			.then(() => {
-				allBookmarksLoaded = true;
-			})
-			.catch(() => {})
-			.finally(() => {
-				allBookmarksLoading = null;
-			});
-	}
-	await allBookmarksLoading;
-};
 
 const focusFirstBookmark = () => {
 	if (!bookmarkListRef.value) return false;
@@ -216,29 +126,7 @@ defineExpose({ focus });
 
 onMounted(async () => {
 	await loadFolders();
-	isRecursive.value = await recursiveSearchItem.getValue();
-	isFuzzyFilter.value = await fuzzyFilterItem.getValue();
-});
-
-const handleRecursiveChange = async () => {
-	await recursiveSearchItem.setValue(isRecursive.value);
-	if (selectedFolderId.value) {
-		await loadBookmarks(selectedFolderId.value, isRecursive.value);
-	}
-};
-
-watch(selectedFolderId, async (newFolderId) => {
-	if (newFolderId) {
-		await loadBookmarks(newFolderId, isRecursive.value);
-	} else if (filterQuery.value.trim()) {
-		await ensureAllBookmarksLoaded();
-	}
-});
-
-watch(filterQuery, (query) => {
-	if (query.trim() && !selectedFolderId.value) {
-		ensureAllBookmarksLoaded();
-	}
+	await init();
 });
 
 const handleOpenBookmark = (bookmark: BookmarkItem) => {

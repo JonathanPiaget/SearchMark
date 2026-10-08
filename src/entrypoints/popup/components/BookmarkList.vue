@@ -5,20 +5,20 @@
       <span class="message">{{ i18n.t('loadingBookmarks') }}</span>
     </div>
 
-    <div v-else-if="bookmarks.length === 0" class="empty-state">
+    <div v-else-if="results.length === 0" class="empty-state">
       <span class="icon"><IconInbox /></span>
       <span class="message">{{ emptyMessage || i18n.t('noBookmarksInFolder') }}</span>
     </div>
 
     <div v-else class="bookmark-items">
       <BookmarkItem
-        v-for="bookmark in bookmarks"
-        :key="bookmark.id"
-        :bookmark="bookmark"
+        v-for="{ item, indexes } in results"
+        :key="item.id"
+        :bookmark="item"
         :filter-query="filterQuery"
-        :highlight-indexes="filterIndexesMap?.get(bookmark.id) ?? null"
+        :highlight-indexes="indexes"
         :is-fuzzy="isFuzzy"
-        @open="emit('openBookmark', bookmark)"
+        @open="emit('openBookmark', item)"
         @deleted="(id) => emit('bookmarkDeleted', id)"
         @escape-top="emit('escapeTop')"
       />
@@ -29,16 +29,16 @@
 <script lang="ts" setup>
 import { i18n } from '#i18n';
 import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
+import type { TitleMatch } from '@/utils/matchByTitle';
 import IconInbox from '~icons/lucide/inbox';
 import IconLoader from '~icons/lucide/loader-circle';
 import BookmarkItem from './BookmarkItem.vue';
 
 interface Props {
-	bookmarks: BookmarkItemType[];
+	results: TitleMatch<BookmarkItemType>[];
 	isLoading?: boolean;
 	emptyMessage?: string;
 	filterQuery?: string;
-	filterIndexesMap?: Map<string, readonly number[]>;
 	isFuzzy?: boolean;
 }
 
