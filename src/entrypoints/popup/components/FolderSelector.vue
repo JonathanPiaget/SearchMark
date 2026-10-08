@@ -214,13 +214,15 @@ const {
 	selected,
 } = picker;
 
-const { maxHeight: dropdownMaxHeight, update: updateDropdownFit } =
-	useDropdownFit(isOpen, folderInput, dropdownRef);
+const { maxHeight: dropdownMaxHeight } = useDropdownFit(
+	isOpen,
+	folderInput,
+	dropdownRef,
+);
 
 const onInput = () => {
 	dropdownItemRefs.value = [];
 	picker.onInput();
-	if (isOpen.value) updateDropdownFit();
 };
 
 const onFocus = () => {
