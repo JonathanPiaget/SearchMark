@@ -101,7 +101,7 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on Node 22 and mu
 3. `pnpm run test` (Vitest)
 4. `pnpm run build`
 
-Before handing back a change, locally ensure these pass: `pnpm run check`, `pnpm run compile`, `pnpm run test`, and (when relevant) `pnpm run build`. `just lint` runs `pre-commit run --all-files` plus `pnpm run compile`.
+Before handing back a change, locally ensure these pass: `pnpm run check`, `pnpm run compile`, `pnpm run test`, and (when relevant) `pnpm run build`. Touched a `.vue` file or popup wiring: also run `pnpm run test:e2e` (Vitest has no DOM, so `.vue` behaviour is only covered there). `just lint` runs `pre-commit run --all-files` plus `pnpm run compile`.
 
 Commit / PR conventions:
 
