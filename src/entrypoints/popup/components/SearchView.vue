@@ -76,14 +76,13 @@
 </template>
 
 <script lang="ts" setup>
-import fuzzysort from 'fuzzysort';
 import type { ComponentPublicInstance } from 'vue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { i18n } from '#i18n';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
-import { FUZZY_THRESHOLD } from '@/composables/useFolderSearch';
 import { useFolderTree } from '@/composables/useFolderTree';
+import { matchByTitle } from '@/utils/matchByTitle';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
@@ -149,24 +148,18 @@ const filteredBookmarks = computed(() => {
 		return bookmarks.value;
 	}
 
-	if (isFuzzyFilter.value) {
-		const results = fuzzysort.go(filterQuery.value, bookmarks.value, {
-			key: 'title',
-			threshold: FUZZY_THRESHOLD,
-			limit: MAX_RESULTS,
-		});
-		const indexMap = new Map<string, readonly number[]>();
-		const filtered = results.map((r) => {
-			indexMap.set(r.obj.id, r.indexes);
-			return r.obj;
-		});
-		filterIndexesMap.value = indexMap;
-		return filtered;
-	}
-
-	const query = filterQuery.value.toLowerCase();
-	filterIndexesMap.value = new Map();
-	return bookmarks.value.filter((b) => b.title.toLowerCase().includes(query));
+	const results = matchByTitle(
+		bookmarks.value,
+		filterQuery.value,
+		isFuzzyFilter.value,
+		MAX_RESULTS + 1,
+	);
+	filterIndexesMap.value = new Map(
+		results.flatMap(({ item, indexes }) =>
+			indexes ? [[item.id, indexes] as const] : [],
+		),
+	);
+	return results.map((r) => r.item);
 });
 
 const displayedBookmarks = computed(() => {

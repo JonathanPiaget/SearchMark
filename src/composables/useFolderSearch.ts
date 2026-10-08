@@ -1,7 +1,7 @@
-import fuzzysort from 'fuzzysort';
 import type { Ref } from 'vue';
 import { ref, watch } from 'vue';
 import { highlightText } from '@/utils/highlight';
+import { matchByTitle } from '@/utils/matchByTitle';
 import type { BookmarkFolder } from './useFolderTree';
 
 export interface FolderSearchResult {
@@ -9,7 +9,6 @@ export interface FolderSearchResult {
 	indexes: readonly number[] | null;
 }
 
-export const FUZZY_THRESHOLD = 0.3;
 const MAX_RESULTS = 50;
 const fuzzySearchItem = storage.defineItem<boolean>(
 	'local:searchmark_fuzzy_search',
@@ -30,28 +29,12 @@ export function useFolderSearch(allFolders: Ref<BookmarkFolder[]>) {
 	});
 
 	const searchFolders = (): void => {
-		if (!searchQuery.value.trim()) {
-			searchResults.value = [];
-			return;
-		}
-
-		if (isFuzzyEnabled.value) {
-			const results = fuzzysort.go(searchQuery.value, allFolders.value, {
-				key: 'title',
-				threshold: FUZZY_THRESHOLD,
-				limit: MAX_RESULTS,
-			});
-			searchResults.value = results.map((r) => ({
-				folder: r.obj,
-				indexes: r.indexes,
-			}));
-		} else {
-			const query = searchQuery.value.toLowerCase();
-			searchResults.value = allFolders.value
-				.filter((folder) => folder.title.toLowerCase().includes(query))
-				.slice(0, MAX_RESULTS)
-				.map((folder) => ({ folder, indexes: null }));
-		}
+		searchResults.value = matchByTitle(
+			allFolders.value,
+			searchQuery.value,
+			isFuzzyEnabled.value,
+			MAX_RESULTS,
+		).map(({ item, indexes }) => ({ folder: item, indexes }));
 	};
 
 	return {
