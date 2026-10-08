@@ -78,7 +78,14 @@ describe('useFolderTree', () => {
 			.spyOn(bookmarks, 'getTree')
 			.mockRejectedValueOnce(new Error('boom'))
 			.mockResolvedValue([
-				{ id: '0', title: '', children: createNestedTreeNodes() },
+				{
+					id: '0',
+					title: '',
+					children: [
+						{ id: 'toolbar', title: 'Toolbar', parentId: '0' },
+						...createNestedTreeNodes(),
+					],
+				},
 			] as BookmarkTreeNode[]);
 		const { loadFolders, allFolders, folderMap, toolbarId } = useFolderTree();
 
@@ -87,8 +94,13 @@ describe('useFolderTree', () => {
 		await loadFolders();
 
 		expect(getTree).toHaveBeenCalledTimes(2);
-		expect(allFolders.value.map((f) => f.id)).toEqual(['1', '2', '3']);
+		expect(allFolders.value.map((f) => f.id)).toEqual([
+			'toolbar',
+			'1',
+			'2',
+			'3',
+		]);
 		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction > Sci-Fi');
-		expect(toolbarId.value).toBe('1');
+		expect(toolbarId.value).toBe('toolbar');
 	});
 });
