@@ -82,7 +82,12 @@ describe('useFolderTree', () => {
 					id: '0',
 					title: '',
 					children: [
-						{ id: 'toolbar', title: 'Toolbar', parentId: '0' },
+						{
+							id: 'toolbar',
+							title: 'Toolbar',
+							parentId: '0',
+							children: [{ id: 'untitled', title: '', parentId: 'toolbar' }],
+						},
 						...createNestedTreeNodes(),
 					],
 				},
@@ -101,6 +106,7 @@ describe('useFolderTree', () => {
 			'3',
 		]);
 		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction > Sci-Fi');
+		expect(folderMap.value.get('untitled')?.path).toBe('Toolbar > ');
 		expect(toolbarId.value).toBe('toolbar');
 	});
 });

@@ -52,12 +52,11 @@ let loading: Promise<void> | null = null;
 
 const fetchFolders = async () => {
 	const tree = await browser.bookmarks.getTree();
-	allFolders.value = buildFolderTree(tree).filter(
+	const folders = buildFolderTree(tree);
+	allFolders.value = folders.filter(
 		(folder) => folder.title !== '' && folder.id !== '0',
 	);
-	folderMap.value = new Map(
-		allFolders.value.map((folder) => [folder.id, folder]),
-	);
+	folderMap.value = new Map(folders.map((folder) => [folder.id, folder]));
 	toolbarId.value = findToolbarId(tree);
 };
 

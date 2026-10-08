@@ -94,7 +94,7 @@ export function useBookmarkFolder(
 			return walkBookmarks(
 				{ id: folderId } as Browser.bookmarks.BookmarkTreeNode,
 				folder.path,
-				(child) => recursive && folderMap.value.has(child.id),
+				(child) => recursive && Boolean(child.title),
 			);
 		});
 

@@ -31,7 +31,8 @@ const folderMap = ref(
 
 const stubChildren = () =>
 	vi.spyOn(bookmarks, 'getChildren').mockImplementation(async (id) => {
-		if (id === 'f1') return [link('b1', 'Alpha', 'f1'), node({ id: 'sub' })];
+		if (id === 'f1')
+			return [link('b1', 'Alpha', 'f1'), node({ id: 'sub', title: 'Sub' })];
 		if (id === 'sub') return [link('b2', 'Beta', 'sub')];
 		return [];
 	});

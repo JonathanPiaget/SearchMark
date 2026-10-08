@@ -96,14 +96,17 @@ describe('loadBookmarks — recursive (default)', () => {
 		expect(items.value[0]?.path).toBe('Bar > Dev > Frontend');
 	});
 
-	it('skips a subfolder that is absent from the folder map', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
+	it('skips an untitled subfolder even when the folder map knows it', async () => {
+		const map = folderMapOf([
+			{ id: 'f1', title: 'Work', path: 'Work' },
+			{ id: 'untitled', title: '', path: 'Work > ', parentId: 'f1' },
+		]);
 		stubChildren({
 			f1: [
 				node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' }),
-				node({ id: 'orphan', title: 'Orphan', parentId: 'f1' }),
+				node({ id: 'untitled', title: '', parentId: 'f1' }),
 			],
-			orphan: [node({ id: 'b2', title: 'B', url: 'https://b' })],
+			untitled: [node({ id: 'b2', title: 'B', url: 'https://b' })],
 		});
 
 		const { loadBookmarks, bookmarks: items } = useBookmarkFolder(map);
