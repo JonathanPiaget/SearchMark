@@ -99,6 +99,7 @@ const handleBookmarkDeleted = async () => {
 const saveBookmark = async () => {
 	isLoading.value = true;
 	try {
+		await loadFolders();
 		const folderId = selectedFolderId.value || toolbarId.value;
 
 		await browser.bookmarks.create({
