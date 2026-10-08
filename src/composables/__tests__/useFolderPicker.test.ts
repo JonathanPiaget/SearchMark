@@ -94,11 +94,11 @@ describe('useFolderPicker', () => {
 		type(picker, 'w');
 		expect(picker.rows.value[0]?.kind).toBe('toolbar');
 		expect(picker.highlighted.value.row).toBe(1);
-		expect(picker.position.value).toEqual({ current: 1, total: 4 });
+		expect(picker.matchCount.value).toEqual({ current: 1, total: 4 });
 
 		picker.onKeydown(key('ArrowUp'));
 		expect(picker.highlighted.value.row).toBe(0);
-		expect(picker.position.value.current).toBe(0);
+		expect(picker.matchCount.value.current).toBe(0);
 
 		picker.onKeydown(key('Enter'));
 		expect(onChange).toHaveBeenCalledWith(
@@ -328,7 +328,7 @@ describe('useFolderPicker', () => {
 		picker.onKeydown(key('Enter'));
 		expect(onSubmit).not.toHaveBeenCalled();
 
-		picker.select(FOLDERS[2] as BookmarkFolder);
+		picker.selectFolder(FOLDERS[2] as BookmarkFolder);
 		picker.onKeydown(key('Enter'));
 		expect(onSubmit).toHaveBeenCalledOnce();
 	});
@@ -347,7 +347,7 @@ describe('useFolderPicker', () => {
 
 	it('clear drops the selection and reports null', async () => {
 		const { picker, onChange } = await setup();
-		picker.select(FOLDERS[2] as BookmarkFolder);
+		picker.selectFolder(FOLDERS[2] as BookmarkFolder);
 
 		picker.clear();
 

@@ -1,11 +1,10 @@
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { matchByTitle } from '@/utils/matchByTitle';
-import type { BookmarkFolder } from './useFolderTree';
 
 const MAX_RESULTS = 50;
-const NONE = { row: -1, child: -1 };
 const fuzzySearchItem = storage.defineItem<boolean>(
 	'local:searchmark_fuzzy_search',
 	{ fallback: true },
@@ -37,7 +36,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const isOpen = ref(false);
 	const isFuzzy = ref(true);
 	const selected = ref<BookmarkFolder | null>(null);
-	const highlighted = ref({ ...NONE });
+	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
 	const toolbar = ref<BookmarkFolder | null>(null);
 
@@ -67,7 +66,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		return toolbarRow.value ? [toolbarRow.value, ...matches] : matches;
 	});
 
-	const position = computed(() => {
+	const matchCount = computed(() => {
 		const offset = toolbarRow.value ? 1 : 0;
 		return {
 			current: Math.max(0, highlighted.value.row + 1 - offset),
@@ -83,7 +82,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 
 	const close = () => {
 		isOpen.value = false;
-		highlighted.value = { ...NONE };
+		highlight(-1);
 		expandedId.value = null;
 	};
 
@@ -92,18 +91,23 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		highlightFirstFolder();
 	};
 
-	const apply = (folder: BookmarkFolder | null) => {
-		selected.value = folder;
-		inputText.value = folder?.title ?? '';
+	const settle = () => {
+		inputText.value = selected.value?.title ?? '';
 	};
 
-	const select = (target: PickerRow | BookmarkFolder) => {
-		const folder =
-			'kind' in target ? target.folder : (findFolder(target.id) ?? target);
+	const apply = (folder: BookmarkFolder | null) => {
+		selected.value = folder;
+		settle();
+	};
+
+	const commit = (folder: BookmarkFolder) => {
 		apply(folder);
 		close();
 		options.onChange(folder);
 	};
+	const select = (row: PickerRow) => commit(row.folder);
+	const selectFolder = (folder: BookmarkFolder) =>
+		commit(findFolder(folder.id) ?? folder);
 
 	const clear = () => {
 		apply(null);
@@ -119,8 +123,8 @@ export function useFolderPicker(options: FolderPickerOptions) {
 			toolbar.value = findFolder(await getBookmarkToolbarId()) ?? null;
 		}
 		if (autoSelect) {
-			const target = toolbarRow.value ?? toolbar.value;
-			if (target) select(target);
+			if (toolbarRow.value) select(toolbarRow.value);
+			else if (toolbar.value) selectFolder(toolbar.value);
 		}
 	};
 
@@ -178,7 +182,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const confirm = () => {
 		const child = expandedChildren()[highlighted.value.child];
 		const row = currentRow();
-		if (child) select(child);
+		if (child) selectFolder(child);
 		else if (row) select(row);
 		else options.onSubmit();
 	};
@@ -221,7 +225,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		}
 		if (event.key === 'Escape') {
 			close();
-			inputText.value = selected.value?.title ?? '';
+			settle();
 			return true;
 		}
 		return false;
@@ -244,7 +248,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		isOpen,
 		isFuzzy,
 		rows,
-		position,
+		matchCount,
 		highlighted,
 		expandedId,
 		selected,
@@ -255,6 +259,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		onKeydown,
 		highlight,
 		select,
+		selectFolder,
 		clear,
 	};
 }

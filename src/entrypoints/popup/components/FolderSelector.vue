@@ -106,7 +106,7 @@
                     v-for="(child, childIndex) in row.folder.children"
                     :key="child.id"
                     :class="['child-folder', { highlighted: index === highlighted.row && childIndex === highlighted.child }]"
-                    @click.stop="picker.select(child)"
+                    @click.stop="picker.selectFolder(child)"
                     @mousedown.stop
                     @mouseenter="picker.highlight(index, childIndex)"
                   >
@@ -117,7 +117,7 @@
               </div>
             </div>
           </template>
-          <div v-if="position.total === 0" class="no-results">
+          <div v-if="matchCount.total === 0" class="no-results">
             <div class="no-results-icon"><IconSearchX /></div>
             <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
             <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
@@ -128,10 +128,10 @@
             @mousedown.prevent
           >
             <div class="result-count">
-              <span class="count-current">{{ position.current }}</span>
-              <span class="count-total"> / {{ position.total }}</span>&nbsp;
+              <span class="count-current">{{ matchCount.current }}</span>
+              <span class="count-total"> / {{ matchCount.total }}</span>&nbsp;
               <span class="count-matches">
-                {{ position.total === 1 ? i18n.t('match') : i18n.t('matches') }}
+                {{ matchCount.total === 1 ? i18n.t('match') : i18n.t('matches') }}
               </span>
             </div>
             <div class="footer-keys">
@@ -208,7 +208,7 @@ const {
 	isOpen,
 	isFuzzy,
 	rows,
-	position,
+	matchCount,
 	highlighted,
 	expandedId,
 	selected,
