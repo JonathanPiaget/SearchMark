@@ -9,10 +9,10 @@
         v-for="location in locations"
         :key="location.id"
         class="location-item"
-        :title="location.folderPath"
+        :title="location.path"
       >
         <span class="folder-icon"><IconFolder /></span>
-        <span class="folder-path">{{ location.folderPath }}</span>
+        <span class="folder-path">{{ location.path }}</span>
         <button
           class="delete-button"
           :disabled="isDeleting"

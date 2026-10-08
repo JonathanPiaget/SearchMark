@@ -1,35 +1,53 @@
-import { describe, expect, it } from 'vitest';
-import { buildFolderPath } from '@/composables/useBookmarkSearch';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
+import type { Browser } from 'wxt/browser';
+import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { createFolder } from '@/test-utils/bookmarkFactory';
 
-describe('buildFolderPath', () => {
-	it('returns empty string when folder not found', () => {
-		const folderMap = new Map<string, BookmarkFolder>();
+type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
-		expect(buildFolderPath('non-existent', folderMap)).toBe('');
-	});
+const bookmarks = browser.bookmarks as unknown as {
+	search(query: { url?: string }): Promise<BookmarkTreeNode[]>;
+};
 
-	it('returns folder title for root-level folder', () => {
-		const folderMap = new Map<string, BookmarkFolder>();
-		folderMap.set('1', createFolder({ id: '1', title: 'Work', path: '' }));
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
-		expect(buildFolderPath('1', folderMap)).toBe('Work');
-	});
-
-	it('builds complete path for nested folders', () => {
-		const folderMap = new Map<string, BookmarkFolder>();
-		folderMap.set(
-			'2',
-			createFolder({
-				id: '2',
-				title: 'Frontend',
-				path: 'Bookmarks Bar > Dev',
-			}),
+describe('useBookmarkSearch', () => {
+	it('returns each match with the path of the folder holding it', async () => {
+		const folderMap = ref(
+			new Map<string, BookmarkFolder>([
+				[
+					'2',
+					createFolder({ id: '2', title: 'Frontend', path: 'Dev > Frontend' }),
+				],
+			]),
 		);
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([
+			{ id: 'a', title: 'A', url: 'https://a.com/', parentId: '2' },
+			{ id: 'b', title: 'B', url: 'https://a.com/', parentId: 'gone' },
+		] as BookmarkTreeNode[]);
+		const { bookmarkLocations, searchByUrl } = useBookmarkSearch(folderMap);
 
-		expect(buildFolderPath('2', folderMap)).toBe(
-			'Bookmarks Bar > Dev > Frontend',
-		);
+		await searchByUrl('https://a.com/');
+
+		expect(bookmarkLocations.value).toEqual([
+			{
+				id: 'a',
+				title: 'A',
+				url: 'https://a.com/',
+				folderId: '2',
+				path: 'Dev > Frontend',
+			},
+			{
+				id: 'b',
+				title: 'B',
+				url: 'https://a.com/',
+				folderId: 'gone',
+				path: '',
+			},
+		]);
 	});
 });

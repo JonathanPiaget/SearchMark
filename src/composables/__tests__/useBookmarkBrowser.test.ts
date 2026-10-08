@@ -24,8 +24,8 @@ const link = (id: string, title: string, parentId: string) =>
 
 const folderMap = ref(
 	new Map<string, BookmarkFolder>([
-		['f1', { id: 'f1', title: 'Work', path: '' }],
-		['sub', { id: 'sub', title: 'Sub', path: 'Work' }],
+		['f1', { id: 'f1', title: 'Work', path: 'Work' }],
+		['sub', { id: 'sub', title: 'Sub', path: 'Work > Sub' }],
 	]),
 );
 

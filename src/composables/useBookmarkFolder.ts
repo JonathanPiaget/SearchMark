@@ -8,7 +8,7 @@ export interface BookmarkItem {
 	title: string;
 	url: string;
 	parentId: string;
-	parentPath: string;
+	path: string;
 	dateAdded?: number;
 }
 
@@ -40,14 +40,17 @@ const walkBookmarks = async (
 						title: child.title,
 						url: child.url,
 						parentId: child.parentId || parent.id,
-						parentPath: basePath,
+						path: basePath,
 						dateAdded: child.dateAdded,
 					},
 				];
 			}
 			if (canDescend(child)) {
-				const subfolderPath = joinFolderPath(basePath, child.title);
-				return walkBookmarks(child, subfolderPath, canDescend);
+				return walkBookmarks(
+					child,
+					joinFolderPath(basePath, child.title),
+					canDescend,
+				);
 			}
 			return [];
 		}),
@@ -88,11 +91,9 @@ export function useBookmarkFolder(
 				throw new Error('Folder not found');
 			}
 
-			const fullPath = joinFolderPath(folder.path, folder.title);
-
 			return walkBookmarks(
 				{ id: folderId } as Browser.bookmarks.BookmarkTreeNode,
-				fullPath,
+				folder.path,
 				(child) => recursive && folderMap.value.has(child.id),
 			);
 		});

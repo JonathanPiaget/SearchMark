@@ -2,7 +2,7 @@
   <div
     class="bookmark-item"
     tabindex="0"
-    :title="bookmark.parentPath"
+    :title="bookmark.path"
     @click="handleOpen"
     @keydown="handleKeydown"
   >
@@ -20,8 +20,8 @@
         </span>
       </div>
       <div class="bookmark-url">{{ bookmark.url }}</div>
-      <div v-if="bookmark.parentPath" class="bookmark-path">
-        {{ i18n.t('pathLabel') }} {{ bookmark.parentPath }}
+      <div v-if="bookmark.path" class="bookmark-path">
+        {{ i18n.t('pathLabel') }} {{ bookmark.path }}
       </div>
     </div>
     <button

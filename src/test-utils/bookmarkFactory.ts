@@ -52,19 +52,6 @@ function createNode(options: CreateNodeOptions): BookmarkTreeNode {
 }
 
 /**
- * Preset: Realistic work-related bookmark structure
- */
-export function createWorkBookmarks(): BookmarkFolder[] {
-	return [
-		createFolder({ id: '1', title: 'Work Projects', path: '' }),
-		createFolder({ id: '2', title: 'Documentation', path: 'Work Projects' }),
-		createFolder({ id: '3', title: 'Code Reviews', path: 'Work Projects' }),
-		createFolder({ id: '4', title: 'Personal', path: '' }),
-		createFolder({ id: '5', title: 'work notes', path: 'Personal' }),
-	];
-}
-
-/**
  * Preset: Simple tree structure for testing buildFolderTree
  */
 export function createSimpleTreeNodes(): BookmarkTreeNode[] {

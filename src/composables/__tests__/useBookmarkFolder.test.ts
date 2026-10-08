@@ -56,10 +56,10 @@ describe('loadBookmarks — folder not found', () => {
 });
 
 describe('loadBookmarks — recursive (default)', () => {
-	it('descends subfolders and sets parentPath from the resolved full path', async () => {
+	it('descends subfolders and sets path from the folder path', async () => {
 		const map = folderMapOf([
-			{ id: 'f1', title: 'Work', path: '' },
-			{ id: 'sub', title: 'Sub', path: 'Work' },
+			{ id: 'f1', title: 'Work', path: 'Work' },
+			{ id: 'sub', title: 'Sub', path: 'Work > Sub' },
 		]);
 		stubChildren({
 			f1: [
@@ -73,18 +73,18 @@ describe('loadBookmarks — recursive (default)', () => {
 		await loadBookmarks('f1');
 
 		expect(items.value).toEqual([
-			expect.objectContaining({ id: 'b1', parentPath: 'Work', parentId: 'f1' }),
+			expect.objectContaining({ id: 'b1', path: 'Work', parentId: 'f1' }),
 			expect.objectContaining({
 				id: 'b2',
-				parentPath: 'Work > Sub',
+				path: 'Work > Sub',
 				parentId: 'sub',
 			}),
 		]);
 	});
 
-	it('prefixes the resolved full path with the folder path when present', async () => {
+	it('uses the full folder path', async () => {
 		const map = folderMapOf([
-			{ id: 'f1', title: 'Frontend', path: 'Bar > Dev' },
+			{ id: 'f1', title: 'Frontend', path: 'Bar > Dev > Frontend' },
 		]);
 		stubChildren({
 			f1: [node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' })],
@@ -93,11 +93,11 @@ describe('loadBookmarks — recursive (default)', () => {
 		const { loadBookmarks, bookmarks: items } = useBookmarkFolder(map);
 		await loadBookmarks('f1');
 
-		expect(items.value[0]?.parentPath).toBe('Bar > Dev > Frontend');
+		expect(items.value[0]?.path).toBe('Bar > Dev > Frontend');
 	});
 
 	it('skips a subfolder that is absent from the folder map', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: '' }]);
+		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
 		stubChildren({
 			f1: [
 				node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' }),
@@ -113,7 +113,7 @@ describe('loadBookmarks — recursive (default)', () => {
 	});
 
 	it('sets errorLoadingBookmarks and rethrows when fetching children fails', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: '' }]);
+		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
 		vi.spyOn(bookmarks, 'getChildren').mockRejectedValue(new Error('boom'));
 
 		const { loadBookmarks, error, bookmarks: items } = useBookmarkFolder(map);
@@ -126,7 +126,7 @@ describe('loadBookmarks — recursive (default)', () => {
 
 describe('loadBookmarks — direct (recursive = false)', () => {
 	it('keeps only direct url children and ignores subfolders', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: '' }]);
+		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
 		stubChildren({
 			f1: [
 				node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' }),
@@ -138,7 +138,7 @@ describe('loadBookmarks — direct (recursive = false)', () => {
 		await loadBookmarks('f1', false);
 
 		expect(items.value).toEqual([
-			expect.objectContaining({ id: 'b1', parentPath: 'Work', parentId: 'f1' }),
+			expect.objectContaining({ id: 'b1', path: 'Work', parentId: 'f1' }),
 		]);
 	});
 });
@@ -167,11 +167,11 @@ describe('loadAllBookmarks', () => {
 		await loadAllBookmarks();
 
 		expect(items.value).toEqual([
-			expect.objectContaining({ id: 'b1', parentPath: 'Toolbar' }),
+			expect.objectContaining({ id: 'b1', path: 'Toolbar' }),
 		]);
 	});
 
-	it('builds nested parentPath from the walked node titles', async () => {
+	it('builds nested path from the walked node titles', async () => {
 		stubTree([
 			node({
 				id: '1',
@@ -198,7 +198,7 @@ describe('loadAllBookmarks', () => {
 		);
 		await loadAllBookmarks();
 
-		expect(items.value[0]?.parentPath).toBe('Toolbar > Dev');
+		expect(items.value[0]?.path).toBe('Toolbar > Dev');
 	});
 
 	it('sets errorLoadingBookmarks and rethrows when the tree fails', async () => {
@@ -218,7 +218,7 @@ describe('loadAllBookmarks', () => {
 
 describe('removeBookmark', () => {
 	it('removes the matching bookmark by id', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: '' }]);
+		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
 		stubChildren({
 			f1: [
 				node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' }),

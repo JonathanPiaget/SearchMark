@@ -27,23 +27,25 @@ describe('buildFolderTree', () => {
 		expect(tree[1]?.title).toBe('Personal');
 	});
 
-	it('sets empty path for root-level folders', () => {
+	it('uses the title as path for root-level folders', () => {
 		const nodes = createSimpleTreeNodes();
 
 		const tree = buildFolderTree(nodes);
 
-		expect(tree[0]?.path).toBe('');
-		expect(tree[1]?.path).toBe('');
+		expect(tree[0]?.path).toBe('Work');
+		expect(tree[1]?.path).toBe('Personal');
 	});
 
-	it('builds hierarchical paths using " > " separator', () => {
+	it('builds paths including the folder itself using " > "', () => {
 		const nodes = createNestedTreeNodes();
 
 		const tree = buildFolderTree(nodes);
 
-		expect(tree.find((f) => f.id === '1')?.path).toBe('');
-		expect(tree.find((f) => f.id === '2')?.path).toBe('Books');
-		expect(tree.find((f) => f.id === '3')?.path).toBe('Books > Fiction');
+		expect(tree.find((f) => f.id === '1')?.path).toBe('Books');
+		expect(tree.find((f) => f.id === '2')?.path).toBe('Books > Fiction');
+		expect(tree.find((f) => f.id === '3')?.path).toBe(
+			'Books > Fiction > Sci-Fi',
+		);
 	});
 
 	it('assigns children array to parent folders', () => {
@@ -86,7 +88,7 @@ describe('useFolderTree', () => {
 
 		expect(getTree).toHaveBeenCalledTimes(2);
 		expect(allFolders.value.map((f) => f.id)).toEqual(['1', '2', '3']);
-		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction');
+		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction > Sci-Fi');
 		expect(toolbarId.value).toBe('1');
 	});
 });

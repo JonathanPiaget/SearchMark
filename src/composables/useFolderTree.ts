@@ -24,7 +24,7 @@ export const buildFolderTree = (
 		const folder: BookmarkFolder = {
 			id: node.id,
 			title: node.title,
-			path: parentPath,
+			path: joinFolderPath(parentPath, node.title),
 			parentId: node.parentId,
 			children: [],
 		};
@@ -32,9 +32,7 @@ export const buildFolderTree = (
 		folders.push(folder);
 
 		if (node.children && node.children.length > 0) {
-			const currentPath = joinFolderPath(parentPath, node.title);
-
-			const childFolders = buildFolderTree(node.children, currentPath);
+			const childFolders = buildFolderTree(node.children, folder.path);
 
 			folder.children = childFolders.filter(
 				(child) => child.parentId === node.id,
