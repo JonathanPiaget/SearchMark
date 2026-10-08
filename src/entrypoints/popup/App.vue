@@ -180,7 +180,7 @@ const saveBookmark = async () => {
       <BookmarkForm
         v-model:model-url="bookmarkUrl"
         v-model:model-title="bookmarkTitle"
-        @enter-pressed="saveBookmark"
+        @submit="saveBookmark"
       />
 
       <SaveButton

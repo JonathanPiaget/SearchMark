@@ -41,7 +41,7 @@ interface Props {
 interface Emits {
 	(e: 'update:modelUrl', value: string): void;
 	(e: 'update:modelTitle', value: string): void;
-	(e: 'enterPressed'): void;
+	(e: 'submit'): void;
 }
 
 const props = defineProps<Props>();
@@ -55,7 +55,7 @@ const updateTitle = () => emit('update:modelTitle', title.value);
 
 const handleKeydown = (event: KeyboardEvent) => {
 	if (event.key === 'Enter') {
-		emit('enterPressed');
+		emit('submit');
 	}
 };
 
