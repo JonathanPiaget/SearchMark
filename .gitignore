@@ -27,3 +27,6 @@ coverage/
 
 # Store credentials (publish-browser-extension)
 .env.submit
+
+# Ignore tasks folder
+tasks
