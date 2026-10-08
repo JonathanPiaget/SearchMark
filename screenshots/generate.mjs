@@ -56,7 +56,7 @@ const DEMO_BOOKMARKS = [
 	},
 ];
 
-// One screenshot per scene; themes alternate to showcase light and dark.
+// One screenshot per scene; all light, with a final dark-mode showcase.
 export const SCENES = [
 	{
 		id: '1-save',
@@ -66,7 +66,7 @@ export const SCENES = [
 	},
 	{
 		id: '2-folders',
-		theme: 'dark',
+		theme: 'light',
 		setup: setupFolderSearch,
 		keepFocus: true,
 		caption: 'Find the right folder instantly',
@@ -79,10 +79,16 @@ export const SCENES = [
 	},
 	{
 		id: '4-existing',
-		theme: 'dark',
+		theme: 'light',
 		tab: BOOKMARKED_TAB,
 		setup: setupSave,
 		caption: 'See where a page is already saved',
+	},
+	{
+		id: '5-dark',
+		theme: 'dark',
+		setup: setupSave,
+		caption: 'Light and dark mode',
 	},
 ];
 
@@ -97,10 +103,13 @@ async function setupFolderSearch(page) {
 
 async function setupSearchView(page) {
 	await page.locator('.view-tabs .tab-button').nth(1).click();
-	await page.waitForSelector('#folder-search');
-	await page.fill('#folder-search', 'Reading');
-	await page.locator('.dropdown-item', { hasText: 'Reading' }).first().click();
-	await page.waitForSelector('.bookmark-item');
+	const searchView = page.locator('.search-view');
+	await searchView.locator('#folder-search').fill('Reading');
+	await searchView
+		.locator('.dropdown-item', { hasText: 'Reading' })
+		.first()
+		.click();
+	await searchView.locator('.bookmark-item').first().waitFor();
 }
 
 function loadMessages(lang) {
