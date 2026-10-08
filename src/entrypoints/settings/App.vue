@@ -47,7 +47,7 @@
               v-model="selectedFolderId"
               :autofocus="false"
               :auto-select-default="false"
-              @folder-selected="handleSeeLaterFolderChange"
+              @change="handleSeeLaterFolderChange"
             />
           </div>
         </div>
@@ -116,6 +116,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
 import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
@@ -147,11 +148,8 @@ const handleThemeChange = async () => {
 	await setTheme(selectedTheme.value);
 };
 
-const handleSeeLaterFolderChange = async (folder: {
-	id: string;
-	name: string;
-}) => {
-	await setSeeLaterFolderId(folder.id || null);
+const handleSeeLaterFolderChange = async (folder: BookmarkFolder | null) => {
+	await setSeeLaterFolderId(folder?.id ?? null);
 };
 
 const handleNotificationsToggle = async () => {

@@ -6,28 +6,28 @@
         <input
           ref="folderInput"
           id="folder-search"
-          v-model="searchQuery"
+          v-model="inputText"
           type="text"
           class="form-input"
-          :class="{ 'has-clear': selectedFolder }"
+          :class="{ 'has-clear': selected }"
           :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
           :disabled="isInitializing"
-          @input="onSearchInput"
+          @input="onInput"
           @keydown="handleKeydown"
           @focus="onFocus"
           @blur="onBlur"
         >
         <button
-          v-if="selectedFolder && searchQuery"
+          v-if="selected && inputText"
           type="button"
           class="clear-button"
-          @mousedown.prevent="clearSelection"
+          @mousedown.prevent="picker.clear"
           :title="i18n.t('clearSelection')"
         >
           <IconX />
         </button>
         <div
-          v-if="showDropdown && searchQuery.trim()"
+          v-if="isOpen && inputText.trim()"
           ref="dropdownRef"
           class="dropdown-container"
           :style="dropdownMaxHeight ? { maxHeight: `${dropdownMaxHeight}px` } : undefined"
@@ -40,101 +40,98 @@
             </div>
             <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')">
               <input
-                v-model="isFuzzyEnabled"
+                v-model="isFuzzy"
                 type="checkbox"
                 class="fuzzy-checkbox"
-                @change="onFuzzyToggle"
               >
               <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
             </label>
           </div>
-          <div
-            v-if="showToolbarOption"
-            :class="['dropdown-item', 'toolbar-item', { highlighted: highlightedIndex === -2 }]"
-            @mousedown="selectBookmarkToolbar"
-            @mouseenter="highlightedIndex = -2"
-          >
-            <div class="folder-info">
-              <div class="folder-row">
-                <span class="folder-icon"><IconLibrary /></span>
-                <div class="folder-text">
-                  <span class="folder-name">{{ i18n.t('bookmarkToolbar') }}</span>
+          <template v-for="(row, index) in rows" :key="row.folder.id">
+            <div
+              v-if="row.kind === 'toolbar'"
+              :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
+              :class="['dropdown-item', 'toolbar-item', { highlighted: index === highlighted.row }]"
+              @mousedown="picker.select(row)"
+              @mouseenter="picker.highlight(index)"
+            >
+              <div class="folder-info">
+                <div class="folder-row">
+                  <span class="folder-icon"><IconLibrary /></span>
+                  <div class="folder-text">
+                    <span class="folder-name">{{ row.folder.title }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-      <div v-if="searchResults.length > 0">
-        <div
-          v-for="(result, index) in searchResults"
-          :key="result.folder.id"
-          :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
-          :class="['dropdown-item', { highlighted: index === highlightedIndex && highlightedChildIndex < 0 }]"
-          @mousedown="selectFolder(result.folder)"
-          @mouseenter="highlightedIndex = index; highlightedChildIndex = -1"
-          @keydown="handleItemKeydown($event, result.folder)"
-          tabindex="-1"
-        >
-          <div class="folder-info">
-            <div class="folder-row">
-              <span class="folder-icon"><IconFolder /></span>
-              <div class="folder-text">
-                <span class="folder-name">
-                  <template v-for="(part, partIndex) in highlightText(result.folder.title, searchQuery, result.indexes)" :key="`${result.folder.id}-${partIndex}`">
-                    <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
-                    <span v-else>{{ part.text }}</span>
-                  </template>
-                </span>
-                <span v-if="result.folder.path" class="folder-breadcrumb">
-                  {{ result.folder.path }}
-                </span>
-              </div>
-              <div v-if="result.folder.children && result.folder.children.length > 0" class="folder-actions">
-                <span
-                  class="children-count"
-                  :title="`${result.folder.children.length} ${result.folder.children.length === 1 ? i18n.t('child') : i18n.t('children')}`"
-                >
-                  <IconFolders class="children-count-icon" />{{ result.folder.children.length }}
-                </span>
-                <span class="expand-hint">
-                  →
-                </span>
-              </div>
-            </div>
             <div
-              v-if="showChildrenFor === result.folder.id && result.folder.children && result.folder.children.length > 0"
-              class="children-list"
-              @mousedown.stop
+              v-else
+              :ref="(el) => { if (el) dropdownItemRefs[index] = el as HTMLElement }"
+              :class="['dropdown-item', { highlighted: index === highlighted.row && highlighted.child < 0 }]"
+              @mousedown="picker.select(row)"
+              @mouseenter="picker.highlight(index)"
             >
-              <span
-                v-for="(child, childIndex) in result.folder.children"
-                :key="child.id"
-                :class="['child-folder', { highlighted: index === highlightedIndex && childIndex === highlightedChildIndex }]"
-                @click.stop="selectChildFolder(child)"
-                @mousedown.stop
-                @mouseenter="highlightedIndex = index; highlightedChildIndex = childIndex"
-              >
-                <span class="child-icon"><IconFolder /></span>
-                <span class="child-name">{{ child.title }}</span>
-              </span>
+              <div class="folder-info">
+                <div class="folder-row">
+                  <span class="folder-icon"><IconFolder /></span>
+                  <div class="folder-text">
+                    <span class="folder-name">
+                      <template v-for="(part, partIndex) in highlightText(row.folder.title, inputText, row.indexes)" :key="`${row.folder.id}-${partIndex}`">
+                        <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
+                        <span v-else>{{ part.text }}</span>
+                      </template>
+                    </span>
+                    <span v-if="row.folder.path" class="folder-breadcrumb">
+                      {{ row.folder.path }}
+                    </span>
+                  </div>
+                  <div v-if="row.folder.children && row.folder.children.length > 0" class="folder-actions">
+                    <span
+                      class="children-count"
+                      :title="`${row.folder.children.length} ${row.folder.children.length === 1 ? i18n.t('child') : i18n.t('children')}`"
+                    >
+                      <IconFolders class="children-count-icon" />{{ row.folder.children.length }}
+                    </span>
+                    <span class="expand-hint">
+                      →
+                    </span>
+                  </div>
+                </div>
+                <div
+                  v-if="expandedId === row.folder.id && row.folder.children && row.folder.children.length > 0"
+                  class="children-list"
+                  @mousedown.stop
+                >
+                  <span
+                    v-for="(child, childIndex) in row.folder.children"
+                    :key="child.id"
+                    :class="['child-folder', { highlighted: index === highlighted.row && childIndex === highlighted.child }]"
+                    @click.stop="picker.select(child)"
+                    @mousedown.stop
+                    @mouseenter="picker.highlight(index, childIndex)"
+                  >
+                    <span class="child-icon"><IconFolder /></span>
+                    <span class="child-name">{{ child.title }}</span>
+                  </span>
+                </div>
+              </div>
             </div>
+          </template>
+          <div v-if="position.total === 0" class="no-results">
+            <div class="no-results-icon"><IconSearchX /></div>
+            <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
+            <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
           </div>
-        </div>
-      </div>
-      <div v-else class="no-results">
-        <div class="no-results-icon"><IconSearchX /></div>
-        <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
-        <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
-        </div>
           <div
-            v-if="searchResults.length > 0"
+            v-else
             class="dropdown-footer"
             @mousedown.prevent
           >
             <div class="result-count">
-              <span class="count-current">{{ currentPosition }}</span>
-              <span class="count-total"> / {{ searchResults.length }}</span>&nbsp;
+              <span class="count-current">{{ position.current }}</span>
+              <span class="count-total"> / {{ position.total }}</span>&nbsp;
               <span class="count-matches">
-                {{ searchResults.length === 1 ? i18n.t('match') : i18n.t('matches') }}
+                {{ position.total === 1 ? i18n.t('match') : i18n.t('matches') }}
               </span>
             </div>
             <div class="footer-keys">
@@ -144,21 +141,20 @@
               <kbd class="key">↵</kbd>
             </div>
           </div>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, toRef } from 'vue';
 import { i18n } from '#i18n';
 import { useDropdownFit } from '@/composables/useDropdownFit';
-import { useFolderSearch } from '@/composables/useFolderSearch';
+import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { useFolderTree } from '@/composables/useFolderTree';
-import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation';
-import { getBookmarkToolbarId } from '@/utils/bookmark';
+import { highlightText } from '@/utils/highlight';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';
@@ -177,8 +173,8 @@ interface Props {
 
 interface Emits {
 	(e: 'update:modelValue', value: string): void;
-	(e: 'folderSelected', folder: { id: string; name: string }): void;
-	(e: 'enterPressed'): void;
+	(e: 'change', folder: BookmarkFolder | null): void;
+	(e: 'submit'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -188,99 +184,47 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emit = defineEmits<Emits>();
 
-const showDropdown = ref(false);
 const folderInput = ref<HTMLInputElement>();
-const selectedFolder = ref<BookmarkFolder | null>(null);
-const toolbarFolder = ref<BookmarkFolder | null>(null);
 const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
 
-const { maxHeight: dropdownMaxHeight, update: updateDropdownFit } =
-	useDropdownFit(showDropdown, folderInput, dropdownRef);
-
 const { allFolders, loadFolders } = useFolderTree();
-const {
-	searchQuery,
-	searchResults,
-	searchFolders,
-	highlightText,
-	isFuzzyEnabled,
-	loadFuzzyPreference,
-} = useFolderSearch(allFolders);
-const {
-	highlightedIndex,
-	highlightedChildIndex,
-	showChildrenFor,
-	handleNavigation,
-	resetNavigation,
-} = useKeyboardNavigation({
-	containerRef: dropdownRef,
-	itemRefs: dropdownItemRefs,
+const picker = useFolderPicker({
+	folders: allFolders,
+	modelValue: toRef(props, 'modelValue'),
+	autoSelectDefault: props.autoSelectDefault,
+	toolbarRowTitle: props.showToolbarOption
+		? i18n.t('bookmarkToolbar')
+		: undefined,
+	onChange: (folder) => {
+		emit('update:modelValue', folder?.id ?? '');
+		emit('change', folder);
+	},
+	onSubmit: () => emit('submit'),
 });
+const {
+	inputText,
+	isOpen,
+	isFuzzy,
+	rows,
+	position,
+	highlighted,
+	expandedId,
+	selected,
+} = picker;
 
-const currentPosition = computed(() =>
-	highlightedIndex.value >= 0 ? highlightedIndex.value + 1 : 0,
-);
+const { maxHeight: dropdownMaxHeight, update: updateDropdownFit } =
+	useDropdownFit(isOpen, folderInput, dropdownRef);
 
-/** Re-run search when fuzzy mode is toggled */
-const onFuzzyToggle = () => {
-	if (searchQuery.value.trim()) {
-		searchFolders();
-	}
-};
-
-const initializeFolders = async () => {
-	await loadFolders();
-	await loadFuzzyPreference();
-
-	if (props.modelValue) {
-		const folder = allFolders.value.find((f) => f.id === props.modelValue);
-		if (folder) {
-			selectedFolder.value = folder;
-			searchQuery.value = folder.title;
-		}
-	}
-
-	if (props.showToolbarOption) {
-		const toolbarId = await getBookmarkToolbarId();
-		toolbarFolder.value =
-			allFolders.value.find((f) => f.id === toolbarId) ?? null;
-		if (props.autoSelectDefault && !props.modelValue) {
-			selectBookmarkToolbar();
-		}
-		return;
-	}
-
-	if (props.autoSelectDefault && !props.modelValue) {
-		const toolbarId = await getBookmarkToolbarId();
-		const bookmarkToolbar = allFolders.value.find((f) => f.id === toolbarId);
-		if (bookmarkToolbar) {
-			selectedFolder.value = bookmarkToolbar;
-			emit('update:modelValue', bookmarkToolbar.id);
-			emit('folderSelected', {
-				id: bookmarkToolbar.id,
-				name: bookmarkToolbar.title,
-			});
-		}
-	}
-};
-
-const onSearchInput = () => {
-	searchFolders();
+const onInput = () => {
 	dropdownItemRefs.value = [];
-	highlightedChildIndex.value = -1;
-	highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
-	showDropdown.value = searchQuery.value.trim().length > 0;
-	if (showDropdown.value) {
-		updateDropdownFit();
-	}
+	picker.onInput();
+	if (isOpen.value) updateDropdownFit();
 };
 
 const onFocus = () => {
-	// Clear the input when focused for search
-	searchQuery.value = '';
-	showDropdown.value = false;
+	picker.onFocus();
 	// Firefox keeps the old scrollLeft after clearing, which renders the
 	// placeholder right-aligned with a leading ellipsis. Reset it.
 	nextTick(() => {
@@ -288,157 +232,56 @@ const onFocus = () => {
 	});
 };
 
-const selectFolder = (folder: BookmarkFolder) => {
-	selectedFolder.value = folder;
-	searchQuery.value = folder.title;
-	showDropdown.value = false;
-	resetNavigation();
-	emit('update:modelValue', folder.id);
-	emit('folderSelected', { id: folder.id, name: folder.title });
-};
-
-const selectBookmarkToolbar = () => {
-	if (!toolbarFolder.value) return;
-	selectFolder({ ...toolbarFolder.value, title: i18n.t('bookmarkToolbar') });
-};
-
-const selectChildFolder = (child: BookmarkFolder) => {
-	// Find the full folder object from allFolders to ensure it has all properties
-	const fullFolder = allFolders.value.find((f) => f.id === child.id) || child;
-	selectFolder(fullFolder);
-};
-
-const clearSelection = () => {
-	selectedFolder.value = null;
-	searchQuery.value = '';
-	emit('update:modelValue', '');
-	emit('folderSelected', { id: '', name: '' });
-};
-
 const onBlur = (event: FocusEvent) => {
 	const relatedTarget = event.relatedTarget as HTMLElement | null;
 	if (relatedTarget && dropdownRef.value?.contains(relatedTarget)) {
 		return;
 	}
-	setTimeout(() => {
-		showDropdown.value = false;
-		resetNavigation();
-		// Restore selected folder name if one is selected
-		if (selectedFolder.value) {
-			searchQuery.value = selectedFolder.value.title;
-		}
-	}, 150);
+	setTimeout(picker.onBlur, 150);
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
 	if (
 		event.key === 'ArrowDown' &&
-		!showDropdown.value &&
-		selectedFolder.value &&
-		props.onArrowDownWithSelection
+		!isOpen.value &&
+		selected.value &&
+		props.onArrowDownWithSelection?.()
 	) {
-		const handled = props.onArrowDownWithSelection();
-		if (handled) {
-			event.preventDefault();
-			return;
-		}
-	}
-
-	if (!showDropdown.value && searchQuery.value.trim()) {
-		if (
-			event.key === 'ArrowDown' ||
-			(event.key === 'Enter' && !selectedFolder.value)
-		) {
-			showDropdown.value = true;
-			searchFolders();
-			highlightedIndex.value = searchResults.value.length > 0 ? 0 : -1;
-			return;
-		}
-	}
-
-	if (showDropdown.value) {
-		if (props.showToolbarOption) {
-			if (
-				event.key === 'ArrowUp' &&
-				highlightedIndex.value <= 0 &&
-				highlightedChildIndex.value < 0
-			) {
-				event.preventDefault();
-				highlightedIndex.value = -2;
-				dropdownRef.value?.scrollTo({ top: 0, behavior: 'instant' });
-				return;
-			}
-			if (event.key === 'ArrowDown' && highlightedIndex.value === -2) {
-				event.preventDefault();
-				highlightedIndex.value = searchResults.value.length > 0 ? 0 : -2;
-				return;
-			}
-			if (event.key === 'Enter' && highlightedIndex.value === -2) {
-				event.preventDefault();
-				selectBookmarkToolbar();
-				return;
-			}
-		}
-
-		if (searchResults.value.length > 0) {
-			handleNavigation(
-				event,
-				searchResults.value.map((r) => r.folder),
-				{
-					onEnter: (item) => selectFolder(item),
-					onEnterChild: (child) => selectChildFolder(child),
-					onEscape: () => {
-						showDropdown.value = false;
-						searchQuery.value = '';
-						resetNavigation();
-						folderInput.value?.blur();
-					},
-					onEmitEnter: () => emit('enterPressed'),
-				},
-			);
-			return;
-		}
-	}
-
-	if (event.key === 'Enter') {
-		if (selectedFolder.value) {
-			emit('enterPressed');
-		}
-	} else if (event.key === 'Escape') {
-		showDropdown.value = false;
-		searchQuery.value = '';
-		resetNavigation();
-		folderInput.value?.blur();
-	}
-};
-
-const handleItemKeydown = (event: KeyboardEvent, item: BookmarkFolder) => {
-	if (event.key === ' ' && event.shiftKey) {
 		event.preventDefault();
-		if (item.children && item.children.length > 0) {
-			showChildrenFor.value =
-				showChildrenFor.value === item.id ? null : item.id;
-		}
+		return;
+	}
+	if (!picker.onKeydown(event)) return;
+	if (event.key === 'Escape') folderInput.value?.blur();
+	else scrollHighlightedIntoView();
+};
+
+const scrollIntoViewIfNeeded = (item: HTMLElement | undefined) => {
+	const container = dropdownRef.value;
+	if (!container || !item) return;
+	const itemRect = item.getBoundingClientRect();
+	const containerRect = container.getBoundingClientRect();
+	if (
+		itemRect.top < containerRect.top ||
+		itemRect.bottom > containerRect.bottom
+	) {
+		item.scrollIntoView({ behavior: 'instant', block: 'nearest' });
 	}
 };
 
-// Watch for external changes to modelValue
-watch(
-	() => props.modelValue,
-	(newValue) => {
-		if (newValue && selectedFolder.value?.id !== newValue) {
-			const folder = allFolders.value.find((f) => f.id === newValue);
-			if (folder) {
-				selectedFolder.value = folder;
-				searchQuery.value = folder.title; // Show folder name in input
-			}
-		} else if (!newValue) {
-			// Clear selection when modelValue is empty (reset to default)
-			selectedFolder.value = null;
-			searchQuery.value = '';
-		}
-	},
-);
+const scrollHighlightedIntoView = async () => {
+	const { row, child } = highlighted.value;
+	if (row < 0) return;
+	if (row === 0 && child < 0) {
+		dropdownRef.value?.scrollTo({ top: 0, behavior: 'instant' });
+		return;
+	}
+	await nextTick();
+	scrollIntoViewIfNeeded(
+		child >= 0
+			? dropdownRef.value?.querySelectorAll<HTMLElement>('.child-folder')[child]
+			: dropdownItemRefs.value[row],
+	);
+};
 
 const focus = () => {
 	folderInput.value?.focus();
@@ -448,7 +291,8 @@ defineExpose({ focus });
 
 onMounted(async () => {
 	try {
-		await initializeFolders();
+		await loadFolders();
+		await picker.init();
 	} finally {
 		isInitializing.value = false;
 		if (props.autofocus) {

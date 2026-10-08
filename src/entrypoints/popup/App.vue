@@ -173,8 +173,8 @@ const saveBookmark = async () => {
         ref="folderSelectorRef"
         v-model="selectedFolderId"
         :show-toolbar-option="true"
-        @folder-selected="(folder) => selectedFolderName = folder.name"
-        @enter-pressed="saveBookmark"
+        @change="(folder) => selectedFolderName = folder?.title ?? ''"
+        @submit="saveBookmark"
       />
 
       <BookmarkForm
