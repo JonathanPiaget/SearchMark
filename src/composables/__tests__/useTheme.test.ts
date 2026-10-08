@@ -8,7 +8,7 @@ const KEY = 'searchmark_theme';
 // module before each test so the shared refs start clean.
 async function freshUseTheme() {
 	vi.resetModules();
-	const { useTheme } = await import('../useTheme');
+	const { useTheme } = await import('@/composables/useTheme');
 	return useTheme();
 }
 

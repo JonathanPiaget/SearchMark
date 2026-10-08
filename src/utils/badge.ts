@@ -1,6 +1,6 @@
-import { actionApi } from './action';
-import { findBookmarksByUrl } from './bookmark';
-import { logError } from './logger';
+import { actionApi } from '@/utils/action';
+import { findBookmarksByUrl } from '@/utils/bookmark';
+import { logError } from '@/utils/logger';
 
 const BOOKMARKED_BADGE_TEXT = '✓';
 const BOOKMARKED_BADGE_COLOR = '#7f45e5';

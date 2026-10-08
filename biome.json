@@ -52,6 +52,26 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["src/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["./**", "../**", "!**/*.vue", "!**/*.css"],
+										"message": "Import through the @/ alias. Relative paths are only for sibling .vue and .css files."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
 		}
 	]
 }

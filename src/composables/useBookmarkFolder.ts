@@ -1,7 +1,7 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { joinFolderPath } from '@/utils/bookmark';
-import type { BookmarkFolder } from './useFolderTree';
 
 export interface BookmarkItem {
 	id: string;

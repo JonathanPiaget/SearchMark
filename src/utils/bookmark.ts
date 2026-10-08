@@ -1,5 +1,5 @@
 import type { Browser } from 'wxt/browser';
-import { logError } from './logger';
+import { logError } from '@/utils/logger';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
