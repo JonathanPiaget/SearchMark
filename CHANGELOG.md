@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.4]
+
+### Fixed
+- Saving a bookmark right after the popup opens no longer fails when no folder is selected yet
+- Folder dropdown now grows the popup as you type or expand folders, instead of being clipped
+- Search results now show the folder path for bookmarks whose top-level folder has no title
+
 ## [1.13.3]
 
 ### Changed
