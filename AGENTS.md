@@ -30,7 +30,7 @@ The extension surfaces are a **popup** (save + search views), a **settings** opt
 
 - `pnpm run dev` / `pnpm run dev:firefox` — launch the WXT dev server with hot reload. WXT loads the extension into a browser automatically (Firefox binary configured in [web-ext.config.ts](web-ext.config.ts)).
 - Source lives under `src/` (`srcDir: 'src'` in [wxt.config.ts](wxt.config.ts)); the build output goes to `.output/` (gitignored).
-- A [justfile](justfile) provides shortcuts: `just chrome`, `just firefox`, `just test`, `just lint`.
+- A [justfile](justfile) provides shortcuts: `just chrome`, `just firefox`, `just test`, `just lint`, `just submit-chrome` / `just submit-firefox` (store submission from a local `.env.submit`, see `.env.submit.example`; pass `--dry-run` to only check credentials).
 - Import aliases (configured by WXT): `@/` and `~/` both map to `src/`, `@@/` and `~~/` map to the repo root.
 
 ## Testing Instructions

@@ -26,12 +26,12 @@
     pre-commit run --all-files
     pnpm run compile
 
-# Check Chrome Web Store credentials from .env.submit without uploading
-@submit-chrome-dry:
+# Submit the Chrome zip to the Chrome Web Store (credentials from .env.submit). Pass --dry-run to only check credentials
+@submit-chrome *flags:
     pnpm zip
-    pnpm wxt submit --chrome-zip .output/searchmark-$(jq -r .version package.json)-chrome.zip --dry-run
+    pnpm wxt submit {{flags}} --chrome-zip .output/searchmark-$(jq -r .version package.json)-chrome.zip
 
-# Submit the Chrome zip to the Chrome Web Store (credentials from .env.submit)
-@submit-chrome:
-    pnpm zip
-    pnpm wxt submit --chrome-zip .output/searchmark-$(jq -r .version package.json)-chrome.zip
+# Submit the Firefox zip to the Firefox Add-ons store (credentials from .env.submit). Pass --dry-run to only check credentials
+@submit-firefox *flags:
+    pnpm zip:firefox
+    pnpm wxt submit {{flags}} --firefox-zip .output/searchmark-$(jq -r .version package.json)-firefox.zip --firefox-sources-zip .output/searchmark-$(jq -r .version package.json)-sources.zip
