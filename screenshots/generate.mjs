@@ -22,7 +22,7 @@ export const TARGETS = [
 // The current tab is simulated; the popup reads url/title from it automatically.
 const DEMO_TAB = {
 	url: 'https://piagetjonathan.ch',
-	title: 'Jonathan Piaget — Resume',
+	title: 'Jonathan Piaget - Full-Stack Developer | Neuchâtel, Switzerland',
 };
 // A tab whose URL matches a demo bookmark, so the "already saved" card shows.
 const BOOKMARKED_TAB = {
@@ -38,13 +38,47 @@ const DEMO_BOOKMARKS = [
 			{ title: 'Figma', url: 'https://figma.com' },
 			{ title: 'GitHub', url: 'https://github.com' },
 		],
+		children: [
+			{
+				folder: 'Design',
+				children: [
+					{
+						folder: 'Design Systems',
+						items: [{ title: 'Radix UI', url: 'https://www.radix-ui.com' }],
+					},
+				],
+			},
+		],
+	},
+	{
+		folder: 'Learning',
+		children: [
+			{
+				folder: 'Web Design',
+				items: [
+					{ title: 'Refactoring UI', url: 'https://www.refactoringui.com' },
+				],
+			},
+		],
 	},
 	{
 		folder: 'Reading',
 		items: [
 			{ title: 'Hacker News', url: BOOKMARKED_TAB.url },
+			{ title: 'GitHub Blog', url: 'https://github.blog' },
 			{ title: 'The Verge', url: 'https://www.theverge.com' },
 			{ title: 'Ars Technica', url: 'https://arstechnica.com' },
+		],
+		children: [
+			{
+				folder: 'Design Blogs',
+				items: [
+					{
+						title: 'Smashing Magazine',
+						url: 'https://www.smashingmagazine.com',
+					},
+				],
+			},
 		],
 	},
 	{
@@ -70,13 +104,13 @@ export const SCENES = [
 		theme: 'light',
 		setup: setupFolderSearch,
 		keepFocus: true,
-		caption: 'Find the right folder instantly',
+		caption: 'Jump to any folder, however deep',
 	},
 	{
 		id: '3-search',
 		theme: 'light',
 		setup: setupSearchView,
-		caption: 'Search across all your bookmarks',
+		caption: 'Find your bookmarks across all your folders',
 	},
 	{
 		id: '4-existing',
@@ -98,18 +132,16 @@ async function setupSave() {
 }
 
 async function setupFolderSearch(page) {
-	await page.fill('#folder-search', 're');
-	await page.waitForSelector('.dropdown-container');
+	await page.fill('#folder-search', 'design');
+	await page.locator('.dropdown-container .fuzzy-checkbox').uncheck();
 }
 
 async function setupSearchView(page) {
 	await page.locator('.view-tabs .tab-button').nth(1).click();
 	const searchView = page.locator('.search-view');
-	await searchView.locator('#folder-search').fill('Reading');
 	await searchView
-		.locator('.dropdown-item', { hasText: 'Reading' })
-		.first()
-		.click();
+		.locator('.filter-container input[type="text"]')
+		.fill('github');
 	await searchView.locator('.bookmark-item').first().waitFor();
 }
 
@@ -122,15 +154,19 @@ async function injectDemoBookmarks(serviceWorker) {
 	await serviceWorker.evaluate(async (bookmarks) => {
 		const [tree] = await chrome.bookmarks.getTree();
 		const toolbarId = tree.children?.[0]?.id || '1';
-		for (const { folder, items } of bookmarks) {
-			const created = await chrome.bookmarks.create({
-				parentId: toolbarId,
-				title: folder,
-			});
-			for (const { title, url } of items) {
-				await chrome.bookmarks.create({ parentId: created.id, title, url });
+		const createFolders = async (parentId, folders) => {
+			for (const { folder, items = [], children = [] } of folders) {
+				const created = await chrome.bookmarks.create({
+					parentId,
+					title: folder,
+				});
+				for (const { title, url } of items) {
+					await chrome.bookmarks.create({ parentId: created.id, title, url });
+				}
+				await createFolders(created.id, children);
 			}
-		}
+		};
+		await createFolders(toolbarId, bookmarks);
 	}, DEMO_BOOKMARKS);
 }
 
