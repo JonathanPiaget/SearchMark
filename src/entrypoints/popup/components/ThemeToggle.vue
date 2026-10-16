@@ -5,7 +5,7 @@
     :title="label"
     @click="cycleTheme"
   >
-    <span class="theme-icon" :class="{ dark: appliedTheme === 'dark' }">
+    <span class="theme-icon">
       <IconMonitor v-if="currentTheme === 'auto'" />
       <IconMoon v-else-if="currentTheme === 'dark'" />
       <IconSun v-else />
@@ -21,7 +21,7 @@ import IconMonitor from '~icons/lucide/monitor';
 import IconMoon from '~icons/lucide/moon';
 import IconSun from '~icons/lucide/sun';
 
-const { currentTheme, appliedTheme, cycleTheme } = useTheme();
+const { currentTheme, cycleTheme } = useTheme();
 
 const THEME_LABELS = {
 	auto: 'themeAuto',
