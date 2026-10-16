@@ -30,7 +30,7 @@ The extension surfaces are a **popup** (save + search views), a **settings** opt
 
 - `pnpm run dev` / `pnpm run dev:firefox` — launch the WXT dev server with hot reload. WXT loads the extension into a browser automatically (Firefox binary configured in [web-ext.config.ts](web-ext.config.ts)).
 - Source lives under `src/` (`srcDir: 'src'` in [wxt.config.ts](wxt.config.ts)); the build output goes to `.output/` (gitignored).
-- A [justfile](justfile) provides shortcuts: `just chrome`, `just firefox`, `just test`, `just lint`, `just ci`, `just wt <branch>` / `just wt-rm <branch>`, `just submit-chrome` / `just submit-firefox` (store submission from a local `.env.submit`, see `.env.submit.example`; pass `--dry-run` to only check credentials).
+- A [justfile](justfile) provides shortcuts: `just chrome`, `just firefox`, `just test`, `just lint`, `just ci`, `just wt <branch>` / `just wt-rm <branch>`, `just screenshots` (rebuild + regenerate store screenshots, `--list` for options), `just submit-chrome` / `just submit-firefox` (store submission from a local `.env.submit`, see `.env.submit.example`; pass `--dry-run` to only check credentials).
 - Small fixes go straight to `main`. Larger features use a worktree (`/worktree <task>` skill, or `just wt feat/xyz`; `just chrome 3001` for a second dev server) and land via a squash PR gated by the CI checks. Run `just ci` before pushing.
 - Import aliases (configured by WXT): `@/` and `~/` both map to `src/`, `@@/` and `~~/` map to the repo root.
 

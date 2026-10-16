@@ -26,6 +26,10 @@
     pre-commit run --all-files
     pnpm run compile
 
+# Rebuild the extension and regenerate store screenshots (pass e.g. --store chrome --scene 2, --list for options)
+@screenshots *flags:
+    pnpm screenshots {{flags}}
+
 # Submit the Chrome zip to the Chrome Web Store (credentials from .env.submit). Pass --dry-run to only check credentials
 @submit-chrome *flags:
     pnpm zip
