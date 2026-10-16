@@ -62,6 +62,7 @@ export const SCENES = [
 		id: '1-save',
 		theme: 'light',
 		setup: setupSave,
+		browserFrame: true,
 		caption: 'Save any page in one click',
 	},
 	{
@@ -191,6 +192,164 @@ async function layoutFrame(page, frame, caption) {
 	);
 }
 
+// Draws a neutral browser chrome around the popup so the store listing shows
+// where the extension lives; the caption doubles as the underlying page's headline.
+async function layoutBrowserFrame(page, frame, caption, tab) {
+	await page.evaluate(
+		({ width, height, caption, tab }) => {
+			const u = height / 100;
+			const px = (n) => `${Math.round(n * u)}px`;
+			const el = (tag, style, text) => {
+				const node = document.createElement(tag);
+				Object.assign(node.style, style);
+				if (text) node.textContent = text;
+				return node;
+			};
+
+			Object.assign(document.body.style, {
+				margin: '0',
+				width: `${width}px`,
+				height: `${height}px`,
+				overflow: 'hidden',
+				background: '#ffffff',
+				fontFamily: 'system-ui, sans-serif',
+				color: '#1f1f1f',
+				position: 'relative',
+			});
+
+			const tabStrip = el('div', {
+				height: px(6),
+				background: '#dfe1e5',
+				display: 'flex',
+				alignItems: 'flex-end',
+				padding: `0 ${px(2)}`,
+			});
+			const activeTab = el('div', {
+				display: 'flex',
+				alignItems: 'center',
+				gap: px(1.2),
+				height: px(5),
+				padding: `0 ${px(2)}`,
+				background: '#ffffff',
+				borderRadius: `${px(1.5)} ${px(1.5)} 0 0`,
+				fontSize: px(1.7),
+				maxWidth: '40%',
+				whiteSpace: 'nowrap',
+				overflow: 'hidden',
+			});
+			activeTab.append(
+				el('span', {
+					width: px(1.5),
+					height: px(1.5),
+					borderRadius: '50%',
+					background: '#9f7aea',
+					flex: '0 0 auto',
+				}),
+				el('span', { overflow: 'hidden', textOverflow: 'ellipsis' }, tab.title),
+			);
+			tabStrip.append(activeTab);
+
+			const toolbar = el('div', {
+				height: px(8),
+				display: 'flex',
+				alignItems: 'center',
+				gap: px(1.5),
+				padding: `0 ${px(2)}`,
+				background: '#ffffff',
+				borderBottom: '1px solid #dadce0',
+			});
+			const dot = () =>
+				el('span', {
+					width: px(2.5),
+					height: px(2.5),
+					borderRadius: '50%',
+					background: '#e8eaed',
+					flex: '0 0 auto',
+				});
+			const omnibox = el(
+				'div',
+				{
+					flex: '1 1 auto',
+					height: px(4.5),
+					lineHeight: px(4.5),
+					padding: `0 ${px(2)}`,
+					borderRadius: px(2.5),
+					background: '#f1f3f4',
+					fontSize: px(1.7),
+					color: '#3c4043',
+				},
+				tab.url,
+			);
+			const actionIcon = el('div', {
+				width: px(4.5),
+				height: px(4.5),
+				borderRadius: px(1),
+				background: '#e8eaed',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				flex: '0 0 auto',
+			});
+			const icon = el('img', { width: px(2.8), height: px(2.8) });
+			icon.src = '/icon/32.png';
+			actionIcon.append(icon);
+			toolbar.append(dot(), dot(), dot(), omnibox, actionIcon, dot());
+
+			const pageArea = el('div', {
+				position: 'absolute',
+				inset: `${px(14)} 0 0 0`,
+				padding: px(5),
+				boxSizing: 'border-box',
+			});
+			pageArea.append(
+				el(
+					'h1',
+					{
+						margin: `0 0 ${px(2.5)}`,
+						width: '42%',
+						fontSize: px(6),
+						lineHeight: '1.15',
+						fontWeight: '800',
+					},
+					caption,
+				),
+			);
+			for (const w of ['34%', '30%', '36%', '22%']) {
+				pageArea.append(
+					el('div', {
+						width: w,
+						height: px(1.2),
+						marginBottom: px(1.2),
+						borderRadius: px(0.6),
+						background: '#e8eaed',
+					}),
+				);
+			}
+
+			const container = document.querySelector('.container');
+			const app = document.getElementById('app');
+			Object.assign(app.style, {
+				position: 'absolute',
+				top: px(15),
+				right: px(2 + 2.5 + 1.5),
+				zIndex: '1',
+				borderRadius: px(1.5),
+				boxShadow:
+					'0 8px 32px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.08)',
+				overflow: 'hidden',
+			});
+			document.body.append(tabStrip, toolbar, pageArea);
+
+			const rect = container.getBoundingClientRect();
+			container.style.zoom = Math.min(
+				(83 * u) / rect.height,
+				(0.5 * width) / rect.width,
+			);
+		},
+		{ width: frame.width, height: frame.height, caption, tab },
+	);
+}
+
 async function capturePopup(context, extensionId, target, scene, messages) {
 	const page = await context.newPage();
 	await page.setViewportSize(target.viewport);
@@ -233,7 +392,16 @@ async function capturePopup(context, extensionId, target, scene, messages) {
 	}
 	await page.mouse.move(0, 0); // Avoid hover artifacts on items the cursor landed on.
 	await page.waitForTimeout(350);
-	await layoutFrame(page, target.viewport, scene.caption ?? '');
+	if (scene.browserFrame) {
+		await layoutBrowserFrame(
+			page,
+			target.viewport,
+			scene.caption ?? '',
+			scene.tab ?? DEMO_TAB,
+		);
+	} else {
+		await layoutFrame(page, target.viewport, scene.caption ?? '');
+	}
 	await page.waitForTimeout(150);
 
 	const outputPath = resolve(OUTPUT_DIR, target.store, `${scene.id}.png`);
