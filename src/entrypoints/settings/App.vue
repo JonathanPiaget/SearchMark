@@ -16,16 +16,19 @@
             <label for="theme-select" class="setting-label">{{ i18n.t('theme') }}</label>
             <p class="setting-description">{{ i18n.t('themeDescription') }}</p>
           </div>
-          <select
-            id="theme-select"
-            v-model="selectedTheme"
-            class="theme-select"
-            @change="handleThemeChange"
-          >
-            <option value="auto">{{ i18n.t('themeAuto') }}</option>
-            <option value="light">{{ i18n.t('themeLight') }}</option>
-            <option value="dark">{{ i18n.t('themeDark') }}</option>
-          </select>
+          <div class="theme-select-wrapper">
+            <select
+              id="theme-select"
+              v-model="selectedTheme"
+              class="theme-select"
+              @change="handleThemeChange"
+            >
+              <option value="auto">{{ i18n.t('themeAuto') }}</option>
+              <option value="light">{{ i18n.t('themeLight') }}</option>
+              <option value="dark">{{ i18n.t('themeDark') }}</option>
+            </select>
+            <IconChevronDown class="theme-select-chevron" aria-hidden="true" />
+          </div>
         </div>
       </section>
 
@@ -125,6 +128,7 @@ import {
 	setSeeLaterFolderId,
 	watchSeeLaterFolderId,
 } from '@/utils/seeLater';
+import IconChevronDown from '~icons/lucide/chevron-down';
 import IconStar from '~icons/lucide/star';
 
 const STORE_URLS = {
@@ -280,8 +284,24 @@ const handleUseDefaultFolder = async () => {
   flex-shrink: 0;
 }
 
+.theme-select-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.theme-select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
 .theme-select {
-  padding: 8px 16px;
+  appearance: none;
+  padding: 8px 38px 8px 16px;
   font-size: 14px;
   border: 1px solid var(--border-primary);
   border-radius: 6px;
