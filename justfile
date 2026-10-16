@@ -35,3 +35,21 @@
 @submit-firefox *flags:
     pnpm zip:firefox
     pnpm wxt submit {{flags}} --firefox-zip .output/searchmark-$(jq -r .version package.json)-firefox.zip --firefox-sources-zip .output/searchmark-$(jq -r .version package.json)-sources.zip
+
+# Create a worktree + branch from main and install deps
+@wt name:
+    git worktree add ../searchmark-wt/{{name}} -b {{name}} main
+    cd ../searchmark-wt/{{name}} && pnpm install
+    echo "cd ../searchmark-wt/{{name}}"
+
+# Remove a merged worktree and its branch (-D: squash merges are never seen as merged by git)
+@wt-rm name:
+    git worktree remove ../searchmark-wt/{{name}}
+    git branch -D {{name}}
+
+# Everything CI runs, locally
+@ci:
+    pnpm run check
+    pnpm run compile
+    pnpm run test
+    pnpm run build
