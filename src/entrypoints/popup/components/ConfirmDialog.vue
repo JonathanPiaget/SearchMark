@@ -8,10 +8,12 @@
           </div>
           <div class="dialog-actions">
             <button class="dialog-button cancel-button" @click="handleCancel">
-              {{ i18n.t('cancel') }}
+              <span>{{ i18n.t('cancel') }}</span>
+              <kbd class="key" aria-hidden="true">Esc</kbd>
             </button>
             <button class="dialog-button confirm-button" @click="handleConfirm">
-              {{ i18n.t('confirm') }}
+              <span>{{ i18n.t('confirm') }}</span>
+              <kbd class="key" aria-hidden="true">↵</kbd>
             </button>
           </div>
         </div>
@@ -134,6 +136,10 @@ onUnmounted(() => {
 }
 
 .dialog-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 14px;
@@ -172,5 +178,16 @@ onUnmounted(() => {
 
 .confirm-button:active {
   transform: scale(0.98);
+}
+
+.key {
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 5px;
 }
 </style>
