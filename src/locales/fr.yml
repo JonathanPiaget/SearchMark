@@ -1,7 +1,7 @@
-saveBookmark: Enregistrer le marque-page
-bookmarkSaved: Marque-page enregistré avec succès
-bookmarkSavedInFolder: Marque-page enregistré dans "{folderName}"
-bookmarkError: Erreur lors de l'enregistrement du marque-page
+saveBookmark: Enregistrer le favori
+bookmarkSaved: Favori enregistré avec succès
+bookmarkSavedInFolder: Favori enregistré dans "{folderName}"
+bookmarkError: Erreur lors de l'enregistrement du favori
 url: URL
 title: Titre
 folder: Dossier
@@ -28,11 +28,11 @@ themeAuto: Auto (suivre le système)
 themeLight: Clair
 themeDark: Sombre
 notifications: Notifications
-notificationsDescription: Afficher une notification système après l'enregistrement d'un marque-page
+notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
 alreadySaved: Déjà enregistré dans
-bookmarkDeleted: Marque-page supprimé avec succès
-delete: Supprimer le marque-page
-confirmDelete: Êtes-vous sûr de vouloir supprimer ce marque-page ?
+bookmarkDeleted: Favori supprimé avec succès
+delete: Supprimer le favori
+confirmDelete: Êtes-vous sûr de vouloir supprimer ce favori ?
 seeLater: Voir plus tard
 seeLaterTooltip: Enregistrer dans votre dossier Voir plus tard
 seeLaterSuccess: Enregistré dans "{folderName}" pour plus tard
