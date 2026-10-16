@@ -1,12 +1,12 @@
 saveBookmark: Enregistrer le favori
-bookmarkSaved: Favori enregistré avec succès
-bookmarkSavedInFolder: Favori enregistré dans "{folderName}"
+bookmarkSaved: Favori enregistré
+bookmarkSavedInFolder: Favori enregistré dans « {folderName} »
 bookmarkError: Erreur lors de l'enregistrement du favori
 url: URL
 title: Titre
 folder: Dossier
-searchFolders: Rechercher des dossiers...
-loadingFolders: Chargement des dossiers...
+searchFolders: Rechercher des dossiers…
+loadingFolders: Chargement des dossiers…
 childCount:
   0: 0 enfant
   1: 1 enfant
@@ -16,9 +16,9 @@ matches:
   1: résultat
   n: résultats
 noFoldersFound: Aucun dossier trouvé
-tryDifferentSearch: Essayez un terme de recherche différent
+tryDifferentSearch: Essayez un autre terme de recherche
 expandHint: pour déplier les dossiers
-keyShift: Shift
+keyShift: Maj
 keySpace: Espace
 save: Enregistrer
 cancel: Annuler
@@ -34,41 +34,41 @@ themeDark: Sombre
 notifications: Notifications
 notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
 alreadySaved: Déjà enregistré dans
-bookmarkDeleted: Favori supprimé avec succès
+bookmarkDeleted: Favori supprimé
 delete: Supprimer le favori
-confirmDelete: Êtes-vous sûr de vouloir supprimer ce favori ?
+confirmDelete: Voulez-vous vraiment supprimer ce favori ?
 seeLater: Voir plus tard
-seeLaterTooltip: Enregistrer dans votre dossier Voir plus tard
-seeLaterSuccess: Enregistré dans "{folderName}" pour plus tard
-seeLaterError: Échec de l'enregistrement dans le dossier Voir plus tard
+seeLaterTooltip: Enregistrer dans votre dossier « Voir plus tard »
+seeLaterSuccess: Enregistré dans « {folderName} » pour plus tard
+seeLaterError: Échec de l'enregistrement dans le dossier « Voir plus tard »
 quickActions: Actions rapides
-seeLaterFolder: Dossier Voir plus tard
-seeLaterFolderDescription: 'Par défaut : crée un dossier "Voir plus tard" dans la barre de favoris'
-seeLaterResetToDefault: Réinitialiser par défaut
+seeLaterFolder: Dossier « Voir plus tard »
+seeLaterFolderDescription: 'Par défaut : crée un dossier « Voir plus tard » dans la barre de favoris'
+seeLaterResetToDefault: Rétablir la valeur par défaut
 search: Rechercher
 noBookmarksInFolder: Aucun favori trouvé dans ce dossier
-loadingBookmarks: Chargement des favoris...
+loadingBookmarks: Chargement des favoris…
 errorLoadingBookmarks: Échec du chargement des favoris
 folderNotFound: Dossier introuvable
-pathLabel: "Chemin :"
+pathLabel: "Chemin :"
 emptyFolderMessage: Ce dossier est vide
 includeSubfolders: Inclure les sous-dossiers
-filterBookmarks: Filtrer les favoris...
-searchAllBookmarks: Rechercher tous les favoris...
+filterBookmarks: Filtrer les favoris…
+searchAllBookmarks: Rechercher tous les favoris…
 typeToSearch: Tapez pour rechercher tous les favoris
-moreResults: "{count} résultats de plus..."
+moreResults: "{count} autres résultats…"
 bookmarkToolbar: Barre de favoris
 fuzzySearch: Recherche floue
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées, tant qu'elles restent dans l'ordre.
 clearSelection: Effacer la sélection
 shortcutsTitle: Raccourcis clavier
-shortcutQuickSave: Sauvegarde rapide dans Voir plus tard
+shortcutQuickSave: Enregistrement rapide dans « Voir plus tard »
 shortcutSwitchView: Changer de vue
 openShortcut: Ouvrir SearchMark
 shortcutDescriptionChrome: Raccourci pour ouvrir la popup. Utilisez le bouton pour le modifier.
-shortcutDescriptionFirefox: 'Raccourci pour ouvrir la popup. Modifiez-le dans about:addons → ⚙ → Gérer les raccourcis.'
+shortcutDescriptionFirefox: 'Raccourci pour ouvrir la popup. Modifiez-le dans about:addons → ⚙ → Gérer les raccourcis d’extensions.'
 shortcutChange: Modifier le raccourci
 support: Soutenir
-supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
+supportMessage: Si SearchMark vous est utile, pensez à soutenir son développement ou à laisser un avis. Vos retours aident les autres à découvrir cette extension !
 buyMeACoffee: M'offrir un café
 rateExtension: Noter l'extension
