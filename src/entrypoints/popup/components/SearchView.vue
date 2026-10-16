@@ -67,7 +67,7 @@
     />
 
     <div v-if="hiddenCount" class="more-results">
-      {{ i18n.t('moreResults', { count: hiddenCount }) }}
+      {{ i18n.t('moreResults', hiddenCount) }}
     </div>
   </div>
 </template>
