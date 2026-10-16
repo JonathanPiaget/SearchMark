@@ -62,6 +62,27 @@ describe('matchByTitle', () => {
 		expect(matchByTitle(titled('xyz'), 'abc', true, 10)).toHaveLength(0);
 	});
 
+	it('fuzzy mode appends typo-only matches after fuzzysort matches', () => {
+		const items = titled('Kotlen notes', 'Kotlin');
+
+		const results = matchByTitle(items, 'kotlin', true, 10);
+
+		expect(results.map((r) => r.item.title)).toEqual([
+			'Kotlin',
+			'Kotlen notes',
+		]);
+		expect(results[1]?.indexes).toEqual([0, 1, 2, 3, 4, 5]);
+	});
+
+	it('fuzzy mode respects limit across both tiers', () => {
+		const items = titled('Kotlen 1', 'Kotlin 2', 'Kotlin 3');
+
+		expect(
+			matchByTitle(items, 'kotlin', true, 2).map((r) => r.item.title),
+		).not.toContain('Kotlen 1');
+		expect(matchByTitle(items, 'kotlin', true, 3)).toHaveLength(3);
+	});
+
 	it.each([true, false])('caps results at limit (fuzzy=%s)', (fuzzy) => {
 		const items = titled(...Array.from({ length: 30 }, (_, i) => `alpha ${i}`));
 
