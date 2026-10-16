@@ -33,13 +33,13 @@ alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Marque-page supprimé avec succès
 delete: Supprimer le marque-page
 confirmDelete: Êtes-vous sûr de vouloir supprimer ce marque-page ?
-seeLater: Voir Plus Tard
-seeLaterTooltip: Enregistrer dans votre dossier Voir Plus Tard
+seeLater: Voir plus tard
+seeLaterTooltip: Enregistrer dans votre dossier Voir plus tard
 seeLaterSuccess: Enregistré dans "{folderName}" pour plus tard
-seeLaterError: Échec de l'enregistrement dans le dossier Voir Plus Tard
-quickActions: Actions Rapides
-seeLaterFolder: Dossier Voir Plus Tard
-seeLaterFolderDescription: 'Par défaut : crée un dossier "Voir Plus Tard" dans la barre de favoris'
+seeLaterError: Échec de l'enregistrement dans le dossier Voir plus tard
+quickActions: Actions rapides
+seeLaterFolder: Dossier Voir plus tard
+seeLaterFolderDescription: 'Par défaut : crée un dossier "Voir plus tard" dans la barre de favoris'
 seeLaterResetToDefault: Réinitialiser par défaut
 search: Rechercher
 noBookmarksInFolder: Aucun favori trouvé dans ce dossier
@@ -58,7 +58,7 @@ fuzzySearch: Recherche floue
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées, tant qu'elles restent dans l'ordre.
 clearSelection: Effacer la sélection
 shortcutsTitle: Raccourcis clavier
-shortcutQuickSave: Sauvegarde rapide dans Voir Plus Tard
+shortcutQuickSave: Sauvegarde rapide dans Voir plus tard
 shortcutSwitchView: Changer de vue
 openShortcut: Ouvrir SearchMark
 shortcutDescriptionChrome: Raccourci pour ouvrir la popup. Utilisez le bouton pour le modifier.

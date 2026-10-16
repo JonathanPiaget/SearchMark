@@ -175,17 +175,17 @@ describe('getOrCreateSeeLaterFolder', () => {
 	});
 
 	it('adopts an existing folder titled in the active locale', async () => {
-		vi.spyOn(browser.i18n, 'getMessage').mockReturnValue('Voir Plus Tard');
+		vi.spyOn(browser.i18n, 'getMessage').mockReturnValue('Voir plus tard');
 		vi.spyOn(bookmarks, 'search').mockImplementation(async ({ title }) =>
-			title === 'Voir Plus Tard'
-				? [node({ id: 'OLD_FR', title: 'Voir Plus Tard' })]
+			title === 'Voir plus tard'
+				? [node({ id: 'OLD_FR', title: 'Voir plus tard' })]
 				: [],
 		);
 		const create = vi.spyOn(bookmarks, 'create');
 
 		const result = await getOrCreateSeeLaterFolder();
 
-		expect(result).toEqual({ id: 'OLD_FR', title: 'Voir Plus Tard' });
+		expect(result).toEqual({ id: 'OLD_FR', title: 'Voir plus tard' });
 		expect(create).not.toHaveBeenCalled();
 	});
 
