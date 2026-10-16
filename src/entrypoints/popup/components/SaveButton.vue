@@ -1,7 +1,8 @@
 <template>
   <div class="save-section">
     <button @click="handleSave" class="save-button" :disabled="isLoading">
-      {{ isLoading ? 'Saving...' : i18n.t('saveBookmark') }}
+      <span>{{ isLoading ? i18n.t('saving') : i18n.t('saveBookmark') }}</span>
+      <kbd v-if="!isLoading" class="key" aria-hidden="true">↵</kbd>
     </button>
     <div v-if="message" class="message" :class="{ 'error': message.includes('Error') }">
       {{ message }}
@@ -35,6 +36,10 @@ const handleSave = () => {
 }
 
 .save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;
   border: none;
@@ -57,6 +62,17 @@ const handleSave = () => {
 .save-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.key {
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
 }
 
 .message {

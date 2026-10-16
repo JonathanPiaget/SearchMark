@@ -1,4 +1,5 @@
 saveBookmark: Save bookmark
+saving: Saving...
 bookmarkSaved: Bookmark saved successfully
 bookmarkSavedInFolder: Bookmark saved to "{folderName}"
 bookmarkError: Error saving bookmark

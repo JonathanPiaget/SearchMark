@@ -1,4 +1,5 @@
 saveBookmark: Enregistrer le favori
+saving: Enregistrement...
 bookmarkSaved: Favori enregistré
 bookmarkSavedInFolder: Favori enregistré dans « {folderName} »
 bookmarkError: Erreur lors de l'enregistrement du favori
