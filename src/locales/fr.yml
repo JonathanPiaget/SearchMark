@@ -7,10 +7,14 @@ title: Titre
 folder: Dossier
 searchFolders: Rechercher des dossiers...
 loadingFolders: Chargement des dossiers...
-child: enfant
-children: enfants
-match: résultat
-matches: résultats
+childCount:
+  0: 0 enfant
+  1: 1 enfant
+  n: $1 enfants
+matches:
+  0: résultat
+  1: résultat
+  n: résultats
 noFoldersFound: Aucun dossier trouvé
 tryDifferentSearch: Essayez un terme de recherche différent
 expandHint: pour déplier les dossiers

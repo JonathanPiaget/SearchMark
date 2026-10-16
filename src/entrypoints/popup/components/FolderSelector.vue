@@ -88,7 +88,7 @@
                   <div v-if="row.folder.children && row.folder.children.length > 0" class="folder-actions">
                     <span
                       class="children-count"
-                      :title="`${row.folder.children.length} ${row.folder.children.length === 1 ? i18n.t('child') : i18n.t('children')}`"
+                      :title="i18n.t('childCount', row.folder.children.length)"
                     >
                       <IconFolders class="children-count-icon" />{{ row.folder.children.length }}
                     </span>
@@ -131,7 +131,7 @@
               <span class="count-current">{{ matchCount.current }}</span>
               <span class="count-total"> / {{ matchCount.total }}</span>&nbsp;
               <span class="count-matches">
-                {{ matchCount.total === 1 ? i18n.t('match') : i18n.t('matches') }}
+                {{ i18n.t('matches', matchCount.total) }}
               </span>
             </div>
             <div class="footer-keys">

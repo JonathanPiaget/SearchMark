@@ -7,10 +7,12 @@ title: Title
 folder: Folder
 searchFolders: Search folders...
 loadingFolders: Loading folders...
-child: child
-children: children
-match: match
-matches: matches
+childCount:
+  1: 1 child
+  n: $1 children
+matches:
+  1: match
+  n: matches
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
 expandHint: to expand folders
