@@ -30,7 +30,7 @@ const THEME_LABELS = {
 } as const;
 
 const label = computed(() =>
-	i18n.t('toggleTheme', [i18n.t(THEME_LABELS[currentTheme.value])]),
+	i18n.t('themeLabel', [i18n.t(THEME_LABELS[currentTheme.value])]),
 );
 </script>
 

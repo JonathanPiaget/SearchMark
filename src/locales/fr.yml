@@ -23,7 +23,7 @@ keySpace: Espace
 save: Enregistrer
 cancel: Annuler
 confirm: Supprimer
-toggleTheme: 'Thème : $1'
+themeLabel: 'Thème : $1'
 settings: Paramètres
 appearance: Apparence
 theme: Thème
