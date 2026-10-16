@@ -6,7 +6,7 @@
     @click="cycleTheme"
   >
     <span class="theme-icon" :class="{ dark: appliedTheme === 'dark' }">
-      <IconSunMoon v-if="currentTheme === 'auto'" />
+      <IconMonitor v-if="currentTheme === 'auto'" />
       <IconMoon v-else-if="currentTheme === 'dark'" />
       <IconSun v-else />
     </span>
@@ -17,9 +17,9 @@
 import { computed } from 'vue';
 import { i18n } from '#i18n';
 import { useTheme } from '@/composables/useTheme';
+import IconMonitor from '~icons/lucide/monitor';
 import IconMoon from '~icons/lucide/moon';
 import IconSun from '~icons/lucide/sun';
-import IconSunMoon from '~icons/lucide/sun-moon';
 
 const { currentTheme, appliedTheme, cycleTheme } = useTheme();
 
