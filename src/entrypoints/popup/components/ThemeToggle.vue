@@ -1,24 +1,37 @@
 <template>
   <button
     class="theme-toggle"
-    :aria-label="i18n.t('toggleTheme')"
-    :title="i18n.t('toggleTheme')"
-    @click="toggleTheme"
+    :aria-label="label"
+    :title="label"
+    @click="cycleTheme"
   >
-    <span class="theme-icon" :class="{ dark: appliedTheme === 'dark' }">
-      <IconMoon v-if="appliedTheme === 'dark'" />
+    <span class="theme-icon">
+      <IconMonitor v-if="currentTheme === 'auto'" />
+      <IconMoon v-else-if="currentTheme === 'dark'" />
       <IconSun v-else />
     </span>
   </button>
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
 import { i18n } from '#i18n';
 import { useTheme } from '@/composables/useTheme';
+import IconMonitor from '~icons/lucide/monitor';
 import IconMoon from '~icons/lucide/moon';
 import IconSun from '~icons/lucide/sun';
 
-const { appliedTheme, toggleTheme } = useTheme();
+const { currentTheme, cycleTheme } = useTheme();
+
+const THEME_LABELS = {
+	auto: 'themeAuto',
+	light: 'themeLight',
+	dark: 'themeDark',
+} as const;
+
+const label = computed(() =>
+	i18n.t('themeLabel', [i18n.t(THEME_LABELS[currentTheme.value])]),
+);
 </script>
 
 <style scoped>

@@ -22,7 +22,7 @@ keySpace: Space
 save: Save
 cancel: Cancel
 confirm: Delete
-toggleTheme: Toggle theme
+themeLabel: 'Theme: $1'
 settings: Settings
 appearance: Appearance
 theme: Theme

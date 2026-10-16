@@ -2,6 +2,12 @@ import { nextTick, ref } from 'vue';
 
 export type Theme = 'light' | 'dark' | 'auto';
 
+const THEME_CYCLE: Record<Theme, Theme> = {
+	auto: 'light',
+	light: 'dark',
+	dark: 'auto',
+};
+
 const themeItem = storage.defineItem<Theme>('local:searchmark_theme', {
 	fallback: 'auto',
 });
@@ -114,12 +120,9 @@ export const useTheme = () => {
 		await themeItem.setValue(theme);
 	};
 
-	/**
-	 * Toggle between light and dark (skips auto)
-	 */
-	const toggleTheme = async (event?: MouseEvent) => {
-		const newTheme = appliedTheme.value === 'light' ? 'dark' : 'light';
-		await setTheme(newTheme, event);
+	const cycleTheme = async (event?: MouseEvent) => {
+		const next = THEME_CYCLE[currentTheme.value];
+		await setTheme(next, event);
 	};
 
 	/**
@@ -170,7 +173,7 @@ export const useTheme = () => {
 		currentTheme,
 		appliedTheme,
 		setTheme,
-		toggleTheme,
+		cycleTheme,
 		initTheme,
 	};
 };
