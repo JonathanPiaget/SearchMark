@@ -1,13 +1,13 @@
 @_default:
     just --list
 
-# Run development server for Firefox
-@firefox:
-    pnpm run dev:firefox
+# Run development server for Firefox (pass a port when another worktree already uses 3000)
+@firefox port="3000":
+    pnpm run dev:firefox --port {{port}}
 
-# Run development server for Chrome
-@chrome:
-    pnpm run dev
+# Run development server for Chrome (pass a port when another worktree already uses 3000)
+@chrome port="3000":
+    pnpm run dev --port {{port}}
 
 # Run tests
 @test:
