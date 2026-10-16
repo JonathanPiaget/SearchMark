@@ -3,9 +3,27 @@ export interface FoldedText {
 	originalIndexes: (start: number, end: number) => number[];
 }
 
-// NFKD + combining-mark strip mirrors fuzzysort, so both matching modes fold alike.
+const COMBINING_MARK = /\p{M}/u;
+
 const foldChar = (char: string) =>
-	char.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+	char
+		.normalize('NFKD')
+		.replace(new RegExp(COMBINING_MARK, 'gu'), '')
+		.toLowerCase();
+
+// fuzzysort indexes base letters only, leaving a decomposed accent unhighlighted.
+export const withCombiningMarks = (
+	text: string,
+	indexes: readonly number[],
+): number[] => {
+	const all = new Set<number>();
+	for (const index of indexes) {
+		all.add(index);
+		for (let next = index + 1; COMBINING_MARK.test(text[next] ?? ''); next++)
+			all.add(next);
+	}
+	return [...all].sort((a, b) => a - b);
+};
 
 export const foldAccents = (text: string): FoldedText => {
 	let folded = '';

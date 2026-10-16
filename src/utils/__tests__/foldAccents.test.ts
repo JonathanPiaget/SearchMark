@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { foldAccents } from '@/utils/foldAccents';
+import { foldAccents, withCombiningMarks } from '@/utils/foldAccents';
 
 describe('foldAccents', () => {
 	it('lowercases and strips accents', () => {
@@ -29,5 +29,17 @@ describe('foldAccents', () => {
 		const { folded, originalIndexes } = foldAccents('ﬁx');
 		expect(folded).toBe('fix');
 		expect(originalIndexes(0, 1)).toEqual([0]);
+	});
+
+	describe('withCombiningMarks', () => {
+		it('adds the combining marks that follow a matched letter', () => {
+			expect(withCombiningMarks('re\u0301sume\u0301', [1, 6])).toEqual([
+				1, 2, 6, 7,
+			]);
+		});
+
+		it('leaves precomposed text unchanged', () => {
+			expect(withCombiningMarks('résumé', [1, 5])).toEqual([1, 5]);
+		});
 	});
 });

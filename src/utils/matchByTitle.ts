@@ -1,5 +1,5 @@
 import fuzzysort from 'fuzzysort';
-import { foldAccents } from '@/utils/foldAccents';
+import { foldAccents, withCombiningMarks } from '@/utils/foldAccents';
 import { matchWordsWithTypos } from '@/utils/matchByTypos';
 
 export const FUZZY_THRESHOLD = 0.3;
@@ -36,7 +36,10 @@ export const matchByTitle = <T extends { title: string }>(
 	if (fuzzy) {
 		const fuzzyMatches: TitleMatch<T>[] = fuzzysort
 			.go(query, items, { key: 'title', threshold: FUZZY_THRESHOLD, limit })
-			.map((r) => ({ item: r.obj, indexes: r.indexes }));
+			.map((r) => ({
+				item: r.obj,
+				indexes: withCombiningMarks(r.obj.title, r.indexes),
+			}));
 		const found = new Set(fuzzyMatches.map((m) => m.item));
 		return appendMatches(
 			fuzzyMatches,

@@ -48,6 +48,17 @@ describe('matchByTitle', () => {
 		expect(results).toHaveLength(1);
 	});
 
+	it('fuzzy mode highlights a decomposed accent with its letter', () => {
+		const results = matchByTitle(
+			titled('Mon re\u0301sume\u0301'),
+			'resume',
+			true,
+			10,
+		);
+
+		expect(results[0]?.indexes).toEqual([4, 5, 6, 7, 8, 9, 10, 11]);
+	});
+
 	it('fuzzy mode matches scattered letters and returns indexes', () => {
 		const items = titled('kotlin-lang-lambda', 'javascript-tutorial');
 
