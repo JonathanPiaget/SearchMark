@@ -109,7 +109,7 @@ describe('useBookmarkBrowser', () => {
 		expect(getTree).toHaveBeenCalledTimes(1);
 	});
 
-	it('returns indexes in fuzzy mode and null in exact mode, and persists the choice', async () => {
+	it('returns indexes in both modes and persists the choice', async () => {
 		stubTree(['Alpha']);
 		const state = await setup();
 		state.filterQuery.value = 'ala';
@@ -120,7 +120,7 @@ describe('useBookmarkBrowser', () => {
 		state.fuzzy.value = false;
 		expect(state.results.value).toEqual([]);
 		state.filterQuery.value = 'alp';
-		expect(state.results.value[0]?.indexes).toBeNull();
+		expect(state.results.value[0]?.indexes).toEqual([0, 1, 2]);
 		await flush();
 		expect(await storage.getItem('local:searchmark_fuzzy_filter')).toBe(false);
 	});

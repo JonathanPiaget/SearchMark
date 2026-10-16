@@ -60,7 +60,7 @@ moreResults:
   n: $1 more results...
 bookmarkToolbar: Bookmark toolbar
 fuzzySearch: Fuzzy search
-fuzzySearchTooltip: Finds results from partial input, even with skipped letters, as long as the letters stay in order.
+fuzzySearchTooltip: Finds results from partial input, even with skipped letters (as long as they stay in order), missing accents or a few typos.
 clearSelection: Clear selection
 shortcutsTitle: Keyboard shortcuts
 shortcutQuickSave: Quick save to "See Later"

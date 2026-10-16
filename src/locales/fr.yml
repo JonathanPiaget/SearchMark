@@ -62,7 +62,7 @@ moreResults:
   n: $1 autres résultats…
 bookmarkToolbar: Barre de favoris
 fuzzySearch: Recherche floue
-fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées, tant qu'elles restent dans l'ordre.
+fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées (tant qu'elles restent dans l'ordre), sans accents ou avec quelques fautes de frappe.
 clearSelection: Effacer la sélection
 shortcutsTitle: Raccourcis clavier
 shortcutQuickSave: Enregistrement rapide dans « Voir plus tard »

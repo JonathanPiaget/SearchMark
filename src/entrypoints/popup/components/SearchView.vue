@@ -59,8 +59,6 @@
       :results="results"
       :is-loading="isLoading"
       :empty-message="folderId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
-      :filter-query="filterQuery"
-      :is-fuzzy="fuzzy"
       @open-bookmark="handleOpenBookmark"
       @bookmark-deleted="remove"
       @escape-top="focusFilterInput"

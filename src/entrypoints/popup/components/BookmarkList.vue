@@ -15,9 +15,7 @@
         v-for="{ item, indexes } in results"
         :key="item.id"
         :bookmark="item"
-        :filter-query="filterQuery"
         :highlight-indexes="indexes"
-        :is-fuzzy="isFuzzy"
         @open="emit('openBookmark', item)"
         @deleted="(id) => emit('bookmarkDeleted', id)"
         @escape-top="emit('escapeTop')"
@@ -38,8 +36,6 @@ interface Props {
 	results: TitleMatch<BookmarkItemType>[];
 	isLoading?: boolean;
 	emptyMessage?: string;
-	filterQuery?: string;
-	isFuzzy?: boolean;
 }
 
 defineProps<Props>();

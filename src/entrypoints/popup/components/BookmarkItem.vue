@@ -10,13 +10,10 @@
       <div class="bookmark-header">
         <span class="bookmark-icon"><IconBookOpen /></span>
         <span class="bookmark-title">
-          <template v-if="filterQuery && (highlightIndexes || !isFuzzy)">
-            <template v-for="(part, idx) in highlightedTitle" :key="idx">
-              <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
-              <span v-else>{{ part.text }}</span>
-            </template>
+          <template v-for="(part, idx) in highlightedTitle" :key="idx">
+            <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
+            <span v-else>{{ part.text }}</span>
           </template>
-          <template v-else>{{ bookmark.title }}</template>
         </span>
       </div>
       <div class="bookmark-url">{{ bookmark.url }}</div>
@@ -48,7 +45,7 @@ import { computed, ref } from 'vue';
 import { i18n } from '#i18n';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
 import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
-import { highlightText } from '@/utils/highlight';
+import { highlightByIndexes } from '@/utils/highlight';
 import IconBookOpen from '~icons/lucide/book-open';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconTrash from '~icons/lucide/trash-2';
@@ -56,9 +53,7 @@ import ConfirmDialog from './ConfirmDialog.vue';
 
 interface Props {
 	bookmark: BookmarkItemType;
-	filterQuery?: string;
 	highlightIndexes?: readonly number[] | null;
-	isFuzzy?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -73,11 +68,7 @@ const { isDeleting, deleteBookmark } = useBookmarkActions();
 const confirmDialogVisible = ref(false);
 
 const highlightedTitle = computed(() =>
-	highlightText(
-		props.bookmark.title,
-		props.filterQuery || '',
-		props.highlightIndexes,
-	),
+	highlightByIndexes(props.bookmark.title, props.highlightIndexes),
 );
 
 const showConfirmDialog = () => {
