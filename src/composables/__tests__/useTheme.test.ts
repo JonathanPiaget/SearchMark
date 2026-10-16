@@ -51,11 +51,15 @@ describe('setTheme', () => {
 	});
 });
 
-describe('toggleTheme', () => {
-	it('flips from the default applied "light" to "dark"', async () => {
-		const { currentTheme, toggleTheme } = await freshUseTheme();
-		await toggleTheme();
-		expect(currentTheme.value).toBe('dark');
+describe('cycleTheme', () => {
+	it('cycles auto → light → dark → auto and persists each step', async () => {
+		const { currentTheme, cycleTheme } = await freshUseTheme();
+		for (const expected of ['light', 'dark', 'auto']) {
+			await cycleTheme();
+			expect(currentTheme.value).toBe(expected);
+			const stored = await browser.storage.local.get(KEY);
+			expect(stored[KEY]).toBe(expected);
+		}
 	});
 });
 
