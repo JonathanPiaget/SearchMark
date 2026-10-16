@@ -21,6 +21,12 @@ describe('matchByTitle', () => {
 		expect(results[1]?.indexes).toEqual([4, 5, 6, 7]);
 	});
 
+	it('exact mode indexes every occurrence of the query', () => {
+		const results = matchByTitle(titled('a-a-a'), 'a', false, 10);
+
+		expect(results[0]?.indexes).toEqual([0, 2, 4]);
+	});
+
 	it('exact mode ignores accents and indexes the original title', () => {
 		const results = matchByTitle(
 			titled('Mon Développement'),

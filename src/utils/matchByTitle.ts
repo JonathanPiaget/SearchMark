@@ -51,10 +51,14 @@ export const matchByTitle = <T extends { title: string }>(
 
 	const foldedQuery = foldAccents(query).folded;
 	return appendMatches([], items, limit, (title) => {
-		const folded = foldAccents(title);
-		const start = folded.folded.indexOf(foldedQuery);
-		return start === -1
-			? null
-			: folded.originalIndexes(start, start + foldedQuery.length);
+		const { folded, originalIndexes } = foldAccents(title);
+		const indexes: number[] = [];
+		for (
+			let start = folded.indexOf(foldedQuery);
+			start !== -1;
+			start = folded.indexOf(foldedQuery, start + foldedQuery.length)
+		)
+			indexes.push(...originalIndexes(start, start + foldedQuery.length));
+		return indexes.length ? indexes : null;
 	});
 };
