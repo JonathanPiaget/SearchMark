@@ -36,11 +36,11 @@ bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark
 confirmDelete: Are you sure you want to delete this bookmark?
 seeLater: See Later
-seeLaterTooltip: Save to your See Later folder
+seeLaterTooltip: Save to your "See Later" folder
 seeLaterSuccess: Saved to "{folderName}" for later
-seeLaterError: Failed to save to See Later folder
+seeLaterError: Failed to save to "See Later" folder
 quickActions: Quick actions
-seeLaterFolder: See Later folder
+seeLaterFolder: '"See Later" folder'
 seeLaterFolderDescription: 'Default: creates a "See Later" folder in your Bookmarks Toolbar'
 seeLaterResetToDefault: Reset to default
 search: Search
@@ -62,7 +62,7 @@ fuzzySearch: Fuzzy search
 fuzzySearchTooltip: Finds results from partial input, even with skipped letters, as long as the letters stay in order.
 clearSelection: Clear selection
 shortcutsTitle: Keyboard shortcuts
-shortcutQuickSave: Quick save to See Later
+shortcutQuickSave: Quick save to "See Later"
 shortcutSwitchView: Switch view
 openShortcut: Open SearchMark
 shortcutDescriptionChrome: Shortcut to open the popup. Use the button to rebind it.
