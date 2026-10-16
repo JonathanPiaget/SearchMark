@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { highlightByIndexes } from '@/utils/highlight';
 
 describe('highlightByIndexes', () => {
-	it('returns a single non-highlighted part when there are no indexes', () => {
-		expect(highlightByIndexes('hello', [])).toEqual([
-			{ text: 'hello', highlighted: false },
-		]);
-	});
+	it.each([[], null, undefined])(
+		'returns a single non-highlighted part when indexes are %s',
+		(indexes) => {
+			expect(highlightByIndexes('hello', indexes)).toEqual([
+				{ text: 'hello', highlighted: false },
+			]);
+		},
+	);
 
 	it('highlights the first character when index 0 is present', () => {
 		expect(highlightByIndexes('hello', [0])).toEqual([
@@ -38,15 +41,6 @@ describe('highlightByIndexes', () => {
 			{ text: 'hi', highlighted: true },
 		]);
 	});
-
-	it.each([null, undefined])(
-		'returns a single non-highlighted part when indexes are %s',
-		(indexes) => {
-			expect(highlightByIndexes('hello', indexes)).toEqual([
-				{ text: 'hello', highlighted: false },
-			]);
-		},
-	);
 
 	it('ignores out-of-range indexes', () => {
 		expect(highlightByIndexes('hi', [5])).toEqual([

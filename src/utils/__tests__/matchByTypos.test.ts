@@ -31,6 +31,14 @@ describe('matchWordsWithTypos', () => {
 		expect(matchWordsWithTypos('Kotlin', 'kitlen')).toBeNull();
 	});
 
+	it.each([
+		['5 letters: 1 typo', 'Plane', 'plant', true],
+		['8 letters: not 2 typos', 'Notebook', 'notabuok', false],
+		['9 letters: 2 typos', 'Notebooks', 'notabuoks', true],
+	])('typo budget boundary, %s', (_, title, query, matches) => {
+		expect(matchWordsWithTypos(title, query) !== null).toBe(matches);
+	});
+
 	it('allows no typo under 5 letters', () => {
 		expect(matchWordsWithTypos('dev tools', 'deb')).toBeNull();
 	});

@@ -32,7 +32,7 @@ const damerauLevenshtein = (a: string, b: string, max: number): number => {
 };
 
 // Title words are cut to about the query word's length so a word still being typed matches.
-const matchesWithTypos = (queryWord: string, titleWord: string) => {
+const wordMatchesWithTypos = (titleWord: string, queryWord: string) => {
 	const budget = typoBudget(queryWord.length);
 	for (
 		let cut = queryWord.length - budget;
@@ -59,7 +59,7 @@ export const matchWordsWithTypos = (
 	const indexes = new Set<number>();
 	for (const queryWord of queryWords) {
 		const titleWord = titleWords.find(([word]) =>
-			matchesWithTypos(queryWord, word),
+			wordMatchesWithTypos(word, queryWord),
 		);
 		if (!titleWord) return null;
 		for (const index of originalIndexes(
