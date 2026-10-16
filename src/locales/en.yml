@@ -1,4 +1,4 @@
-saveBookmark: Save Bookmark
+saveBookmark: Save bookmark
 bookmarkSaved: Bookmark saved successfully
 bookmarkSavedInFolder: Bookmark saved to "{folderName}"
 bookmarkError: Error saving bookmark
@@ -39,8 +39,8 @@ seeLater: See Later
 seeLaterTooltip: Save to your See Later folder
 seeLaterSuccess: Saved to "{folderName}" for later
 seeLaterError: Failed to save to See Later folder
-quickActions: Quick Actions
-seeLaterFolder: See Later Folder
+quickActions: Quick actions
+seeLaterFolder: See Later folder
 seeLaterFolderDescription: 'Default: creates a "See Later" folder in your Bookmarks Toolbar'
 seeLaterResetToDefault: Reset to default
 search: Search
