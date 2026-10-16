@@ -61,6 +61,14 @@ describe('cycleTheme', () => {
 			expect(stored[KEY]).toBe(expected);
 		}
 	});
+
+	it('starts the cycle from the stored preference', async () => {
+		await browser.storage.local.set({ [KEY]: 'dark' });
+		const { currentTheme, cycleTheme, initTheme } = await freshUseTheme();
+		await initTheme();
+		await cycleTheme();
+		expect(currentTheme.value).toBe('auto');
+	});
 });
 
 describe('storage.onChanged sync', () => {
