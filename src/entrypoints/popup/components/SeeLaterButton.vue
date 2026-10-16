@@ -2,7 +2,7 @@
   <button
     class="see-later-button"
     :aria-label="i18n.t('seeLater')"
-    :title="i18n.t('seeLaterTooltip')"
+    :title="tooltip"
     :disabled="isLoading"
     @click="handleSeeLater"
   >
@@ -13,14 +13,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { i18n } from '#i18n';
+import { getQuickSaveShortcut } from '@/utils/commands';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
 import { quickSave } from '@/utils/seeLater';
 import IconClock from '~icons/lucide/clock';
 
 const isLoading = ref(false);
+const shortcut = ref<string>();
+
+onMounted(async () => {
+	shortcut.value = await getQuickSaveShortcut();
+});
+
+const tooltip = computed(() =>
+	shortcut.value
+		? `${i18n.t('seeLaterTooltip')} (${shortcut.value})`
+		: i18n.t('seeLaterTooltip'),
+);
 
 const handleSeeLater = async () => {
 	isLoading.value = true;
