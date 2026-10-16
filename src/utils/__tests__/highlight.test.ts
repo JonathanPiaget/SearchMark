@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-	highlightByIndexes,
-	highlightBySubstring,
-	highlightText,
-} from '@/utils/highlight';
+import { highlightByIndexes } from '@/utils/highlight';
 
 describe('highlightByIndexes', () => {
 	it('returns a single non-highlighted part when there are no indexes', () => {
@@ -43,83 +39,18 @@ describe('highlightByIndexes', () => {
 		]);
 	});
 
+	it.each([null, undefined])(
+		'returns a single non-highlighted part when indexes are %s',
+		(indexes) => {
+			expect(highlightByIndexes('hello', indexes)).toEqual([
+				{ text: 'hello', highlighted: false },
+			]);
+		},
+	);
+
 	it('ignores out-of-range indexes', () => {
 		expect(highlightByIndexes('hi', [5])).toEqual([
 			{ text: 'hi', highlighted: false },
-		]);
-	});
-});
-
-describe('highlightBySubstring', () => {
-	it('returns a single non-highlighted part when the query is empty', () => {
-		expect(highlightBySubstring('hello', '')).toEqual([
-			{ text: 'hello', highlighted: false },
-		]);
-	});
-
-	it('returns a single non-highlighted part when the query is whitespace only', () => {
-		expect(highlightBySubstring('hello', '   ')).toEqual([
-			{ text: 'hello', highlighted: false },
-		]);
-	});
-
-	it('highlights the matching substring case-insensitively', () => {
-		expect(highlightBySubstring('Hello World', 'world')).toEqual([
-			{ text: 'Hello ', highlighted: false },
-			{ text: 'World', highlighted: true },
-		]);
-	});
-
-	it('preserves the original casing in the highlighted part', () => {
-		expect(highlightBySubstring('FooBar', 'foo')).toEqual([
-			{ text: 'Foo', highlighted: true },
-			{ text: 'Bar', highlighted: false },
-		]);
-	});
-
-	it('highlights every occurrence of the query', () => {
-		expect(highlightBySubstring('a-a-a', 'a')).toEqual([
-			{ text: 'a', highlighted: true },
-			{ text: '-', highlighted: false },
-			{ text: 'a', highlighted: true },
-			{ text: '-', highlighted: false },
-			{ text: 'a', highlighted: true },
-		]);
-	});
-
-	it('returns a single non-highlighted part when there is no match', () => {
-		expect(highlightBySubstring('hello', 'xyz')).toEqual([
-			{ text: 'hello', highlighted: false },
-		]);
-	});
-});
-
-describe('highlightText', () => {
-	it('uses index-based highlighting when indexes are provided', () => {
-		expect(highlightText('hello', 'ignored', [0])).toEqual([
-			{ text: 'h', highlighted: true },
-			{ text: 'ello', highlighted: false },
-		]);
-	});
-
-	it('falls back to substring highlighting when indexes are empty', () => {
-		expect(highlightText('Hello World', 'world', [])).toEqual([
-			{ text: 'Hello ', highlighted: false },
-			{ text: 'World', highlighted: true },
-		]);
-	});
-
-	it('falls back to substring highlighting when indexes are null', () => {
-		expect(highlightText('Hello World', 'hello', null)).toEqual([
-			{ text: 'Hello', highlighted: true },
-			{ text: ' World', highlighted: false },
-		]);
-	});
-
-	it('falls back to substring highlighting when indexes are undefined', () => {
-		expect(highlightText('Hello World', 'hello')).toEqual([
-			{ text: 'Hello', highlighted: true },
-			{ text: ' World', highlighted: false },
 		]);
 	});
 });

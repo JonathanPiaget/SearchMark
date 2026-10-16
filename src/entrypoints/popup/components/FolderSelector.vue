@@ -76,7 +76,7 @@
                   <span class="folder-icon"><IconFolder /></span>
                   <div class="folder-text">
                     <span class="folder-name">
-                      <template v-for="(part, partIndex) in highlightText(row.folder.title, inputText, row.indexes)" :key="`${row.folder.id}-${partIndex}`">
+                      <template v-for="(part, partIndex) in highlightByIndexes(row.folder.title, row.indexes)" :key="`${row.folder.id}-${partIndex}`">
                         <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
                         <span v-else>{{ part.text }}</span>
                       </template>
@@ -154,7 +154,7 @@ import { useDropdownFit } from '@/composables/useDropdownFit';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { useFolderTree } from '@/composables/useFolderTree';
-import { highlightText } from '@/utils/highlight';
+import { highlightByIndexes } from '@/utils/highlight';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';
