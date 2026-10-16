@@ -15,7 +15,7 @@ Fuzzy matching (see `GLOSSARY.md`) uses fuzzysort: it accepts skipped letters in
 
 ## Decision
 
-Option 4. fuzzysort runs first and its results keep their order; titles only the typo tier accepts are appended after them. Every query word must match some title word, in any order. A typo-corrected word is highlighted whole, mapped back to the original title through the shared accent fold (`src/utils/foldAccents.ts`).
+Option 4. fuzzysort runs first and its results keep their order; titles only the typo tier accepts are appended after them. Every query word must match some title word, in any order. A title word is compared cut to the query word's length plus or minus the budget, so a word still being typed matches and a missing or extra letter does not shift the cut into a second edit ("jvascript" is one edit from "javascript", two from "javascrip"). A typo-corrected word is highlighted whole, mapped back to the original title through the shared accent fold (`src/utils/foldAccents.ts`).
 
 ## Consequences
 

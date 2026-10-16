@@ -58,6 +58,10 @@ _Avoid_: bookmark search, global search
 The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. Each of folder search and bookmark filter remembers its own choice.
 _Avoid_: fuzzy search, strict, substring mode
 
+**Typo tier**:
+The second pass of fuzzy matching, run on titles fuzzysort rejected: each query word must be within its typo budget (0 typos under 5 letters, 1 from 5, 2 from 9) of the start of some title word. Its matches rank after fuzzysort's. See `docs/adr/0001-typo-tier-next-to-fuzzysort.md`.
+_Avoid_: typo-tolerant matching, typo matcher, second pass
+
 **Recursive**:
 Listing a folder's bookmarks including those in its subfolders. User-facing label: "Include subfolders".
 _Avoid_: deep, nested, flattened
