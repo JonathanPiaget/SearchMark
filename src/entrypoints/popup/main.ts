@@ -1,6 +1,5 @@
-import { createApp } from 'vue';
 import './style.css';
-import { loadLanguage } from '@/utils/i18n';
+import { mountApp } from '@/utils/mount';
 import App from './App.vue';
 
-loadLanguage().then(() => createApp(App).mount('#app'));
+mountApp(App);

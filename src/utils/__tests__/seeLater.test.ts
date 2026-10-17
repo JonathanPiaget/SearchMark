@@ -49,8 +49,7 @@ const mockEmptyToolbarTree = () => {
 
 beforeEach(async () => {
 	fakeBrowser.reset();
-	stubLocales();
-	await loadLanguage();
+	await stubLocales();
 });
 
 afterEach(() => {

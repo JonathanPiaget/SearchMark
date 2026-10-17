@@ -8,9 +8,9 @@ import {
 	loadLanguage,
 } from '@/utils/i18n';
 
-beforeEach(() => {
+beforeEach(async () => {
 	fakeBrowser.reset();
-	stubLocales();
+	await stubLocales();
 });
 
 afterEach(() => {

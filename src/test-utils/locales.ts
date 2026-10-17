@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { generateChromeMessages, parseMessagesFile } from '@wxt-dev/i18n/build';
 import { vi } from 'vitest';
-import { LANGUAGES } from '@/utils/i18n';
+import { LANGUAGES, loadLanguage } from '@/utils/i18n';
 
 const localesDir = fileURLToPath(new URL('../locales', import.meta.url));
 
@@ -27,12 +27,13 @@ export function stubUiLanguage(uiLanguage: string) {
 	vi.spyOn(browser.i18n, 'getUILanguage').mockReturnValue(uiLanguage);
 }
 
-/** Serves the real `_locales/<language>/messages.json` that WXT generates from src/locales. */
-export function stubLocales() {
+/** Serves the real `_locales/<language>/messages.json` that WXT generates from src/locales, then loads it. */
+export async function stubLocales() {
 	fetchMock.mockClear();
 	vi.spyOn(browser.runtime, 'getURL').mockImplementation(
 		(path) => `chrome-extension://id${path}`,
 	);
 	vi.stubGlobal('fetch', fetchMock);
 	stubUiLanguage('en-US');
+	await loadLanguage();
 }
