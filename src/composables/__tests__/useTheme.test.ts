@@ -41,6 +41,41 @@ describe('initTheme — load from storage', () => {
 	});
 });
 
+describe('applyCachedTheme', () => {
+	const stubDom = () => {
+		const setAttribute = vi.fn();
+		const store = new Map<string, string>();
+		vi.stubGlobal('document', { documentElement: { setAttribute } });
+		vi.stubGlobal('localStorage', {
+			getItem: (k: string) => store.get(k) ?? null,
+			setItem: (k: string, v: string) => store.set(k, v),
+		});
+		return setAttribute;
+	};
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it('re-applies the theme cached by a previous applyTheme', async () => {
+		const setAttribute = stubDom();
+		const { setTheme } = await freshUseTheme();
+		await setTheme('dark');
+
+		setAttribute.mockClear();
+		const { applyCachedTheme } = await import('@/composables/useTheme');
+		applyCachedTheme();
+		expect(setAttribute).toHaveBeenCalledWith('data-theme', 'dark');
+	});
+
+	it('does nothing when no theme is cached', async () => {
+		const setAttribute = stubDom();
+		const { applyCachedTheme } = await import('@/composables/useTheme');
+		applyCachedTheme();
+		expect(setAttribute).not.toHaveBeenCalled();
+	});
+});
+
 describe('setTheme', () => {
 	it('updates currentTheme and persists the preference', async () => {
 		const { currentTheme, setTheme } = await freshUseTheme();

@@ -12,6 +12,8 @@ const themeItem = storage.defineItem<Theme>('local:searchmark_theme', {
 	fallback: 'auto',
 });
 
+const APPLIED_THEME_CACHE_KEY = 'searchmark_applied_theme';
+
 const currentTheme = ref<Theme>('auto');
 const appliedTheme = ref<'light' | 'dark'>('light');
 
@@ -45,7 +47,19 @@ const calculateAppliedTheme = (theme: Theme): 'light' | 'dark' => {
 const applyTheme = (theme: 'light' | 'dark') => {
 	if (typeof document !== 'undefined') {
 		document.documentElement.setAttribute('data-theme', theme);
+		localStorage.setItem(APPLIED_THEME_CACHE_KEY, theme);
 		appliedTheme.value = theme;
+	}
+};
+
+/**
+ * Re-apply the last applied theme synchronously, before the async storage read
+ * in initTheme, so the page does not first paint in light mode.
+ */
+export const applyCachedTheme = () => {
+	const cached = localStorage.getItem(APPLIED_THEME_CACHE_KEY);
+	if (cached === 'light' || cached === 'dark') {
+		applyTheme(cached);
 	}
 };
 
