@@ -42,10 +42,10 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { i18n } from '#i18n';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
 import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
 import { highlightByIndexes } from '@/utils/highlight';
+import { i18n } from '@/utils/i18n';
 import IconBookOpen from '~icons/lucide/book-open';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconTrash from '~icons/lucide/trash-2';

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
-import { i18n } from '#i18n';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { useTheme } from '@/composables/useTheme';
+import { i18n } from '@/utils/i18n';
 import { notify } from '@/utils/notify';
 import { getCurrentTab } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';

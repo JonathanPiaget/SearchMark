@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { i18n } from '#i18n';
 import { useTheme } from '@/composables/useTheme';
+import { i18n } from '@/utils/i18n';
 import IconMonitor from '~icons/lucide/monitor';
 import IconMoon from '~icons/lucide/moon';
 import IconSun from '~icons/lucide/sun';

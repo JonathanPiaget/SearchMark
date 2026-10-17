@@ -1,5 +1,5 @@
-import { i18n } from '#i18n';
 import { getBookmarkToolbarId } from '@/utils/bookmark';
+import { allTranslations, i18n } from '@/utils/i18n';
 import { getCurrentTab } from '@/utils/tabs';
 
 const seeLaterFolderItem = storage.defineItem<string | null>(
@@ -38,8 +38,7 @@ export const watchSeeLaterFolderId = (
 	seeLaterFolderItem.watch((value) => callback(asFolderId(value)));
 
 const findExistingSeeLaterFolder = async () => {
-	const titles = [...new Set([i18n.t('seeLater'), 'See Later'])];
-	for (const title of titles) {
+	for (const title of await allTranslations('seeLater')) {
 		const matches = await browser.bookmarks.search({ title });
 		const folder = matches.find((match) => !match.url);
 		if (folder) return folder;

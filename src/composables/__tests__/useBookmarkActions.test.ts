@@ -1,18 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
+import { stubLocales } from '@/test-utils/locales';
+import { loadLocale } from '@/utils/i18n';
 import * as logger from '@/utils/logger';
 import * as notifyModule from '@/utils/notify';
 
-beforeEach(() => {
+beforeEach(async () => {
 	fakeBrowser.reset();
-	vi.spyOn(browser.i18n, 'getMessage').mockImplementation(
-		(key) => key as string,
-	);
+	stubLocales();
+	await loadLocale();
 });
 
 afterEach(() => {
 	vi.restoreAllMocks();
+	vi.unstubAllGlobals();
 });
 
 describe('deleteBookmark', () => {
@@ -41,7 +43,7 @@ describe('deleteBookmark', () => {
 
 		await expect(deleteBookmark('B1')).rejects.toThrow(failure);
 
-		expect(deleteError.value).toBe('bookmarkError');
+		expect(deleteError.value).toBe('Error saving bookmark');
 		expect(isDeleting.value).toBe(false);
 		expect(notify).not.toHaveBeenCalled();
 		expect(logSpy).toHaveBeenCalledWith(expect.any(String), failure);

@@ -73,10 +73,10 @@
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from 'vue';
 import { computed, onMounted, ref } from 'vue';
-import { i18n } from '#i18n';
 import { useBookmarkBrowser } from '@/composables/useBookmarkBrowser';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useFolderTree } from '@/composables/useFolderTree';
+import { i18n } from '@/utils/i18n';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';

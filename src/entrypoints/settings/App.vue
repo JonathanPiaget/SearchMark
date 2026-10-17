@@ -118,11 +118,11 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { i18n } from '#i18n';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
 import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
+import { i18n } from '@/utils/i18n';
 import {
 	getSeeLaterFolderId,
 	setSeeLaterFolderId,

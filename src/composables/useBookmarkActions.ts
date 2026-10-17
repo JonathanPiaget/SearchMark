@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { i18n } from '#i18n';
+import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
 

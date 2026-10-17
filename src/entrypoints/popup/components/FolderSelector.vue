@@ -149,12 +149,12 @@
 
 <script lang="ts" setup>
 import { nextTick, onMounted, ref, toRef } from 'vue';
-import { i18n } from '#i18n';
 import { useDropdownFit } from '@/composables/useDropdownFit';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
+import { i18n } from '@/utils/i18n';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';

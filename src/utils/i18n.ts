@@ -1,4 +1,4 @@
-import type { i18n as wxtI18n } from '#i18n';
+import type { GeneratedI18nStructure, i18n as wxtI18n } from '#i18n';
 
 export type Locale = 'auto' | 'en' | 'fr';
 
@@ -9,15 +9,18 @@ export const localeItem = storage.defineItem<Locale>(
 	},
 );
 
-let messages: Record<string, { message: string }> | undefined;
+const LANGS = ['en', 'fr'] as const;
+type Lang = (typeof LANGS)[number];
+type Messages = Record<string, { message: string }>;
 
-function resolveLocale(locale: Locale): 'en' | 'fr' {
+let messages: Messages | undefined;
+
+function resolveLocale(locale: Locale): Lang {
 	if (locale === 'en' || locale === 'fr') return locale;
 	return browser.i18n.getUILanguage().startsWith('fr') ? 'fr' : 'en';
 }
 
-export async function loadLocale(): Promise<void> {
-	const lang = resolveLocale(await localeItem.getValue());
+async function fetchMessages(lang: Lang): Promise<Messages> {
 	const url = browser.runtime.getURL(`/_locales/${lang}/messages.json` as '/');
 	const response = await fetch(url);
 	if (!response.ok) {
@@ -25,8 +28,26 @@ export async function loadLocale(): Promise<void> {
 			`Failed to load "${lang}" messages: HTTP ${response.status}`,
 		);
 	}
-	messages = await response.json();
+	return response.json();
+}
+
+export async function loadLocale(): Promise<void> {
+	const lang = resolveLocale(await localeItem.getValue());
+	messages = await fetchMessages(lang);
 	if (typeof document !== 'undefined') document.documentElement.lang = lang;
+}
+
+export async function allTranslations(
+	key: keyof GeneratedI18nStructure,
+): Promise<string[]> {
+	const all = await Promise.all(LANGS.map(fetchMessages));
+	return all.map((source) => lookup(source, key));
+}
+
+function lookup(source: Messages, key: string): string {
+	const entry = source[key.replaceAll('.', '_')];
+	if (!entry) throw new Error(`Message not found: "${key}"`);
+	return entry.message;
 }
 
 function selectPlural(message: string, count: number): string {
@@ -59,10 +80,8 @@ function t(key: string, ...args: unknown[]): string {
 	}
 	if (count != null && subs == null) subs = [count];
 
-	const entry = messages[key.replaceAll('.', '_')];
-	if (!entry) throw new Error(`Message not found: "${key}"`);
-	let message =
-		count == null ? entry.message : selectPlural(entry.message, count);
+	const raw = lookup(messages, key);
+	let message = count == null ? raw : selectPlural(raw, count);
 	if (subs)
 		message = message.replace(/\$([1-9])/g, (m, i) => String(subs[i - 1] ?? m));
 	if (named) {
