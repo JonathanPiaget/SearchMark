@@ -24,6 +24,7 @@ interface ChromeBookmarks {
 interface ChromeTab {
 	id?: number;
 	url?: string;
+	pendingUrl?: string;
 	title?: string;
 	active?: boolean;
 }

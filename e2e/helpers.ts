@@ -93,7 +93,9 @@ export function findTabIdByUrl(
 ): Promise<number | null> {
 	return serviceWorker.evaluate(async (url) => {
 		const tabs = await chrome.tabs.query({});
-		return tabs.find((tab) => tab.url === url)?.id ?? null;
+		return (
+			tabs.find((tab) => tab.url === url || tab.pendingUrl === url)?.id ?? null
+		);
 	}, url);
 }
 
