@@ -20,16 +20,14 @@ afterEach(() => {
 
 describe('loadLanguage', () => {
 	it.each([
-		['fr-CA', 'fr'],
-		['fr', 'fr'],
-		['de', 'en'],
-		['en-GB', 'en'],
-	])('resolves auto with UI language %s to %s', async (ui, lang) => {
+		['fr-CA', 'Enregistrer'],
+		['fr', 'Enregistrer'],
+		['de', 'Save'],
+		['en-GB', 'Save'],
+	])('resolves auto with UI language %s', async (ui, save) => {
 		stubUiLanguage(ui);
 		await loadLanguage();
-		expect(fetchMock).toHaveBeenLastCalledWith(
-			`chrome-extension://id/_locales/${lang}/messages.json`,
-		);
+		expect(i18n.t('save')).toBe(save);
 	});
 
 	it('uses the stored language over the UI language', async () => {
@@ -47,8 +45,10 @@ describe('loadLanguage', () => {
 	});
 
 	it('throws when the messages cannot be fetched', async () => {
+		vi.resetModules();
+		const fresh = await import('@/utils/i18n');
 		fetchMock.mockResolvedValueOnce(new Response('', { status: 404 }));
-		await expect(loadLanguage()).rejects.toThrow('HTTP 404');
+		await expect(fresh.loadLanguage()).rejects.toThrow('HTTP 404');
 	});
 });
 

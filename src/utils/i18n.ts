@@ -14,6 +14,7 @@ export const languageItem = storage.defineItem<Language>(
 type Messages = Record<string, { message: string }>;
 
 let messages: Messages | undefined;
+const cache = new Map<ResolvedLanguage, Messages>();
 
 function resolveLanguage(language: Language): ResolvedLanguage {
 	const chosen = LANGUAGES.find((candidate) => candidate === language);
@@ -25,6 +26,8 @@ function resolveLanguage(language: Language): ResolvedLanguage {
 }
 
 async function fetchMessages(language: ResolvedLanguage): Promise<Messages> {
+	const cached = cache.get(language);
+	if (cached) return cached;
 	// WXT writes _locales at build time, so it is missing from its typed public paths
 	const url = browser.runtime.getURL(
 		`/_locales/${language}/messages.json` as '/',
@@ -35,7 +38,9 @@ async function fetchMessages(language: ResolvedLanguage): Promise<Messages> {
 			`Failed to load "${language}" messages: HTTP ${response.status}`,
 		);
 	}
-	return response.json();
+	const loaded: Messages = await response.json();
+	cache.set(language, loaded);
+	return loaded;
 }
 
 export async function loadLanguage(): Promise<void> {
