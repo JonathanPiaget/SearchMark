@@ -18,7 +18,7 @@ matches:
   n: résultats
 noFoldersFound: Aucun dossier trouvé
 tryDifferentSearch: Essayez un autre terme de recherche
-expandHint: pour déplier les dossiers
+expandHint: déplier les dossiers
 keyShift: Maj
 keySpace: Espace
 save: Enregistrer
@@ -32,6 +32,9 @@ themeDescription: Choisissez l'apparence de SearchMark
 themeAuto: Auto (suivre le système)
 themeLight: Clair
 themeDark: Sombre
+language: Langue
+languageDescription: Choisissez la langue de SearchMark
+languageAuto: Auto (langue du navigateur)
 notifications: Notifications
 notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
 alreadySaved: Déjà enregistré dans
@@ -61,7 +64,7 @@ moreResults:
   1: 1 autre résultat…
   n: $1 autres résultats…
 bookmarkToolbar: Barre de favoris
-fuzzySearch: Recherche approximative
+fuzzySearch: Approximatif
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées (tant qu'elles restent dans l'ordre), sans accents ou avec quelques fautes de frappe.
 clearSelection: Effacer la sélection
 shortcutsTitle: Raccourcis clavier

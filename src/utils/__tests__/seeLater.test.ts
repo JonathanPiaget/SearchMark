@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { stubLocales } from '@/test-utils/locales';
 import { triggerStorageChange } from '@/test-utils/storageEvents';
+import { languageItem, loadLanguage } from '@/utils/i18n';
 import {
 	getOrCreateSeeLaterFolder,
 	getSeeLaterFolderId,
@@ -45,13 +47,14 @@ const mockEmptyToolbarTree = () => {
 	]);
 };
 
-beforeEach(() => {
+beforeEach(async () => {
 	fakeBrowser.reset();
-	vi.spyOn(browser.i18n, 'getMessage').mockReturnValue('See Later');
+	await stubLocales();
 });
 
 afterEach(() => {
 	vi.restoreAllMocks();
+	vi.unstubAllGlobals();
 });
 
 describe('getSeeLaterFolderId', () => {
@@ -174,8 +177,7 @@ describe('getOrCreateSeeLaterFolder', () => {
 		await expect(storedId()).resolves.toBe('OLD');
 	});
 
-	it('adopts an existing folder titled in the active locale', async () => {
-		vi.spyOn(browser.i18n, 'getMessage').mockReturnValue('Voir plus tard');
+	it('adopts an existing folder titled in another language', async () => {
 		vi.spyOn(bookmarks, 'search').mockImplementation(async ({ title }) =>
 			title === 'Voir plus tard'
 				? [node({ id: 'OLD_FR', title: 'Voir plus tard' })]
@@ -220,6 +222,22 @@ describe('getOrCreateSeeLaterFolder', () => {
 			title: 'See Later',
 		});
 		await expect(storedId()).resolves.toBe('NEW');
+	});
+
+	it('names a new folder in the chosen language', async () => {
+		await languageItem.setValue('fr');
+		await loadLanguage();
+		mockEmptyToolbarTree();
+		const create = vi
+			.spyOn(bookmarks, 'create')
+			.mockResolvedValue(node({ id: 'NEW', title: 'Voir plus tard' }));
+
+		await getOrCreateSeeLaterFolder();
+
+		expect(create).toHaveBeenCalledWith({
+			parentId: 'toolbar',
+			title: 'Voir plus tard',
+		});
 	});
 });
 

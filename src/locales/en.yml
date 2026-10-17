@@ -30,6 +30,9 @@ themeDescription: Choose how SearchMark looks
 themeAuto: Auto (follow system)
 themeLight: Light
 themeDark: Dark
+language: Language
+languageDescription: Choose the language of SearchMark
+languageAuto: Auto (browser language)
 notifications: Notifications
 notificationsDescription: Show a system notification after saving a bookmark
 alreadySaved: Already saved in

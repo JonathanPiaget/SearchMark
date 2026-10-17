@@ -25,8 +25,8 @@
 </template>
 
 <script lang="ts" setup>
-import { i18n } from '#i18n';
 import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
+import { i18n } from '@/utils/i18n';
 import type { TitleMatch } from '@/utils/matchByTitle';
 import IconInbox from '~icons/lucide/inbox';
 import IconLoader from '~icons/lucide/loader-circle';

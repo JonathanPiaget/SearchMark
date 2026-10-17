@@ -1,5 +1,5 @@
-import { createApp } from 'vue';
+import { mountApp } from '@/utils/mount';
 import App from './App.vue';
 import './style.css';
 
-createApp(App).mount('#app');
+mountApp(App);

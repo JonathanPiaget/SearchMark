@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
-import { i18n } from '#i18n';
 import { getQuickSaveShortcut } from '@/utils/commands';
+import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
 import { quickSave } from '@/utils/seeLater';

@@ -31,7 +31,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { i18n } from '#i18n';
+import { i18n } from '@/utils/i18n';
 
 interface Props {
 	modelUrl: string;

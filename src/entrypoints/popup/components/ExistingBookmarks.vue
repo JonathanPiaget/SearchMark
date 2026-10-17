@@ -36,9 +36,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { i18n } from '#i18n';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
 import type { BookmarkLocation } from '@/composables/useBookmarkSearch';
+import { i18n } from '@/utils/i18n';
 import IconFolder from '~icons/lucide/folder';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconPin from '~icons/lucide/pin';
