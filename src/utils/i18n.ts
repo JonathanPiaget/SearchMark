@@ -1,46 +1,53 @@
 import type { GeneratedI18nStructure, i18n as wxtI18n } from '#i18n';
 
-export type Locale = 'auto' | 'en' | 'fr';
+export const LANGUAGES = ['en', 'fr'] as const;
+type ResolvedLanguage = (typeof LANGUAGES)[number];
+export type Language = 'auto' | ResolvedLanguage;
 
-export const localeItem = storage.defineItem<Locale>(
-	'local:searchmark_locale',
+export const languageItem = storage.defineItem<Language>(
+	'local:searchmark_language',
 	{
 		fallback: 'auto',
 	},
 );
 
-const LANGS = ['en', 'fr'] as const;
-type Lang = (typeof LANGS)[number];
 type Messages = Record<string, { message: string }>;
 
 let messages: Messages | undefined;
 
-function resolveLocale(locale: Locale): Lang {
-	if (locale === 'en' || locale === 'fr') return locale;
-	return browser.i18n.getUILanguage().startsWith('fr') ? 'fr' : 'en';
+function resolveLanguage(language: Language): ResolvedLanguage {
+	const chosen = LANGUAGES.find((candidate) => candidate === language);
+	if (chosen) return chosen;
+	const uiLanguage = browser.i18n.getUILanguage();
+	return (
+		LANGUAGES.find((candidate) => uiLanguage.startsWith(candidate)) ?? 'en'
+	);
 }
 
-async function fetchMessages(lang: Lang): Promise<Messages> {
-	const url = browser.runtime.getURL(`/_locales/${lang}/messages.json` as '/');
+async function fetchMessages(language: ResolvedLanguage): Promise<Messages> {
+	// WXT writes _locales at build time, so it is missing from its typed public paths
+	const url = browser.runtime.getURL(
+		`/_locales/${language}/messages.json` as '/',
+	);
 	const response = await fetch(url);
 	if (!response.ok) {
 		throw new Error(
-			`Failed to load "${lang}" messages: HTTP ${response.status}`,
+			`Failed to load "${language}" messages: HTTP ${response.status}`,
 		);
 	}
 	return response.json();
 }
 
-export async function loadLocale(): Promise<void> {
-	const lang = resolveLocale(await localeItem.getValue());
-	messages = await fetchMessages(lang);
-	if (typeof document !== 'undefined') document.documentElement.lang = lang;
+export async function loadLanguage(): Promise<void> {
+	const language = resolveLanguage(await languageItem.getValue());
+	messages = await fetchMessages(language);
+	if (typeof document !== 'undefined') document.documentElement.lang = language;
 }
 
 export async function allTranslations(
 	key: keyof GeneratedI18nStructure,
 ): Promise<string[]> {
-	const all = await Promise.all(LANGS.map(fetchMessages));
+	const all = await Promise.all(LANGUAGES.map(fetchMessages));
 	return all.map((source) => lookup(source, key));
 }
 
@@ -68,7 +75,7 @@ function selectPlural(message: string, count: number): string {
 }
 
 function t(key: string, ...args: unknown[]): string {
-	if (!messages) throw new Error('loadLocale() must resolve before t()');
+	if (!messages) throw new Error('loadLanguage() must resolve before t()');
 	let subs: unknown[] | undefined;
 	let named: Record<string, unknown> | undefined;
 	let count: number | undefined;

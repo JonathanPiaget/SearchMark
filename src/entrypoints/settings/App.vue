@@ -16,38 +16,38 @@
             <label for="theme-select" class="setting-label">{{ i18n.t('theme') }}</label>
             <p class="setting-description">{{ i18n.t('themeDescription') }}</p>
           </div>
-          <div class="theme-select-wrapper">
+          <div class="setting-select-wrapper">
             <select
               id="theme-select"
               v-model="selectedTheme"
-              class="theme-select"
+              class="setting-select"
               @change="handleThemeChange"
             >
               <option value="auto">{{ i18n.t('themeAuto') }}</option>
               <option value="light">{{ i18n.t('themeLight') }}</option>
               <option value="dark">{{ i18n.t('themeDark') }}</option>
             </select>
-            <IconChevronDown class="theme-select-chevron" aria-hidden="true" />
+            <IconChevronDown class="setting-select-chevron" aria-hidden="true" />
           </div>
         </div>
 
         <div class="setting-item">
           <div class="setting-info">
-            <label for="locale-select" class="setting-label">{{ i18n.t('language') }}</label>
+            <label for="language-select" class="setting-label">{{ i18n.t('language') }}</label>
             <p class="setting-description">{{ i18n.t('languageDescription') }}</p>
           </div>
-          <div class="theme-select-wrapper">
+          <div class="setting-select-wrapper">
             <select
-              id="locale-select"
-              v-model="selectedLocale"
-              class="theme-select"
-              @change="handleLocaleChange"
+              id="language-select"
+              v-model="selectedLanguage"
+              class="setting-select"
+              @change="handleLanguageChange"
             >
               <option value="auto">{{ i18n.t('languageAuto') }}</option>
               <option value="en" lang="en">English</option>
               <option value="fr" lang="fr">Français</option>
             </select>
-            <IconChevronDown class="theme-select-chevron" aria-hidden="true" />
+            <IconChevronDown class="setting-select-chevron" aria-hidden="true" />
           </div>
         </div>
       </section>
@@ -142,7 +142,7 @@ import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
 import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
-import { i18n, type Locale, localeItem } from '@/utils/i18n';
+import { i18n, type Language, languageItem } from '@/utils/i18n';
 import {
 	getSeeLaterFolderId,
 	setSeeLaterFolderId,
@@ -159,7 +159,7 @@ const STORE_URLS = {
 
 const { currentTheme, setTheme, initTheme } = useTheme();
 const selectedTheme = ref<Theme>('auto');
-const selectedLocale = ref<Locale>('auto');
+const selectedLanguage = ref<Language>('auto');
 const selectedFolderId = ref('');
 const notificationsEnabled = ref(false);
 
@@ -173,8 +173,8 @@ const handleThemeChange = async () => {
 	await setTheme(selectedTheme.value);
 };
 
-const handleLocaleChange = async () => {
-	await localeItem.setValue(selectedLocale.value);
+const handleLanguageChange = async () => {
+	await languageItem.setValue(selectedLanguage.value);
 	location.reload();
 };
 
@@ -196,7 +196,7 @@ onMounted(async () => {
 	await initTheme();
 	selectedFolderId.value = (await getSeeLaterFolderId()) ?? '';
 	selectedTheme.value = currentTheme.value;
-	selectedLocale.value = await localeItem.getValue();
+	selectedLanguage.value = await languageItem.getValue();
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],
 	});
@@ -311,12 +311,12 @@ const handleUseDefaultFolder = async () => {
   flex-shrink: 0;
 }
 
-.theme-select-wrapper {
+.setting-select-wrapper {
   position: relative;
   flex-shrink: 0;
 }
 
-.theme-select-chevron {
+.setting-select-chevron {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -326,7 +326,7 @@ const handleUseDefaultFolder = async () => {
   pointer-events: none;
 }
 
-.theme-select {
+.setting-select {
   appearance: none;
   padding: 8px 38px 8px 16px;
   font-size: 14px;
@@ -339,11 +339,11 @@ const handleUseDefaultFolder = async () => {
   min-width: 140px;
 }
 
-.theme-select:hover {
+.setting-select:hover {
   border-color: var(--accent-primary);
 }
 
-.theme-select:focus {
+.setting-select:focus {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--shadow-primary);

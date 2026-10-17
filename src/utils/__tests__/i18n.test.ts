@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { fetchMock, stubLocales, stubUiLanguage } from '@/test-utils/locales';
-import { allTranslations, i18n, loadLocale, localeItem } from '@/utils/i18n';
+import {
+	allTranslations,
+	i18n,
+	languageItem,
+	loadLanguage,
+} from '@/utils/i18n';
 
 beforeEach(() => {
 	fakeBrowser.reset();
@@ -13,7 +18,7 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 });
 
-describe('loadLocale', () => {
+describe('loadLanguage', () => {
 	it.each([
 		['fr-CA', 'fr'],
 		['fr', 'fr'],
@@ -21,36 +26,36 @@ describe('loadLocale', () => {
 		['en-GB', 'en'],
 	])('resolves auto with UI language %s to %s', async (ui, lang) => {
 		stubUiLanguage(ui);
-		await loadLocale();
+		await loadLanguage();
 		expect(fetchMock).toHaveBeenLastCalledWith(
 			`chrome-extension://id/_locales/${lang}/messages.json`,
 		);
 	});
 
-	it('uses the stored locale over the UI language', async () => {
+	it('uses the stored language over the UI language', async () => {
 		stubUiLanguage('fr-FR');
-		await localeItem.setValue('en');
-		await loadLocale();
+		await languageItem.setValue('en');
+		await loadLanguage();
 		expect(i18n.t('save')).toBe('Save');
 	});
 
 	it('treats an unknown stored value as auto', async () => {
 		stubUiLanguage('fr-FR');
-		await browser.storage.local.set({ searchmark_locale: 'de' });
-		await loadLocale();
+		await browser.storage.local.set({ searchmark_language: 'de' });
+		await loadLanguage();
 		expect(i18n.t('save')).toBe('Enregistrer');
 	});
 
 	it('throws when the messages cannot be fetched', async () => {
 		fetchMock.mockResolvedValueOnce(new Response('', { status: 404 }));
-		await expect(loadLocale()).rejects.toThrow('HTTP 404');
+		await expect(loadLanguage()).rejects.toThrow('HTTP 404');
 	});
 });
 
 describe('t', () => {
 	beforeEach(async () => {
-		await localeItem.setValue('fr');
-		await loadLocale();
+		await languageItem.setValue('fr');
+		await loadLanguage();
 	});
 
 	it('picks the plural form and substitutes the count', () => {

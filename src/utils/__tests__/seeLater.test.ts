@@ -3,7 +3,7 @@ import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { stubLocales } from '@/test-utils/locales';
 import { triggerStorageChange } from '@/test-utils/storageEvents';
-import { loadLocale, localeItem } from '@/utils/i18n';
+import { languageItem, loadLanguage } from '@/utils/i18n';
 import {
 	getOrCreateSeeLaterFolder,
 	getSeeLaterFolderId,
@@ -50,7 +50,7 @@ const mockEmptyToolbarTree = () => {
 beforeEach(async () => {
 	fakeBrowser.reset();
 	stubLocales();
-	await loadLocale();
+	await loadLanguage();
 });
 
 afterEach(() => {
@@ -226,8 +226,8 @@ describe('getOrCreateSeeLaterFolder', () => {
 	});
 
 	it('names a new folder in the chosen language', async () => {
-		await localeItem.setValue('fr');
-		await loadLocale();
+		await languageItem.setValue('fr');
+		await loadLanguage();
 		mockEmptyToolbarTree();
 		const create = vi
 			.spyOn(bookmarks, 'create')

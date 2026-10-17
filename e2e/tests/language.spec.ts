@@ -6,9 +6,9 @@ test('choosing French in Settings translates the settings page and the popup', a
 	extensionId,
 }) => {
 	const settings = await openSettings(context, extensionId);
-	await settings.selectOption('#locale-select', 'fr');
+	await settings.selectOption('#language-select', 'fr');
 
-	await expect(settings.locator('label[for="locale-select"]')).toHaveText(
+	await expect(settings.locator('label[for="language-select"]')).toHaveText(
 		'Langue',
 	);
 	await expect(settings.locator('html')).toHaveAttribute('lang', 'fr');

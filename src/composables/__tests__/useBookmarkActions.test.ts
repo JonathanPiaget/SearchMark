@@ -2,14 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
 import { stubLocales } from '@/test-utils/locales';
-import { loadLocale } from '@/utils/i18n';
+import { loadLanguage } from '@/utils/i18n';
 import * as logger from '@/utils/logger';
 import * as notifyModule from '@/utils/notify';
 
 beforeEach(async () => {
 	fakeBrowser.reset();
 	stubLocales();
-	await loadLocale();
+	await loadLanguage();
 });
 
 afterEach(() => {

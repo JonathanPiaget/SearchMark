@@ -1,5 +1,5 @@
 import { refreshAllBadges, updateBadgeForTab } from '@/utils/badge';
-import { i18n, loadLocale } from '@/utils/i18n';
+import { i18n, loadLanguage } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import type { ExtensionMessage } from '@/utils/notify';
 import { quickSave } from '@/utils/seeLater';
@@ -20,7 +20,7 @@ const showNotification = async (message: string) => {
 };
 
 const handleQuickSave = async () => {
-	await loadLocale();
+	await loadLanguage();
 	try {
 		const { folderTitle } = await quickSave();
 		showNotification(i18n.t('seeLaterSuccess', { folderName: folderTitle }));
@@ -54,7 +54,7 @@ export default defineBackground(() => {
 
 	browser.commands.onCommand.addListener((command) => {
 		if (command === 'quick-save') {
-			handleQuickSave();
+			handleQuickSave().catch((error) => logError('Quick save failed', error));
 		}
 	});
 
