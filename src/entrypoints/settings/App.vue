@@ -30,6 +30,26 @@
             <IconChevronDown class="theme-select-chevron" aria-hidden="true" />
           </div>
         </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="locale-select" class="setting-label">{{ i18n.t('language') }}</label>
+            <p class="setting-description">{{ i18n.t('languageDescription') }}</p>
+          </div>
+          <div class="theme-select-wrapper">
+            <select
+              id="locale-select"
+              v-model="selectedLocale"
+              class="theme-select"
+              @change="handleLocaleChange"
+            >
+              <option value="auto">{{ i18n.t('languageAuto') }}</option>
+              <option value="en" lang="en">English</option>
+              <option value="fr" lang="fr">Français</option>
+            </select>
+            <IconChevronDown class="theme-select-chevron" aria-hidden="true" />
+          </div>
+        </div>
       </section>
 
       <section class="settings-section">
@@ -122,7 +142,7 @@ import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
 import FolderSelector from '@/entrypoints/popup/components/FolderSelector.vue';
-import { i18n } from '@/utils/i18n';
+import { i18n, type Locale, localeItem } from '@/utils/i18n';
 import {
 	getSeeLaterFolderId,
 	setSeeLaterFolderId,
@@ -139,6 +159,7 @@ const STORE_URLS = {
 
 const { currentTheme, setTheme, initTheme } = useTheme();
 const selectedTheme = ref<Theme>('auto');
+const selectedLocale = ref<Locale>('auto');
 const selectedFolderId = ref('');
 const notificationsEnabled = ref(false);
 
@@ -150,6 +171,11 @@ const storeUrl = computed(() =>
 
 const handleThemeChange = async () => {
 	await setTheme(selectedTheme.value);
+};
+
+const handleLocaleChange = async () => {
+	await localeItem.setValue(selectedLocale.value);
+	location.reload();
 };
 
 const handleSeeLaterFolderChange = async (folder: BookmarkFolder | null) => {
@@ -170,6 +196,7 @@ onMounted(async () => {
 	await initTheme();
 	selectedFolderId.value = (await getSeeLaterFolderId()) ?? '';
 	selectedTheme.value = currentTheme.value;
+	selectedLocale.value = await localeItem.getValue();
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],
 	});

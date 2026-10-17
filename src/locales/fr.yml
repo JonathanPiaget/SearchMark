@@ -32,6 +32,9 @@ themeDescription: Choisissez l'apparence de SearchMark
 themeAuto: Auto (suivre le système)
 themeLight: Clair
 themeDark: Sombre
+language: Langue
+languageDescription: Choisissez la langue de SearchMark
+languageAuto: Auto (langue du navigateur)
 notifications: Notifications
 notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
 alreadySaved: Déjà enregistré dans
