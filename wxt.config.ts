@@ -5,6 +5,14 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
 	modules: ['@wxt-dev/module-vue', '@wxt-dev/i18n/module'],
 	srcDir: 'src',
+	hooks: {
+		// src/utils/i18n.ts replaces the #i18n runtime (docs/adr/0002)
+		'config:resolved': (wxt) => {
+			wxt.config.imports.imports = wxt.config.imports.imports?.filter(
+				(entry) => entry.from !== '#i18n',
+			);
+		},
+	},
 	vite: () => ({
 		plugins: [Icons({ compiler: 'vue3' })],
 	}),
