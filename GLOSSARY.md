@@ -33,7 +33,7 @@ Saving the current tab into the See Later folder with no further input, from the
 _Avoid_: save for later, one-key save, see later action
 
 **See Later folder**:
-The folder Quick Save targets. Either chosen by the user in settings, or created by SearchMark in the bookmark toolbar under the localized title "See Later".
+The folder Quick Save targets. Either chosen by the user in settings, or created by SearchMark in the bookmark toolbar under the title "See Later" in the current language. SearchMark never renames it; it recognizes it under its title in any supported language.
 _Avoid_: quick save folder, read later, default folder
 
 **Existing bookmark**:
@@ -65,3 +65,9 @@ _Avoid_: typo-tolerant matching, typo matcher, second pass
 **Recursive**:
 Listing a folder's bookmarks including those in its subfolders. User-facing label: "Include subfolders".
 _Avoid_: deep, nested, flattened
+
+### Settings
+
+**Language**:
+The language SearchMark's interface is shown in: either "Auto", which follows the browser's language, or one chosen by the user. The extension's name and its shortcut labels in the browser always follow the browser's language.
+_Avoid_: locale, lang, display language
