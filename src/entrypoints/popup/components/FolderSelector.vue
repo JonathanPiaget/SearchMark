@@ -380,6 +380,7 @@ onMounted(async () => {
 }
 
 .key-icon {
+  flex-shrink: 0;
   width: 14px;
   height: 14px;
 }
