@@ -3,7 +3,6 @@
     class="bookmark-item"
     :class="{ 'folder-item': isFolder(item) }"
     tabindex="0"
-    :title="item.path"
     @click="handleOpen"
     @keydown="handleKeydown"
   >
@@ -13,15 +12,15 @@
           <IconFolder v-if="isFolder(item)" />
           <IconBookOpen v-else />
         </span>
-        <span class="bookmark-title">
+        <span class="bookmark-title" :title="item.title">
           <template v-for="(part, idx) in highlightedTitle" :key="idx">
             <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
             <span v-else>{{ part.text }}</span>
           </template>
         </span>
       </div>
-      <div v-if="!isFolder(item)" class="bookmark-url">{{ item.url }}</div>
-      <div v-if="path" class="bookmark-path">
+      <div v-if="!isFolder(item)" class="bookmark-url" :title="item.url">{{ item.url }}</div>
+      <div v-if="path" class="bookmark-path" :title="path">
         {{ i18n.t('pathLabel') }} {{ path }}
       </div>
     </div>
