@@ -24,7 +24,7 @@ The extension surfaces are a **popup** (save + search views), a **settings** opt
 - Start dev (Chrome): `pnpm run dev`
 - Start dev (Firefox): `pnpm run dev:firefox`
 
-> ⚠️ Per project convention, **do not run `pnpm run dev` yourself** — wait for the developer to start it. Agents should rely on `pnpm run check`, `pnpm run test`, `pnpm run compile`, and `pnpm run build` to validate changes.
+> Agents may start the dev server themselves; use another port (`just chrome 3001`) when the developer already has one running. Dev output goes to `.output/chrome-mv3-dev`, so `pnpm run build` and the e2e suite never clash with it. See "Checking the popup in Chrome" below.
 
 ## Development Workflow
 
@@ -40,6 +40,12 @@ The extension surfaces are a **popup** (save + search views), a **settings** opt
 - Watch mode: `pnpm run test:watch`
 - Focus on one test: `pnpm vitest run -t "<test name>"`
 - Type-check the whole project: `pnpm run compile` (`vue-tsc --noEmit`)
+
+Checking the popup in Chrome (do it for any visible `.vue` or CSS change):
+
+- **Dev server + chrome-devtools MCP** (hot reload, real Chrome): `just chrome` launches Chrome with the extension and a CDP endpoint on `127.0.0.1:9222` ([web-ext.config.ts](web-ext.config.ts)); the repo [.mcp.json](.mcp.json) points the `chrome-devtools` MCP at it. Find the extension id with `curl -s 127.0.0.1:9222/json | grep chrome-extension`, then navigate the MCP page to `chrome-extension://<id>/popup.html`, interact and screenshot. Only one dev server at a time can own port 9222.
+- **No MCP**: `pnpm run build`, then a throwaway Playwright script modelled on [e2e/fixtures.ts](e2e/fixtures.ts): load `.output/chrome-mv3` in Playwright's Chromium, seed bookmarks through the service worker, open `popup.html`, screenshot to a PNG and read it. Same Blink engine as CI's e2e, so rendering is faithful.
+- Neither route can open the real browser-action popup (auto-sizing, closing on focus loss, keyboard shortcuts). Ask the developer to check those by hand.
 
 Test conventions:
 
