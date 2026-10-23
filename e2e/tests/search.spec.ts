@@ -66,8 +66,12 @@ test('a scope lists its subfolder items and narrows the search within it', async
 	await expect.poll(sortedTitles).toEqual(['Nested Doc']);
 
 	await searchInput(popup).fill('');
-	await popup.locator('.search-view .folder-item', { hasText: 'Sub' }).click();
+	await searchInput(popup).press('ArrowDown');
+	const subRow = popup.locator('.search-view .folder-item', { hasText: 'Sub' });
+	await expect(subRow).toBeFocused();
+	await subRow.press('Enter');
 	await expect(popup.locator('.search-view .scope-chip')).toHaveText('Sub');
+	await expect(searchInput(popup)).toBeFocused();
 	await expect.poll(sortedTitles).toEqual(['Nested Doc']);
 
 	await searchInput(popup).dispatchEvent('keydown', {
