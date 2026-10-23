@@ -2,6 +2,7 @@ import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
+import { useCachedFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { logError } from '@/utils/logger';
 import type { TitleMatch } from '@/utils/matchByTitle';
@@ -12,10 +13,6 @@ const recursiveItem = storage.defineItem<boolean>(
 	'local:searchmark_recursive_search',
 	{ fallback: true },
 );
-const FUZZY_KEY = 'searchmark_fuzzy_filter';
-const fuzzyItem = storage.defineItem<boolean>(`local:${FUZZY_KEY}`, {
-	fallback: true,
-});
 
 export type SearchItem = BookmarkItem | BookmarkFolder;
 
@@ -29,8 +26,9 @@ export function useBookmarkBrowser(
 	const scopeId = ref('');
 	const filterQuery = ref('');
 	const recursive = ref(true);
-	// Cached so the first paint shows the stored choice before storage answers.
-	const fuzzy = ref(localStorage.getItem(FUZZY_KEY) !== 'false');
+	const { flag: fuzzy, load: loadFuzzy } = useCachedFlag(
+		'searchmark_fuzzy_filter',
+	);
 
 	const scoped = useBookmarkFolder(folderMap);
 	const all = useBookmarkFolder(folderMap);
@@ -97,7 +95,7 @@ export function useBookmarkBrowser(
 
 	const init = async () => {
 		recursive.value = await recursiveItem.getValue();
-		fuzzy.value = await fuzzyItem.getValue();
+		await loadFuzzy();
 	};
 
 	const remove = (id: string) => {
@@ -110,10 +108,6 @@ export function useBookmarkBrowser(
 		if (value && !scopeId.value) load();
 	});
 	watch(recursive, (value) => recursiveItem.setValue(value));
-	watch(fuzzy, (value) => {
-		localStorage.setItem(FUZZY_KEY, String(value));
-		fuzzyItem.setValue(value);
-	});
 
 	return {
 		scopeId,

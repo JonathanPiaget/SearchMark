@@ -8,6 +8,7 @@ import {
 	useBookmarkBrowser,
 } from '@/composables/useBookmarkBrowser';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { stubLocalStorage } from '@/test-utils/localStorage';
 
 vi.mock('@/utils/logger', () => ({ logError: vi.fn() }));
 
@@ -58,11 +59,7 @@ const stubTree = (titles: string[]) =>
 		}),
 	]);
 
-const cache = new Map<string, string>();
-vi.stubGlobal('localStorage', {
-	getItem: (key: string) => cache.get(key) ?? null,
-	setItem: (key: string, value: string) => cache.set(key, value),
-});
+const cache = stubLocalStorage();
 
 const flush = async () => {
 	await nextTick();

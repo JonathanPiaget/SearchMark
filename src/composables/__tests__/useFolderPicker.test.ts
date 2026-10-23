@@ -3,6 +3,7 @@ import { nextTick, ref } from 'vue';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { stubLocalStorage } from '@/test-utils/localStorage';
 
 const folder = (
 	id: string,
@@ -53,11 +54,7 @@ const type = (picker: ReturnType<typeof useFolderPicker>, text: string) => {
 	picker.onInput();
 };
 
-const cache = new Map<string, string>();
-vi.stubGlobal('localStorage', {
-	getItem: (key: string) => cache.get(key) ?? null,
-	setItem: (key: string, value: string) => cache.set(key, value),
-});
+const cache = stubLocalStorage();
 
 beforeEach(() => {
 	fakeBrowser.reset();
