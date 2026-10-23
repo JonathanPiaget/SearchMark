@@ -2,6 +2,9 @@ import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures';
 import { findTabIdByUrl, openPopup, seedBookmarks } from '../helpers';
 
+const searchInput = (popup: Page) =>
+	popup.locator('.search-view .search-input');
+
 const switchToSearch = async (popup: Page) => {
 	await popup.locator('.view-tabs .tab-button').nth(1).click();
 	await popup.waitForSelector('.search-view');
@@ -38,29 +41,38 @@ test('folder-scoped search lists subfolder items and filters within the folder',
 	const popup = await openPopup(context, extensionId);
 	await switchToSearch(popup);
 
-	await popup.locator('.search-view #folder-search').fill('Work');
-	await popup.waitForSelector('.search-view .dropdown-container');
-	await popup
-		.locator('.search-view .dropdown-item', { hasText: 'Work' })
-		.first()
-		.click();
+	await searchInput(popup).fill('Work');
+	await popup.locator('.search-view .folder-item', { hasText: 'Work' }).click();
 
 	const titles = popup.locator('.search-view .bookmark-title');
 	const sortedTitles = async () =>
 		(await titles.allInnerTexts()).map((title) => title.trim()).sort();
 
-	await expect.poll(sortedTitles).toEqual(['Nested Doc', 'Work Root Doc']);
+	await expect(popup.locator('.search-view .scope-chip')).toHaveText('Work');
+	await expect(searchInput(popup)).toHaveValue('');
+	await expect
+		.poll(sortedTitles)
+		.toEqual(['Nested Doc', 'Sub', 'Work Root Doc']);
 
 	await popup.locator('.search-view .search-options .checkbox-input').uncheck();
-	await expect.poll(sortedTitles).toEqual(['Work Root Doc']);
+	await expect.poll(sortedTitles).toEqual(['Sub', 'Work Root Doc']);
 
 	await popup.locator('.search-view .search-options .checkbox-input').check();
-	await expect.poll(sortedTitles).toEqual(['Nested Doc', 'Work Root Doc']);
+	await expect
+		.poll(sortedTitles)
+		.toEqual(['Nested Doc', 'Sub', 'Work Root Doc']);
 
-	await popup
-		.locator('.search-view .filter-container input[type="text"]')
-		.fill('Nested');
+	await searchInput(popup).fill('Nested');
 	await expect.poll(sortedTitles).toEqual(['Nested Doc']);
+
+	await searchInput(popup).fill('');
+	await popup.locator('.search-view .folder-item', { hasText: 'Sub' }).click();
+	await expect(popup.locator('.search-view .scope-chip')).toHaveText('Sub');
+	await expect.poll(sortedTitles).toEqual(['Nested Doc']);
+
+	await searchInput(popup).press('Backspace');
+	await expect(popup.locator('.search-view .scope-chip')).toHaveCount(0);
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
 });
 
 test('global search opens a matching bookmark in a new tab', async ({
@@ -78,9 +90,7 @@ test('global search opens a matching bookmark in a new tab', async ({
 	const popup = await openPopup(context, extensionId);
 	await switchToSearch(popup);
 
-	await popup
-		.locator('.search-view .filter-container input[type="text"]')
-		.fill('Alpha');
+	await searchInput(popup).fill('Alpha');
 
 	await popup
 		.locator('.search-view .bookmark-item', { hasText: 'Alpha Guide' })
@@ -113,12 +123,8 @@ test('shows an error box instead of a blank list when bookmarks fail to load', a
 	});
 	await switchToSearch(popup);
 
-	await popup.locator('.search-view #folder-search').fill('Work');
-	await popup.waitForSelector('.search-view .dropdown-container');
-	await popup
-		.locator('.search-view .dropdown-item', { hasText: 'Work' })
-		.first()
-		.click();
+	await searchInput(popup).fill('Work');
+	await popup.locator('.search-view .folder-item', { hasText: 'Work' }).click();
 
 	await expect(popup.locator('.search-view .error-message')).toBeVisible();
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
@@ -142,9 +148,7 @@ test('global fuzzy filter lists more than ten matches', async ({
 	const popup = await openPopup(context, extensionId);
 	await switchToSearch(popup);
 
-	await popup
-		.locator('.search-view .filter-container input[type="text"]')
-		.fill('Alpha');
+	await searchInput(popup).fill('Alpha');
 
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(30);
 });

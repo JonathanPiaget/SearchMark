@@ -55,9 +55,9 @@ folderNotFound: Folder not found
 pathLabel: "Path:"
 emptyFolderMessage: This folder is empty
 includeSubfolders: Include subfolders
-filterBookmarks: Filter bookmarks...
-searchAllBookmarks: Search all bookmarks...
-typeToSearch: Type to search all bookmarks
+searchInScope: Search in this folder...
+searchAll: Search bookmarks and folders...
+typeToSearch: Type to search bookmarks and folders
 moreResults:
   1: 1 more result...
   n: $1 more results...
@@ -65,6 +65,7 @@ bookmarkToolbar: Bookmark toolbar
 fuzzySearch: Fuzzy search
 fuzzySearchTooltip: Finds results from partial input, even with skipped letters (as long as they stay in order), missing accents or a few typos.
 clearSelection: Clear selection
+clearScope: Clear folder
 shortcutsTitle: Keyboard shortcuts
 shortcutQuickSave: Quick save to "See Later"
 shortcutSwitchView: Switch view
