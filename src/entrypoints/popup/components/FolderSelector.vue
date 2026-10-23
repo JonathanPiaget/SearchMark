@@ -26,6 +26,17 @@
         >
           <IconX />
         </button>
+        <button
+          type="button"
+          class="fuzzy-button"
+          :class="{ active: isFuzzy }"
+          :aria-pressed="isFuzzy"
+          :title="i18n.t('fuzzySearchTooltip')"
+          :disabled="isInitializing"
+          @mousedown.prevent="isFuzzy = !isFuzzy"
+        >
+          <IconApproximately />
+        </button>
         <div
           v-if="isOpen && inputText.trim()"
           ref="dropdownRef"
@@ -38,14 +49,6 @@
               <kbd class="key"><IconSpace class="key-icon" />{{ i18n.t('keySpace') }}</kbd>
               <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
             </div>
-            <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')">
-              <input
-                v-model="isFuzzy"
-                type="checkbox"
-                class="fuzzy-checkbox"
-              >
-              <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
-            </label>
           </div>
           <template v-for="(row, index) in rows" :key="row.folder.id">
             <div
@@ -81,8 +84,8 @@
                         <span v-else>{{ part.text }}</span>
                       </template>
                     </span>
-                    <span v-if="parentOf(row.folder)?.path" class="folder-breadcrumb">
-                      {{ parentOf(row.folder)?.path }}
+                    <span v-if="parentPath(row.folder)" class="folder-breadcrumb">
+                      {{ parentPath(row.folder) }}
                     </span>
                   </div>
                   <div v-if="row.folder.children && row.folder.children.length > 0" class="folder-actions">
@@ -156,6 +159,7 @@ import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
 import { i18n } from '@/utils/i18n';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
+import IconApproximately from '~icons/lucide/equal-approximately';
 import IconFolder from '~icons/lucide/folder';
 import IconFolders from '~icons/lucide/folders';
 import IconLibrary from '~icons/lucide/library';
@@ -167,7 +171,6 @@ interface Props {
 	modelValue: string;
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
-	onArrowDownWithSelection?: () => boolean;
 	showToolbarOption?: boolean;
 }
 
@@ -189,7 +192,7 @@ const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
 
-const { allFolders, folderMap, toolbarId, loadFolders } = useFolderTree();
+const { allFolders, toolbarId, loadFolders, parentPath } = useFolderTree();
 const picker = useFolderPicker({
 	folders: allFolders,
 	modelValue: toRef(props, 'modelValue'),
@@ -214,9 +217,6 @@ const {
 	expandedId,
 	selected,
 } = picker;
-
-const parentOf = (folder: BookmarkFolder) =>
-	folderMap.value.get(folder.parentId ?? '');
 
 const { maxHeight: dropdownMaxHeight } = useDropdownFit(
 	isOpen,
@@ -247,15 +247,6 @@ const onBlur = (event: FocusEvent) => {
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
-	if (
-		event.key === 'ArrowDown' &&
-		!isOpen.value &&
-		selected.value &&
-		props.onArrowDownWithSelection?.()
-	) {
-		event.preventDefault();
-		return;
-	}
 	if (!picker.onKeydown(event)) return;
 	if (event.key === 'Escape') folderInput.value?.blur();
 	else scrollHighlightedIntoView();
@@ -330,6 +321,25 @@ onMounted(async () => {
   position: relative;
 }
 
+.search-container .form-input {
+  padding-right: 36px;
+}
+
+.search-container .form-input.has-clear {
+  padding-right: 60px;
+}
+
+.search-container .clear-button {
+  right: 36px;
+}
+
+.search-container .fuzzy-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .dropdown-header {
   position: sticky;
   top: 0;
@@ -385,29 +395,6 @@ onMounted(async () => {
   height: 14px;
 }
 
-.fuzzy-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
-  flex-shrink: 0;
-  transition: color 0.2s ease;
-}
-
-.fuzzy-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--accent-primary);
-  border-radius: 5px;
-}
-
-.fuzzy-label {
-  user-select: none;
-}
 
 .dropdown-footer {
   position: sticky;

@@ -11,6 +11,10 @@ const OUTPUT_DIR = __dirname; // Screenshots live next to this script.
 // Capture at half the target size with deviceScaleFactor 2 => crisp full-size PNG.
 const DEVICE_SCALE_FACTOR = 2;
 const THEME_STORAGE_KEY = 'searchmark_theme';
+const FUZZY_STORAGE_KEYS = [
+	'searchmark_fuzzy_search',
+	'searchmark_fuzzy_filter',
+];
 
 const LOCALE = 'en';
 
@@ -133,15 +137,12 @@ async function setupSave() {
 
 async function setupFolderSearch(page) {
 	await page.fill('#folder-search', 'design');
-	await page.locator('.dropdown-container .fuzzy-checkbox').uncheck();
 }
 
 async function setupSearchView(page) {
 	await page.locator('.view-tabs .tab-button').nth(1).click();
 	const searchView = page.locator('.search-view');
-	await searchView
-		.locator('.filter-container input[type="text"]')
-		.fill('github');
+	await searchView.locator('.search-input').fill('github');
 	await searchView.locator('.bookmark-item').first().waitFor();
 }
 
@@ -168,6 +169,14 @@ async function injectDemoBookmarks(serviceWorker) {
 		};
 		await createFolders(toolbarId, bookmarks);
 	}, DEMO_BOOKMARKS);
+}
+
+async function disableFuzzy(serviceWorker) {
+	await serviceWorker.evaluate(
+		(keys) =>
+			chrome.storage.local.set(Object.fromEntries(keys.map((k) => [k, false]))),
+		FUZZY_STORAGE_KEYS,
+	);
 }
 
 async function setTheme(serviceWorker, theme) {
@@ -467,6 +476,7 @@ export async function generate({ targets = TARGETS, scenes = SCENES } = {}) {
 	const extensionId = serviceWorker.url().split('/')[2];
 
 	await injectDemoBookmarks(serviceWorker);
+	await disableFuzzy(serviceWorker);
 
 	for (const target of targets) {
 		for (const scene of scenes) {

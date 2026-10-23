@@ -57,16 +57,16 @@ folderNotFound: Dossier introuvable
 pathLabel: "Chemin :"
 emptyFolderMessage: Ce dossier est vide
 includeSubfolders: Inclure les sous-dossiers
-filterBookmarks: Filtrer les favoris…
-searchAllBookmarks: Rechercher tous les favoris…
-typeToSearch: Tapez pour rechercher tous les favoris
+searchInScope: Rechercher dans ce dossier…
+searchAll: Rechercher favoris et dossiers…
+typeToSearch: Tapez pour rechercher favoris et dossiers
 moreResults:
   1: 1 autre résultat…
   n: $1 autres résultats…
 bookmarkToolbar: Barre de favoris
-fuzzySearch: Approximatif
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées (tant qu'elles restent dans l'ordre), sans accents ou avec quelques fautes de frappe.
 clearSelection: Effacer la sélection
+clearScope: Retirer le dossier
 shortcutsTitle: Raccourcis clavier
 shortcutQuickSave: Enregistrement rapide dans « Voir plus tard »
 shortcutSwitchView: Changer de vue

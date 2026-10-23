@@ -14,9 +14,9 @@
       <BookmarkItem
         v-for="{ item, indexes } in results"
         :key="item.id"
-        :bookmark="item"
+        :item="item"
         :highlight-indexes="indexes"
-        @open="emit('openBookmark', item)"
+        @open="emit('select', item)"
         @deleted="(id) => emit('bookmarkDeleted', id)"
         @escape-top="emit('escapeTop')"
       />
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
+import type { SearchItem } from '@/composables/useBookmarkBrowser';
 import { i18n } from '@/utils/i18n';
 import type { TitleMatch } from '@/utils/matchByTitle';
 import IconInbox from '~icons/lucide/inbox';
@@ -33,7 +33,7 @@ import IconLoader from '~icons/lucide/loader-circle';
 import BookmarkItem from './BookmarkItem.vue';
 
 interface Props {
-	results: TitleMatch<BookmarkItemType>[];
+	results: TitleMatch<SearchItem>[];
 	isLoading?: boolean;
 	emptyMessage?: string;
 }
@@ -41,7 +41,7 @@ interface Props {
 defineProps<Props>();
 
 const emit = defineEmits<{
-	openBookmark: [bookmark: BookmarkItemType];
+	select: [item: SearchItem];
 	bookmarkDeleted: [id: string];
 	escapeTop: [];
 }>();

@@ -3,6 +3,7 @@ import { nextTick, ref } from 'vue';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { stubLocalStorage } from '@/test-utils/localStorage';
 
 const folder = (
 	id: string,
@@ -53,8 +54,11 @@ const type = (picker: ReturnType<typeof useFolderPicker>, text: string) => {
 	picker.onInput();
 };
 
+const cache = stubLocalStorage();
+
 beforeEach(() => {
 	fakeBrowser.reset();
+	cache.clear();
 });
 
 describe('useFolderPicker', () => {
@@ -351,6 +355,19 @@ describe('useFolderPicker', () => {
 		expect(picker.selected.value).toBeNull();
 		expect(picker.inputText.value).toBe('');
 		expect(onChange).toHaveBeenLastCalledWith(null);
+	});
+
+	it('starts from the cached fuzzy choice before init', () => {
+		cache.set('searchmark_fuzzy_search', 'false');
+		const picker = useFolderPicker({
+			folders: ref(FOLDERS),
+			toolbarId: ref('toolbar'),
+			autoSelectDefault: false,
+			onChange: vi.fn(),
+			onSubmit: vi.fn(),
+			modelValue: ref(''),
+		});
+		expect(picker.isFuzzy.value).toBe(false);
 	});
 
 	it('persists the fuzzy preference and uses it for matching', async () => {

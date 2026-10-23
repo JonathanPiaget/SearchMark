@@ -50,12 +50,16 @@ _Avoid_: tab, page, mode
 Typing in the folder picker to find a folder by title. Results show each folder's path with the matching letters highlighted.
 _Avoid_: folder filter, autocomplete
 
-**Bookmark filter**:
-Typing in the Search view to narrow bookmarks by title, either inside the selected folder or across all bookmarks when no folder is selected.
-_Avoid_: bookmark search, global search
+**Search**:
+Typing in the Search view's single input to find folders and bookmarks by title, across all bookmarks or, when a scope is set, inside it.
+_Avoid_: bookmark filter, bookmark search, global search, filter
+
+**Scope**:
+The folder a search is narrowed to, shown as a chip in the search input. Selecting a folder result sets it; removing the chip clears it.
+_Avoid_: folder filter, selected folder, current folder, context
 
 **Fuzzy matching** / **Exact matching**:
-The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. Each of folder search and bookmark filter remembers its own choice.
+The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. Folder search and search each remember their own choice.
 _Avoid_: fuzzy search, strict, substring mode
 
 **Typo tier**:

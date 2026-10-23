@@ -2,8 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick, ref } from 'vue';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { useBookmarkBrowser } from '@/composables/useBookmarkBrowser';
+import {
+	isFolder,
+	type SearchItem,
+	useBookmarkBrowser,
+} from '@/composables/useBookmarkBrowser';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { stubLocalStorage } from '@/test-utils/localStorage';
 
 vi.mock('@/utils/logger', () => ({ logError: vi.fn() }));
 
@@ -22,11 +27,14 @@ const node = (partial: Partial<BookmarkTreeNode>) =>
 const link = (id: string, title: string, parentId: string) =>
 	node({ id, title, url: `https://${id}`, parentId });
 
+const allFolders = ref<BookmarkFolder[]>([
+	{ id: 'f1', title: 'Work', path: 'Work', parentId: '1' },
+	{ id: 'sub', title: 'Sub', path: 'Work > Sub', parentId: 'f1' },
+	{ id: 'deep', title: 'Deep', path: 'Work > Sub > Deep', parentId: 'sub' },
+	{ id: 'other', title: 'Other', path: 'Other', parentId: '1' },
+]);
 const folderMap = ref(
-	new Map<string, BookmarkFolder>([
-		['f1', { id: 'f1', title: 'Work', path: 'Work' }],
-		['sub', { id: 'sub', title: 'Sub', path: 'Work > Sub' }],
-	]),
+	new Map(allFolders.value.map((folder) => [folder.id, folder])),
 );
 
 const stubChildren = () =>
@@ -51,13 +59,15 @@ const stubTree = (titles: string[]) =>
 		}),
 	]);
 
+const cache = stubLocalStorage();
+
 const flush = async () => {
 	await nextTick();
 	await new Promise((resolve) => setTimeout(resolve));
 };
 
 const setup = async () => {
-	const browserState = useBookmarkBrowser(folderMap);
+	const browserState = useBookmarkBrowser(folderMap, allFolders);
 	await browserState.init();
 	return browserState;
 };
@@ -67,6 +77,7 @@ const ids = (state: ReturnType<typeof useBookmarkBrowser>) =>
 
 beforeEach(() => {
 	fakeBrowser.reset();
+	cache.clear();
 });
 
 afterEach(() => {
@@ -79,13 +90,13 @@ describe('useBookmarkBrowser', () => {
 		stubChildren();
 		const state = await setup();
 
-		state.folderId.value = 'f1';
+		state.scopeId.value = 'f1';
 		await flush();
-		expect(ids(state)).toEqual(['b1']);
+		expect(ids(state)).toEqual(['sub', 'b1']);
 
 		state.recursive.value = true;
 		await flush();
-		expect(ids(state)).toEqual(['b1', 'b2']);
+		expect(ids(state)).toEqual(['sub', 'deep', 'b1', 'b2']);
 		expect(await storage.getItem('local:searchmark_recursive_search')).toBe(
 			true,
 		);
@@ -99,11 +110,11 @@ describe('useBookmarkBrowser', () => {
 		expect(getTree).not.toHaveBeenCalled();
 		expect(state.results.value).toEqual([]);
 
-		state.filterQuery.value = 'al';
+		state.query.value = 'al';
 		await flush();
 		expect(ids(state)).toEqual(['t0']);
 
-		state.filterQuery.value = 'be';
+		state.query.value = 'be';
 		await flush();
 		expect(ids(state)).toEqual(['t1']);
 		expect(getTree).toHaveBeenCalledTimes(1);
@@ -112,23 +123,33 @@ describe('useBookmarkBrowser', () => {
 	it('returns indexes in both modes and persists the choice', async () => {
 		stubTree(['Alpha']);
 		const state = await setup();
-		state.filterQuery.value = 'ala';
+		state.query.value = 'ala';
 		await flush();
 
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 4]);
 
 		state.fuzzy.value = false;
 		expect(state.results.value).toEqual([]);
-		state.filterQuery.value = 'alp';
+		state.query.value = 'alp';
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 2]);
 		await flush();
 		expect(await storage.getItem('local:searchmark_fuzzy_filter')).toBe(false);
 	});
 
+	it('starts from the cached fuzzy choice and caches changes', async () => {
+		cache.set('searchmark_fuzzy_filter', 'false');
+		const state = useBookmarkBrowser(folderMap, allFolders);
+		expect(state.fuzzy.value).toBe(false);
+
+		state.fuzzy.value = true;
+		await flush();
+		expect(cache.get('searchmark_fuzzy_filter')).toBe('true');
+	});
+
 	it('caps results and reports the hidden count', async () => {
 		stubTree(Array.from({ length: 120 }, (_, i) => `Item ${i}`));
 		const state = await setup();
-		state.filterQuery.value = 'item';
+		state.query.value = 'item';
 		await flush();
 
 		expect(state.results.value).toHaveLength(100);
@@ -139,18 +160,58 @@ describe('useBookmarkBrowser', () => {
 		stubChildren();
 		stubTree(['Alpha']);
 		const state = await setup();
-		state.filterQuery.value = 'alpha';
+		state.query.value = 'alpha';
 		await flush();
-		state.folderId.value = 'f1';
-		state.filterQuery.value = '';
+		state.scopeId.value = 'f1';
+		state.query.value = '';
 		await flush();
 
 		state.remove('b1');
 		state.remove('t0');
 
-		expect(ids(state)).toEqual(['b2']);
-		state.folderId.value = '';
-		state.filterQuery.value = 'alpha';
+		expect(ids(state)).toEqual(['sub', 'deep', 'b2']);
+		state.scopeId.value = '';
+		state.query.value = 'alpha';
+		expect(ids(state)).toEqual([]);
+	});
+
+	it('ranks folders and bookmarks together by match score', async () => {
+		stubTree(['Sub guide', 'Workflow']);
+		const state = await setup();
+		state.query.value = 'sub';
+		await flush();
+
+		expect(ids(state)).toEqual(['sub', 't0']);
+		expect(isFolder(state.results.value[0]?.item as SearchItem)).toBe(true);
+
+		state.query.value = 'workf';
+		expect(ids(state)).toEqual(['t1', 'f1']);
+	});
+
+	it('lists folders first in exact mode', async () => {
+		stubTree(['Work']);
+		const state = await setup();
+		state.fuzzy.value = false;
+		state.query.value = 'work';
+		await flush();
+
+		expect(ids(state)).toEqual(['f1', 't0']);
+	});
+
+	it('searches only folders inside the scope', async () => {
+		stubChildren();
+		const state = await setup();
+		state.scopeId.value = 'f1';
+		await flush();
+
+		state.query.value = 'o';
+		expect(ids(state)).toEqual([]);
+
+		state.query.value = 'deep';
+		expect(ids(state)).toEqual(['deep']);
+
+		state.recursive.value = false;
+		await flush();
 		expect(ids(state)).toEqual([]);
 	});
 
@@ -159,7 +220,7 @@ describe('useBookmarkBrowser', () => {
 		vi.spyOn(bookmarks, 'getChildren').mockRejectedValue(new Error('boom'));
 		const state = await setup();
 
-		state.folderId.value = 'f1';
+		state.scopeId.value = 'f1';
 		await flush();
 
 		expect(state.error.value).toBe('errorLoadingBookmarks');

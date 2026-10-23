@@ -2,6 +2,7 @@ import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
+import { useCachedFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { logError } from '@/utils/logger';
 import type { TitleMatch } from '@/utils/matchByTitle';
@@ -12,33 +13,65 @@ const recursiveItem = storage.defineItem<boolean>(
 	'local:searchmark_recursive_search',
 	{ fallback: true },
 );
-const fuzzyItem = storage.defineItem<boolean>('local:searchmark_fuzzy_filter', {
-	fallback: true,
-});
+
+export type SearchItem = BookmarkItem | BookmarkFolder;
+
+export const isFolder = (item: SearchItem): item is BookmarkFolder =>
+	!('url' in item);
 
 export function useBookmarkBrowser(
 	folderMap: Ref<Map<string, BookmarkFolder>>,
+	allFolders: Ref<BookmarkFolder[]>,
 ) {
-	const folderId = ref('');
-	const filterQuery = ref('');
+	const scopeId = ref('');
+	const query = ref('');
 	const recursive = ref(true);
-	const fuzzy = ref(true);
+	const { flag: fuzzy, load: loadFuzzy } = useCachedFlag(
+		'searchmark_fuzzy_filter',
+	);
 
 	const scoped = useBookmarkFolder(folderMap);
 	const all = useBookmarkFolder(folderMap);
 	let allLoading: Promise<void> | null = null;
 
-	const source = computed(() => (folderId.value ? scoped : all));
+	const source = computed(() => (scopeId.value ? scoped : all));
 	const isLoading = computed(() => source.value.isLoading.value);
 	const error = computed(() => source.value.error.value);
-	const query = computed(() => filterQuery.value.trim());
+	const trimmedQuery = computed(() => query.value.trim());
 
-	const matches = computed<TitleMatch<BookmarkItem>[]>(() => {
-		const items = source.value.bookmarks.value;
-		if (query.value) {
-			return matchByTitle(items, query.value, fuzzy.value, Infinity);
+	const isInside = (folder: BookmarkFolder, ancestorId: string) => {
+		for (let id = folder.parentId; id; id = folderMap.value.get(id)?.parentId) {
+			if (id === ancestorId) return true;
 		}
-		return folderId.value ? items.map((item) => ({ item, indexes: null })) : [];
+		return false;
+	};
+
+	const folders = computed(() => {
+		if (!scopeId.value) return allFolders.value;
+		return allFolders.value.filter((folder) =>
+			recursive.value
+				? isInside(folder, scopeId.value)
+				: folder.parentId === scopeId.value,
+		);
+	});
+
+	const items = computed<SearchItem[]>(() => [
+		...folders.value,
+		...source.value.bookmarks.value,
+	]);
+
+	const matches = computed<TitleMatch<SearchItem>[]>(() => {
+		if (trimmedQuery.value) {
+			return matchByTitle(
+				items.value,
+				trimmedQuery.value,
+				fuzzy.value,
+				Infinity,
+			);
+		}
+		return scopeId.value
+			? items.value.map((item) => ({ item, indexes: null }))
+			: [];
 	});
 	const results = computed(() => matches.value.slice(0, MAX_RESULTS));
 	const hiddenCount = computed(() =>
@@ -55,9 +88,9 @@ export function useBookmarkBrowser(
 
 	const load = async () => {
 		try {
-			if (folderId.value) {
-				await scoped.loadBookmarks(folderId.value, recursive.value);
-			} else if (query.value) {
+			if (scopeId.value) {
+				await scoped.loadBookmarks(scopeId.value, recursive.value);
+			} else if (trimmedQuery.value) {
 				await loadAll();
 			}
 		} catch (err) {
@@ -67,7 +100,7 @@ export function useBookmarkBrowser(
 
 	const init = async () => {
 		recursive.value = await recursiveItem.getValue();
-		fuzzy.value = await fuzzyItem.getValue();
+		await loadFuzzy();
 	};
 
 	const remove = (id: string) => {
@@ -75,16 +108,15 @@ export function useBookmarkBrowser(
 		all.removeBookmark(id);
 	};
 
-	watch([folderId, recursive], load);
-	watch(query, (value) => {
-		if (value && !folderId.value) load();
+	watch([scopeId, recursive], load);
+	watch(trimmedQuery, (value) => {
+		if (value && !scopeId.value) load();
 	});
 	watch(recursive, (value) => recursiveItem.setValue(value));
-	watch(fuzzy, (value) => fuzzyItem.setValue(value));
 
 	return {
-		folderId,
-		filterQuery,
+		scopeId,
+		query,
 		recursive,
 		fuzzy,
 		results,

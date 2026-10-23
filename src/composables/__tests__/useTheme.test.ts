@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
+import { stubLocalStorage } from '@/test-utils/localStorage';
 import { triggerStorageChange } from '@/test-utils/storageEvents';
 
 const KEY = 'searchmark_theme';
@@ -44,12 +45,8 @@ describe('initTheme — load from storage', () => {
 describe('applyCachedTheme', () => {
 	const stubDom = () => {
 		const setAttribute = vi.fn();
-		const store = new Map<string, string>();
 		vi.stubGlobal('document', { documentElement: { setAttribute } });
-		vi.stubGlobal('localStorage', {
-			getItem: (k: string) => store.get(k) ?? null,
-			setItem: (k: string, v: string) => store.set(k, v),
-		});
+		stubLocalStorage();
 		return setAttribute;
 	};
 

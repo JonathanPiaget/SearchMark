@@ -1,14 +1,18 @@
 <template>
   <div
     class="bookmark-item"
+    :class="{ 'folder-item': isFolder(item) }"
     tabindex="0"
-    :title="bookmark.path"
+    :title="item.path"
     @click="handleOpen"
     @keydown="handleKeydown"
   >
     <div class="bookmark-info">
       <div class="bookmark-header">
-        <span class="bookmark-icon"><IconBookOpen /></span>
+        <span class="bookmark-icon">
+          <IconFolder v-if="isFolder(item)" />
+          <IconBookOpen v-else />
+        </span>
         <span class="bookmark-title">
           <template v-for="(part, idx) in highlightedTitle" :key="idx">
             <span v-if="part.highlighted" class="highlight">{{ part.text }}</span>
@@ -16,12 +20,13 @@
           </template>
         </span>
       </div>
-      <div class="bookmark-url">{{ bookmark.url }}</div>
-      <div v-if="bookmark.path" class="bookmark-path">
-        {{ i18n.t('pathLabel') }} {{ bookmark.path }}
+      <div v-if="!isFolder(item)" class="bookmark-url">{{ item.url }}</div>
+      <div v-if="path" class="bookmark-path">
+        {{ i18n.t('pathLabel') }} {{ path }}
       </div>
     </div>
     <button
+      v-if="!isFolder(item)"
       class="delete-button"
       :disabled="isDeleting"
       :title="i18n.t('delete')"
@@ -30,6 +35,7 @@
       <IconLoader v-if="isDeleting" class="spin" />
       <IconTrash v-else />
     </button>
+    <IconChevronRight v-else class="folder-chevron" />
 
     <ConfirmDialog
       v-model="confirmDialogVisible"
@@ -43,16 +49,19 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { useBookmarkActions } from '@/composables/useBookmarkActions';
-import type { BookmarkItem as BookmarkItemType } from '@/composables/useBookmarkFolder';
+import { isFolder, type SearchItem } from '@/composables/useBookmarkBrowser';
+import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
 import { i18n } from '@/utils/i18n';
 import IconBookOpen from '~icons/lucide/book-open';
+import IconChevronRight from '~icons/lucide/chevron-right';
+import IconFolder from '~icons/lucide/folder';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconTrash from '~icons/lucide/trash-2';
 import ConfirmDialog from './ConfirmDialog.vue';
 
 interface Props {
-	bookmark: BookmarkItemType;
+	item: SearchItem;
 	highlightIndexes?: readonly number[] | null;
 }
 
@@ -65,10 +74,15 @@ const emit = defineEmits<{
 }>();
 
 const { isDeleting, deleteBookmark } = useBookmarkActions();
+const { parentPath } = useFolderTree();
 const confirmDialogVisible = ref(false);
 
 const highlightedTitle = computed(() =>
-	highlightByIndexes(props.bookmark.title, props.highlightIndexes),
+	highlightByIndexes(props.item.title, props.highlightIndexes),
+);
+
+const path = computed(() =>
+	isFolder(props.item) ? parentPath(props.item) : props.item.path,
 );
 
 const showConfirmDialog = () => {
@@ -76,12 +90,12 @@ const showConfirmDialog = () => {
 };
 
 const handleConfirmDelete = async () => {
-	await deleteBookmark(props.bookmark.id);
-	emit('deleted', props.bookmark.id);
+	await deleteBookmark(props.item.id);
+	emit('deleted', props.item.id);
 };
 
 const handleOpen = () => {
-	new URL(props.bookmark.url);
+	if (!isFolder(props.item)) new URL(props.item.url);
 	emit('open');
 };
 
@@ -206,6 +220,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 .delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.folder-chevron {
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .spin {

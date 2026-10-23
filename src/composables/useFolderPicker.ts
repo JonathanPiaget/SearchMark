@@ -1,13 +1,10 @@
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
+import { useCachedFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { matchByTitle } from '@/utils/matchByTitle';
 
 const MAX_RESULTS = 50;
-const fuzzySearchItem = storage.defineItem<boolean>(
-	'local:searchmark_fuzzy_search',
-	{ fallback: true },
-);
 
 export interface PickerRow {
 	kind: 'toolbar' | 'folder';
@@ -34,7 +31,9 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const { folders, modelValue } = options;
 	const inputText = ref('');
 	const isOpen = ref(false);
-	const isFuzzy = ref(true);
+	const { flag: isFuzzy, load: loadFuzzy } = useCachedFlag(
+		'searchmark_fuzzy_search',
+	);
 	const selected = ref<BookmarkFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
@@ -115,7 +114,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	const init = async () => {
-		isFuzzy.value = await fuzzySearchItem.getValue();
+		await loadFuzzy();
 		if (modelValue.value) apply(findFolder(modelValue.value) ?? null);
 
 		if (options.autoSelectDefault && !modelValue.value) {
@@ -233,10 +232,6 @@ export function useFolderPicker(options: FolderPickerOptions) {
 			const folder = findFolder(id);
 			if (folder) apply(folder);
 		}
-	});
-
-	watch(isFuzzy, (value) => {
-		fuzzySearchItem.setValue(value);
 	});
 
 	return {
