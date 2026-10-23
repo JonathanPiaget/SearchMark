@@ -167,7 +167,6 @@ interface Props {
 	modelValue: string;
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
-	onArrowDownWithSelection?: () => boolean;
 	showToolbarOption?: boolean;
 }
 
@@ -247,15 +246,6 @@ const onBlur = (event: FocusEvent) => {
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
-	if (
-		event.key === 'ArrowDown' &&
-		!isOpen.value &&
-		selected.value &&
-		props.onArrowDownWithSelection?.()
-	) {
-		event.preventDefault();
-		return;
-	}
 	if (!picker.onKeydown(event)) return;
 	if (event.key === 'Escape') folderInput.value?.blur();
 	else scrollHighlightedIntoView();
