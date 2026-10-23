@@ -1,11 +1,7 @@
 <template>
   <div class="search-view">
     <div v-if="!error" class="filter-container">
-      <div
-        class="form-input search-box input-with-clear"
-        :class="{ 'has-clear': filterQuery }"
-        @click="focus"
-      >
+      <div class="form-input search-box" @click="focus">
         <span v-if="scope" class="scope-chip" :title="scope.path">
           <IconFolder class="scope-icon" />
           <span class="scope-title">{{ scope.title }}</span>
@@ -36,15 +32,17 @@
         >
           <IconX />
         </button>
-      </div>
-      <label class="fuzzy-toggle" :title="i18n.t('fuzzySearchTooltip')" @mousedown.prevent>
-        <input
-          v-model="fuzzy"
-          type="checkbox"
-          class="fuzzy-checkbox"
+        <button
+          type="button"
+          class="fuzzy-button"
+          :class="{ active: fuzzy }"
+          :aria-pressed="fuzzy"
+          :title="i18n.t('fuzzySearchTooltip')"
+          @mousedown.prevent="fuzzy = !fuzzy"
         >
-        <span class="fuzzy-label">{{ i18n.t('fuzzySearch') }}</span>
-      </label>
+          <IconApproximately />
+        </button>
+      </div>
     </div>
 
     <div v-if="scopeId" class="search-options">
@@ -89,6 +87,7 @@ import {
 } from '@/composables/useBookmarkBrowser';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { i18n } from '@/utils/i18n';
+import IconApproximately from '~icons/lucide/equal-approximately';
 import IconFolder from '~icons/lucide/folder';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
@@ -177,19 +176,45 @@ onMounted(async () => {
   border-radius: 6px;
 }
 
-.filter-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .search-box {
-  flex: 1;
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
   cursor: text;
+}
+
+.search-box .clear-button {
+  position: static;
+  transform: none;
+  flex-shrink: 0;
+}
+
+.fuzzy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.fuzzy-button:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.fuzzy-button.active {
+  color: var(--accent-primary);
 }
 
 .search-box:focus-within {
@@ -250,31 +275,6 @@ onMounted(async () => {
 
 .scope-clear:hover {
   color: var(--text-primary);
-}
-
-.fuzzy-toggle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  font-size: 11px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.fuzzy-toggle:hover {
-  color: var(--text-primary);
-}
-
-.fuzzy-checkbox {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
-  accent-color: var(--accent-primary);
-}
-
-.fuzzy-label {
-  user-select: none;
 }
 
 .checkbox-label {

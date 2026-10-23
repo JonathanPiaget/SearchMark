@@ -152,3 +152,28 @@ test('global fuzzy filter lists more than ten matches', async ({
 
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(30);
 });
+
+test('the fuzzy button toggles typo tolerance', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedBookmarks(serviceWorker, [
+		{
+			folder: 'Reading',
+			items: [{ title: 'Alpha Guide', url: 'https://example.com/alpha' }],
+		},
+	]);
+
+	const popup = await openPopup(context, extensionId);
+	await switchToSearch(popup);
+	const fuzzyButton = popup.locator('.search-view .fuzzy-button');
+	await expect(fuzzyButton).toHaveAttribute('aria-pressed', 'true');
+
+	await searchInput(popup).fill('alhpa');
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(1);
+
+	await fuzzyButton.click();
+	await expect(fuzzyButton).toHaveAttribute('aria-pressed', 'false');
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
+});

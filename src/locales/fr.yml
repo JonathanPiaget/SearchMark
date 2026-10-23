@@ -64,7 +64,6 @@ moreResults:
   1: 1 autre résultat…
   n: $1 autres résultats…
 bookmarkToolbar: Barre de favoris
-fuzzySearch: Approximatif
 fuzzySearchTooltip: Trouve des résultats à partir d'une saisie partielle, même avec des lettres sautées (tant qu'elles restent dans l'ordre), sans accents ou avec quelques fautes de frappe.
 clearSelection: Effacer la sélection
 clearScope: Retirer le dossier
