@@ -127,8 +127,8 @@ const clearScope = () => {
 	focus();
 };
 
-const onBackspace = () => {
-	if (!filterQuery.value && scopeId.value) clearScope();
+const onBackspace = (event: KeyboardEvent) => {
+	if (!event.repeat && !filterQuery.value && scopeId.value) clearScope();
 };
 
 const handleSelect = (item: SearchItem) => {

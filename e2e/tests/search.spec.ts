@@ -70,6 +70,12 @@ test('folder-scoped search lists subfolder items and filters within the folder',
 	await expect(popup.locator('.search-view .scope-chip')).toHaveText('Sub');
 	await expect.poll(sortedTitles).toEqual(['Nested Doc']);
 
+	await searchInput(popup).dispatchEvent('keydown', {
+		key: 'Backspace',
+		repeat: true,
+	});
+	await expect(popup.locator('.search-view .scope-chip')).toHaveText('Sub');
+
 	await searchInput(popup).press('Backspace');
 	await expect(popup.locator('.search-view .scope-chip')).toHaveCount(0);
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
