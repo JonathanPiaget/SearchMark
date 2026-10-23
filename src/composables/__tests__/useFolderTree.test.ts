@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
-import { buildFolderTree, useFolderTree } from '@/composables/useFolderTree';
+import {
+	type BookmarkFolder,
+	buildFolderTree,
+	useFolderTree,
+} from '@/composables/useFolderTree';
 import {
 	createNestedTreeNodes,
 	createSimpleTreeNodes,
@@ -92,7 +96,8 @@ describe('useFolderTree', () => {
 					],
 				},
 			] as BookmarkTreeNode[]);
-		const { loadFolders, allFolders, folderMap, toolbarId } = useFolderTree();
+		const { loadFolders, allFolders, folderMap, toolbarId, parentPath } =
+			useFolderTree();
 
 		await expect(loadFolders()).rejects.toThrow('boom');
 		await Promise.all([loadFolders(), loadFolders()]);
@@ -108,5 +113,8 @@ describe('useFolderTree', () => {
 		expect(folderMap.value.get('3')?.path).toBe('Books > Fiction > Sci-Fi');
 		expect(folderMap.value.get('untitled')?.path).toBe('Toolbar > ');
 		expect(toolbarId.value).toBe('toolbar');
+		const folder = (id: string) => folderMap.value.get(id) as BookmarkFolder;
+		expect(parentPath(folder('3'))).toBe('Books > Fiction');
+		expect(parentPath(folder('toolbar'))).toBe('');
 	});
 });

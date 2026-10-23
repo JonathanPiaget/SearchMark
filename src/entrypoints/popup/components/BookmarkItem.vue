@@ -74,7 +74,7 @@ const emit = defineEmits<{
 }>();
 
 const { isDeleting, deleteBookmark } = useBookmarkActions();
-const { folderMap } = useFolderTree();
+const { parentPath } = useFolderTree();
 const confirmDialogVisible = ref(false);
 
 const highlightedTitle = computed(() =>
@@ -82,9 +82,7 @@ const highlightedTitle = computed(() =>
 );
 
 const path = computed(() =>
-	isFolder(props.item)
-		? (folderMap.value.get(props.item.parentId ?? '')?.path ?? '')
-		: props.item.path,
+	isFolder(props.item) ? parentPath(props.item) : props.item.path,
 );
 
 const showConfirmDialog = () => {

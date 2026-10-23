@@ -84,8 +84,8 @@
                         <span v-else>{{ part.text }}</span>
                       </template>
                     </span>
-                    <span v-if="parentOf(row.folder)?.path" class="folder-breadcrumb">
-                      {{ parentOf(row.folder)?.path }}
+                    <span v-if="parentPath(row.folder)" class="folder-breadcrumb">
+                      {{ parentPath(row.folder) }}
                     </span>
                   </div>
                   <div v-if="row.folder.children && row.folder.children.length > 0" class="folder-actions">
@@ -192,7 +192,7 @@ const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
 
-const { allFolders, folderMap, toolbarId, loadFolders } = useFolderTree();
+const { allFolders, toolbarId, loadFolders, parentPath } = useFolderTree();
 const picker = useFolderPicker({
 	folders: allFolders,
 	modelValue: toRef(props, 'modelValue'),
@@ -217,9 +217,6 @@ const {
 	expandedId,
 	selected,
 } = picker;
-
-const parentOf = (folder: BookmarkFolder) =>
-	folderMap.value.get(folder.parentId ?? '');
 
 const { maxHeight: dropdownMaxHeight } = useDropdownFit(
 	isOpen,
