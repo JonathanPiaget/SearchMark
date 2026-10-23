@@ -110,11 +110,11 @@ describe('useBookmarkBrowser', () => {
 		expect(getTree).not.toHaveBeenCalled();
 		expect(state.results.value).toEqual([]);
 
-		state.filterQuery.value = 'al';
+		state.query.value = 'al';
 		await flush();
 		expect(ids(state)).toEqual(['t0']);
 
-		state.filterQuery.value = 'be';
+		state.query.value = 'be';
 		await flush();
 		expect(ids(state)).toEqual(['t1']);
 		expect(getTree).toHaveBeenCalledTimes(1);
@@ -123,14 +123,14 @@ describe('useBookmarkBrowser', () => {
 	it('returns indexes in both modes and persists the choice', async () => {
 		stubTree(['Alpha']);
 		const state = await setup();
-		state.filterQuery.value = 'ala';
+		state.query.value = 'ala';
 		await flush();
 
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 4]);
 
 		state.fuzzy.value = false;
 		expect(state.results.value).toEqual([]);
-		state.filterQuery.value = 'alp';
+		state.query.value = 'alp';
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 2]);
 		await flush();
 		expect(await storage.getItem('local:searchmark_fuzzy_filter')).toBe(false);
@@ -149,7 +149,7 @@ describe('useBookmarkBrowser', () => {
 	it('caps results and reports the hidden count', async () => {
 		stubTree(Array.from({ length: 120 }, (_, i) => `Item ${i}`));
 		const state = await setup();
-		state.filterQuery.value = 'item';
+		state.query.value = 'item';
 		await flush();
 
 		expect(state.results.value).toHaveLength(100);
@@ -160,10 +160,10 @@ describe('useBookmarkBrowser', () => {
 		stubChildren();
 		stubTree(['Alpha']);
 		const state = await setup();
-		state.filterQuery.value = 'alpha';
+		state.query.value = 'alpha';
 		await flush();
 		state.scopeId.value = 'f1';
-		state.filterQuery.value = '';
+		state.query.value = '';
 		await flush();
 
 		state.remove('b1');
@@ -171,20 +171,20 @@ describe('useBookmarkBrowser', () => {
 
 		expect(ids(state)).toEqual(['sub', 'deep', 'b2']);
 		state.scopeId.value = '';
-		state.filterQuery.value = 'alpha';
+		state.query.value = 'alpha';
 		expect(ids(state)).toEqual([]);
 	});
 
 	it('ranks folders and bookmarks together by match score', async () => {
 		stubTree(['Sub guide', 'Workflow']);
 		const state = await setup();
-		state.filterQuery.value = 'sub';
+		state.query.value = 'sub';
 		await flush();
 
 		expect(ids(state)).toEqual(['sub', 't0']);
 		expect(isFolder(state.results.value[0]?.item as SearchItem)).toBe(true);
 
-		state.filterQuery.value = 'workf';
+		state.query.value = 'workf';
 		expect(ids(state)).toEqual(['t1', 'f1']);
 	});
 
@@ -192,7 +192,7 @@ describe('useBookmarkBrowser', () => {
 		stubTree(['Work']);
 		const state = await setup();
 		state.fuzzy.value = false;
-		state.filterQuery.value = 'work';
+		state.query.value = 'work';
 		await flush();
 
 		expect(ids(state)).toEqual(['f1', 't0']);
@@ -204,10 +204,10 @@ describe('useBookmarkBrowser', () => {
 		state.scopeId.value = 'f1';
 		await flush();
 
-		state.filterQuery.value = 'o';
+		state.query.value = 'o';
 		expect(ids(state)).toEqual([]);
 
-		state.filterQuery.value = 'deep';
+		state.query.value = 'deep';
 		expect(ids(state)).toEqual(['deep']);
 
 		state.recursive.value = false;

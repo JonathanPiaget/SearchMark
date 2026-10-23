@@ -1,6 +1,6 @@
 <template>
   <div class="search-view">
-    <div v-if="!error" class="filter-container">
+    <div v-if="!error" class="search-container">
       <div class="form-input search-box" @click="focus">
         <span v-if="scope" class="scope-chip" :title="scope.path">
           <IconFolder class="scope-icon" />
@@ -15,8 +15,8 @@
           </button>
         </span>
         <input
-          ref="filterInputRef"
-          v-model="filterQuery"
+          ref="searchInputRef"
+          v-model="query"
           type="text"
           class="search-input"
           :placeholder="scope ? i18n.t('searchInScope') : i18n.t('searchAll')"
@@ -24,10 +24,10 @@
           @keydown.backspace="onBackspace"
         >
         <button
-          v-if="filterQuery"
+          v-if="query"
           type="button"
           class="clear-button"
-          @mousedown.prevent="filterQuery = ''"
+          @mousedown.prevent="query = ''"
           :title="i18n.t('clearSelection')"
         >
           <IconX />
@@ -93,12 +93,12 @@ import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
 
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
-const filterInputRef = ref<HTMLInputElement | null>(null);
+const searchInputRef = ref<HTMLInputElement | null>(null);
 
 const { folderMap, allFolders, loadFolders } = useFolderTree();
 const {
 	scopeId,
-	filterQuery,
+	query,
 	recursive,
 	fuzzy,
 	results,
@@ -113,7 +113,7 @@ const scope = computed(() => folderMap.value.get(scopeId.value));
 const errorMessage = computed(() => (error.value ? i18n.t(error.value) : ''));
 
 const focus = () => {
-	filterInputRef.value?.focus();
+	searchInputRef.value?.focus();
 };
 
 const focusFirstBookmark = () => {
@@ -128,13 +128,13 @@ const clearScope = () => {
 };
 
 const onBackspace = (event: KeyboardEvent) => {
-	if (!event.repeat && !filterQuery.value && scopeId.value) clearScope();
+	if (!event.repeat && !query.value && scopeId.value) clearScope();
 };
 
 const handleSelect = (item: SearchItem) => {
 	if (isFolder(item)) {
 		scopeId.value = item.id;
-		filterQuery.value = '';
+		query.value = '';
 		focus();
 		return;
 	}

@@ -10,7 +10,7 @@ const switchToSearch = async (popup: Page) => {
 	await popup.waitForSelector('.search-view');
 };
 
-test('folder-scoped search lists subfolder items and filters within the folder', async ({
+test('a scope lists its subfolder items and narrows the search within it', async ({
 	context,
 	serviceWorker,
 	extensionId,
@@ -81,7 +81,7 @@ test('folder-scoped search lists subfolder items and filters within the folder',
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
 });
 
-test('global search opens a matching bookmark in a new tab', async ({
+test('search without a scope opens a matching bookmark in a new tab', async ({
 	context,
 	serviceWorker,
 	extensionId,
@@ -136,7 +136,7 @@ test('shows an error box instead of a blank list when bookmarks fail to load', a
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
 });
 
-test('global fuzzy filter lists more than ten matches', async ({
+test('fuzzy matching without a scope lists more than ten matches', async ({
 	context,
 	serviceWorker,
 	extensionId,

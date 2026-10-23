@@ -24,7 +24,7 @@ export function useBookmarkBrowser(
 	allFolders: Ref<BookmarkFolder[]>,
 ) {
 	const scopeId = ref('');
-	const filterQuery = ref('');
+	const query = ref('');
 	const recursive = ref(true);
 	const { flag: fuzzy, load: loadFuzzy } = useCachedFlag(
 		'searchmark_fuzzy_filter',
@@ -37,7 +37,7 @@ export function useBookmarkBrowser(
 	const source = computed(() => (scopeId.value ? scoped : all));
 	const isLoading = computed(() => source.value.isLoading.value);
 	const error = computed(() => source.value.error.value);
-	const query = computed(() => filterQuery.value.trim());
+	const trimmedQuery = computed(() => query.value.trim());
 
 	const isInside = (folder: BookmarkFolder, ancestorId: string) => {
 		for (let id = folder.parentId; id; id = folderMap.value.get(id)?.parentId) {
@@ -61,8 +61,13 @@ export function useBookmarkBrowser(
 	]);
 
 	const matches = computed<TitleMatch<SearchItem>[]>(() => {
-		if (query.value) {
-			return matchByTitle(items.value, query.value, fuzzy.value, Infinity);
+		if (trimmedQuery.value) {
+			return matchByTitle(
+				items.value,
+				trimmedQuery.value,
+				fuzzy.value,
+				Infinity,
+			);
 		}
 		return scopeId.value
 			? items.value.map((item) => ({ item, indexes: null }))
@@ -85,7 +90,7 @@ export function useBookmarkBrowser(
 		try {
 			if (scopeId.value) {
 				await scoped.loadBookmarks(scopeId.value, recursive.value);
-			} else if (query.value) {
+			} else if (trimmedQuery.value) {
 				await loadAll();
 			}
 		} catch (err) {
@@ -104,14 +109,14 @@ export function useBookmarkBrowser(
 	};
 
 	watch([scopeId, recursive], load);
-	watch(query, (value) => {
+	watch(trimmedQuery, (value) => {
 		if (value && !scopeId.value) load();
 	});
 	watch(recursive, (value) => recursiveItem.setValue(value));
 
 	return {
 		scopeId,
-		filterQuery,
+		query,
 		recursive,
 		fuzzy,
 		results,
