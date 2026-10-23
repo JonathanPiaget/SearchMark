@@ -35,6 +35,7 @@
       <IconLoader v-if="isDeleting" class="spin" />
       <IconTrash v-else />
     </button>
+    <IconChevronRight v-else class="folder-chevron" />
 
     <ConfirmDialog
       v-model="confirmDialogVisible"
@@ -53,6 +54,7 @@ import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
 import { i18n } from '@/utils/i18n';
 import IconBookOpen from '~icons/lucide/book-open';
+import IconChevronRight from '~icons/lucide/chevron-right';
 import IconFolder from '~icons/lucide/folder';
 import IconLoader from '~icons/lucide/loader-circle';
 import IconTrash from '~icons/lucide/trash-2';
@@ -220,6 +222,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 .delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.folder-chevron {
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .spin {
