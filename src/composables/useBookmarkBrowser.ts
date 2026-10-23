@@ -12,7 +12,8 @@ const recursiveItem = storage.defineItem<boolean>(
 	'local:searchmark_recursive_search',
 	{ fallback: true },
 );
-const fuzzyItem = storage.defineItem<boolean>('local:searchmark_fuzzy_filter', {
+const FUZZY_KEY = 'searchmark_fuzzy_filter';
+const fuzzyItem = storage.defineItem<boolean>(`local:${FUZZY_KEY}`, {
 	fallback: true,
 });
 
@@ -28,7 +29,8 @@ export function useBookmarkBrowser(
 	const scopeId = ref('');
 	const filterQuery = ref('');
 	const recursive = ref(true);
-	const fuzzy = ref(true);
+	// Cached so the first paint shows the stored choice before storage answers.
+	const fuzzy = ref(localStorage.getItem(FUZZY_KEY) !== 'false');
 
 	const scoped = useBookmarkFolder(folderMap);
 	const all = useBookmarkFolder(folderMap);
@@ -108,7 +110,10 @@ export function useBookmarkBrowser(
 		if (value && !scopeId.value) load();
 	});
 	watch(recursive, (value) => recursiveItem.setValue(value));
-	watch(fuzzy, (value) => fuzzyItem.setValue(value));
+	watch(fuzzy, (value) => {
+		localStorage.setItem(FUZZY_KEY, String(value));
+		fuzzyItem.setValue(value);
+	});
 
 	return {
 		scopeId,

@@ -58,6 +58,12 @@ const stubTree = (titles: string[]) =>
 		}),
 	]);
 
+const cache = new Map<string, string>();
+vi.stubGlobal('localStorage', {
+	getItem: (key: string) => cache.get(key) ?? null,
+	setItem: (key: string, value: string) => cache.set(key, value),
+});
+
 const flush = async () => {
 	await nextTick();
 	await new Promise((resolve) => setTimeout(resolve));
@@ -74,6 +80,7 @@ const ids = (state: ReturnType<typeof useBookmarkBrowser>) =>
 
 beforeEach(() => {
 	fakeBrowser.reset();
+	cache.clear();
 });
 
 afterEach(() => {
@@ -130,6 +137,16 @@ describe('useBookmarkBrowser', () => {
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 2]);
 		await flush();
 		expect(await storage.getItem('local:searchmark_fuzzy_filter')).toBe(false);
+	});
+
+	it('starts from the cached fuzzy choice and caches changes', async () => {
+		cache.set('searchmark_fuzzy_filter', 'false');
+		const state = useBookmarkBrowser(folderMap, allFolders);
+		expect(state.fuzzy.value).toBe(false);
+
+		state.fuzzy.value = true;
+		await flush();
+		expect(cache.get('searchmark_fuzzy_filter')).toBe('true');
 	});
 
 	it('caps results and reports the hidden count', async () => {

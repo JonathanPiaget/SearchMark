@@ -4,10 +4,10 @@ import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { matchByTitle } from '@/utils/matchByTitle';
 
 const MAX_RESULTS = 50;
-const fuzzySearchItem = storage.defineItem<boolean>(
-	'local:searchmark_fuzzy_search',
-	{ fallback: true },
-);
+const FUZZY_KEY = 'searchmark_fuzzy_search';
+const fuzzySearchItem = storage.defineItem<boolean>(`local:${FUZZY_KEY}`, {
+	fallback: true,
+});
 
 export interface PickerRow {
 	kind: 'toolbar' | 'folder';
@@ -34,7 +34,8 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const { folders, modelValue } = options;
 	const inputText = ref('');
 	const isOpen = ref(false);
-	const isFuzzy = ref(true);
+	// Cached so the first paint shows the stored choice before storage answers.
+	const isFuzzy = ref(localStorage.getItem(FUZZY_KEY) !== 'false');
 	const selected = ref<BookmarkFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
@@ -236,6 +237,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	});
 
 	watch(isFuzzy, (value) => {
+		localStorage.setItem(FUZZY_KEY, String(value));
 		fuzzySearchItem.setValue(value);
 	});
 

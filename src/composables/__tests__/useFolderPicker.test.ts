@@ -53,8 +53,15 @@ const type = (picker: ReturnType<typeof useFolderPicker>, text: string) => {
 	picker.onInput();
 };
 
+const cache = new Map<string, string>();
+vi.stubGlobal('localStorage', {
+	getItem: (key: string) => cache.get(key) ?? null,
+	setItem: (key: string, value: string) => cache.set(key, value),
+});
+
 beforeEach(() => {
 	fakeBrowser.reset();
+	cache.clear();
 });
 
 describe('useFolderPicker', () => {
@@ -351,6 +358,19 @@ describe('useFolderPicker', () => {
 		expect(picker.selected.value).toBeNull();
 		expect(picker.inputText.value).toBe('');
 		expect(onChange).toHaveBeenLastCalledWith(null);
+	});
+
+	it('starts from the cached fuzzy choice before init', () => {
+		cache.set('searchmark_fuzzy_search', 'false');
+		const picker = useFolderPicker({
+			folders: ref(FOLDERS),
+			toolbarId: ref('toolbar'),
+			autoSelectDefault: false,
+			onChange: vi.fn(),
+			onSubmit: vi.fn(),
+			modelValue: ref(''),
+		});
+		expect(picker.isFuzzy.value).toBe(false);
 	});
 
 	it('persists the fuzzy preference and uses it for matching', async () => {
