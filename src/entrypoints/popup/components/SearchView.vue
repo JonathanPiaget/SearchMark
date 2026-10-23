@@ -2,12 +2,12 @@
   <div class="search-view">
     <FolderSelector
       ref="folderSelectorRef"
-      v-model="folderId"
+      v-model="scopeId"
       :auto-select-default="false"
       :on-arrow-down-with-selection="focusFirstBookmark"
     />
 
-    <div v-if="folderId" class="search-options">
+    <div v-if="scopeId" class="search-options">
       <label class="checkbox-label">
         <input
           v-model="recursive"
@@ -26,7 +26,7 @@
           type="text"
           class="form-input"
           :class="{ 'has-clear': filterQuery }"
-          :placeholder="folderId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
+          :placeholder="scopeId ? i18n.t('filterBookmarks') : i18n.t('searchAllBookmarks')"
           @keydown.down.prevent="focusFirstBookmark"
         >
         <button
@@ -56,9 +56,9 @@
     <BookmarkList
       ref="bookmarkListRef"
       v-if="!error"
-      :results="results"
+      :results="bookmarkResults"
       :is-loading="isLoading"
-      :empty-message="folderId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
+      :empty-message="scopeId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
       @open-bookmark="handleOpenBookmark"
       @bookmark-deleted="remove"
       @escape-top="focusFilterInput"
@@ -73,10 +73,11 @@
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from 'vue';
 import { computed, onMounted, ref } from 'vue';
-import { useBookmarkBrowser } from '@/composables/useBookmarkBrowser';
+import { isFolder, useBookmarkBrowser } from '@/composables/useBookmarkBrowser';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { i18n } from '@/utils/i18n';
+import type { TitleMatch } from '@/utils/matchByTitle';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
 import FolderSelector from './FolderSelector.vue';
@@ -85,9 +86,9 @@ const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const filterInputRef = ref<HTMLInputElement | null>(null);
 
-const { folderMap, loadFolders } = useFolderTree();
+const { folderMap, allFolders, loadFolders } = useFolderTree();
 const {
-	folderId,
+	scopeId,
 	filterQuery,
 	recursive,
 	fuzzy,
@@ -97,7 +98,13 @@ const {
 	error,
 	init,
 	remove,
-} = useBookmarkBrowser(folderMap);
+} = useBookmarkBrowser(folderMap, allFolders);
+
+const bookmarkResults = computed(() =>
+	results.value.filter(
+		(match): match is TitleMatch<BookmarkItem> => !isFolder(match.item),
+	),
+);
 
 const errorMessage = computed(() => (error.value ? i18n.t(error.value) : ''));
 
