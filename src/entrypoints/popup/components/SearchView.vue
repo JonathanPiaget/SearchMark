@@ -190,33 +190,6 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.fuzzy-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease;
-}
-
-.fuzzy-button:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.fuzzy-button.active {
-  color: var(--accent-primary);
-}
-
 .search-box:focus-within {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--shadow-primary);
