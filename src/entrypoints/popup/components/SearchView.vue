@@ -138,7 +138,7 @@ const handleSelect = (item: SearchItem) => {
 		focus();
 		return;
 	}
-	browser.tabs.create({ url: item.url, active: true });
+	browser.tabs.create({ url: item.url, active: false });
 };
 
 defineExpose({ focus });
