@@ -129,6 +129,25 @@ export const SCENES = [
 		setup: setupSave,
 		caption: 'Light and dark mode',
 	},
+	{
+		id: 'promo-tile',
+		stores: ['chrome'],
+		viewport: { width: 220, height: 140 }, // -> 440x280 small promo tile
+		theme: 'light',
+		setup: setupSave,
+		layout: layoutPromo,
+		caption: 'Save & find bookmarks, fast',
+	},
+	{
+		id: 'promo-marquee',
+		stores: ['chrome'],
+		viewport: { width: 700, height: 280 }, // -> 1400x560 marquee
+		theme: 'light',
+		setup: setupFolderSearch,
+		keepFocus: true,
+		layout: layoutPromo,
+		caption: 'Save and find bookmarks in a keystroke',
+	},
 ];
 
 async function setupSave() {
@@ -395,9 +414,159 @@ async function layoutBrowserFrame(page, frame, caption, tab) {
 	);
 }
 
+// Store promo art: the brand on a violet gradient. The wide marquee also shows
+// the live popup; the small tile has no room to keep it readable.
+async function layoutPromo(page, frame, caption) {
+	await page.evaluate(
+		({ width, height, caption }) => {
+			const u = height / 100;
+			const px = (n) => `${Math.round(n * u)}px`;
+			const el = (tag, style, text) => {
+				const node = document.createElement(tag);
+				Object.assign(node.style, style);
+				if (text) node.textContent = text;
+				return node;
+			};
+			const wide = width > 2 * height;
+
+			Object.assign(document.body.style, {
+				margin: '0',
+				width: `${width}px`,
+				height: `${height}px`,
+				boxSizing: 'border-box',
+				padding: wide ? `0 ${px(10)}` : '0',
+				overflow: 'hidden',
+				position: 'relative',
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				alignItems: wide ? 'flex-start' : 'center',
+				gap: px(4),
+				textAlign: wide ? 'left' : 'center',
+				background: [
+					'radial-gradient(circle at 15% 10%, rgba(169, 124, 246, 0.9), transparent 55%)',
+					'radial-gradient(circle at 95% 110%, rgba(243, 181, 65, 0.4), transparent 40%)',
+					'linear-gradient(135deg, #5a24c7, #23104f)',
+				].join(', '),
+			});
+
+			const badge = el('div', {
+				width: px(wide ? 20 : 30),
+				height: px(wide ? 20 : 30),
+				borderRadius: '24%',
+				background: '#ffffff',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				boxShadow: '0 6px 20px rgba(20, 5, 60, 0.35)',
+			});
+			const icon = el('img', { width: '72%', height: '72%' });
+			icon.src = '/icon.svg';
+			badge.append(icon);
+
+			// "Mark" wears the popup's search-match highlight.
+			const wordmark = el(
+				'div',
+				{
+					fontSize: px(wide ? 15 : 18),
+					color: '#ffffff',
+					fontWeight: '800',
+					letterSpacing: '-0.02em',
+					lineHeight: '1.1',
+				},
+				'Search',
+			);
+			wordmark.append(
+				el(
+					'span',
+					{
+						marginLeft: '0.04em',
+						padding: '0 0.08em',
+						borderRadius: '0.15em',
+						background: 'var(--hl-bg)',
+						color: 'var(--hl-text)',
+					},
+					'Mark',
+				),
+			);
+
+			const headline = el(
+				'div',
+				{
+					maxWidth: wide ? '44%' : '90%',
+					color: '#ffffff',
+					fontSize: px(wide ? 8 : 9),
+					fontWeight: '600',
+					lineHeight: '1.25',
+					textWrap: 'balance',
+					opacity: '0.92',
+				},
+				caption,
+			);
+			document.body.append(badge, wordmark, headline);
+
+			const app = document.getElementById('app');
+			if (!wide) {
+				app.style.display = 'none';
+				return;
+			}
+
+			const shortcut = el('div', {
+				display: 'flex',
+				alignItems: 'center',
+				gap: px(1.5),
+				marginTop: px(2),
+				fontSize: px(4.5),
+				color: 'rgba(255, 255, 255, 0.8)',
+			});
+			for (const key of ['Ctrl', 'Shift', 'B']) {
+				shortcut.append(
+					el(
+						'kbd',
+						{
+							fontFamily: 'inherit',
+							fontWeight: '600',
+							color: '#ffffff',
+							padding: `${px(0.8)} ${px(1.8)}`,
+							borderRadius: px(1.2),
+							background: 'rgba(255, 255, 255, 0.14)',
+							border: '1px solid rgba(255, 255, 255, 0.28)',
+							boxShadow: 'inset 0 -2px 0 rgba(0, 0, 0, 0.2)',
+						},
+						key,
+					),
+				);
+			}
+			shortcut.append(
+				el('span', { marginLeft: px(1) }, 'quick-saves the current tab'),
+			);
+			document.body.append(shortcut);
+
+			Object.assign(app.style, {
+				position: 'absolute',
+				top: '50%',
+				right: px(10),
+				transform: 'translateY(-50%)',
+				borderRadius: px(2.5),
+				overflow: 'hidden',
+				boxShadow:
+					'0 24px 60px rgba(10, 0, 40, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12)',
+			});
+			const container = document.querySelector('.container');
+			const rect = container.getBoundingClientRect();
+			container.style.zoom = Math.min(
+				(86 * u) / rect.height,
+				(0.42 * width) / rect.width,
+			);
+		},
+		{ width: frame.width, height: frame.height, caption },
+	);
+}
+
 async function capturePopup(context, extensionId, target, scene, messages) {
+	const viewport = scene.viewport ?? target.viewport;
 	const page = await context.newPage();
-	await page.setViewportSize(target.viewport);
+	await page.setViewportSize(viewport);
 	await page.addInitScript(
 		({ tab, msgs, locale }) => {
 			const fakeTabs = [{ id: 1, active: true, ...tab }];
@@ -437,16 +606,9 @@ async function capturePopup(context, extensionId, target, scene, messages) {
 	}
 	await page.mouse.move(0, 0); // Avoid hover artifacts on items the cursor landed on.
 	await page.waitForTimeout(350);
-	if (scene.browserFrame) {
-		await layoutBrowserFrame(
-			page,
-			target.viewport,
-			scene.caption ?? '',
-			scene.tab ?? DEMO_TAB,
-		);
-	} else {
-		await layoutFrame(page, target.viewport, scene.caption ?? '');
-	}
+	const layout =
+		scene.layout ?? (scene.browserFrame ? layoutBrowserFrame : layoutFrame);
+	await layout(page, viewport, scene.caption ?? '', scene.tab ?? DEMO_TAB);
 	await page.waitForTimeout(150);
 
 	const outputPath = resolve(OUTPUT_DIR, target.store, `${scene.id}.png`);
@@ -479,7 +641,9 @@ export async function generate({ targets = TARGETS, scenes = SCENES } = {}) {
 	await disableFuzzy(serviceWorker);
 
 	for (const target of targets) {
-		for (const scene of scenes) {
+		for (const scene of scenes.filter(
+			(s) => !s.stores || s.stores.includes(target.store),
+		)) {
 			await setTheme(serviceWorker, scene.theme);
 			await capturePopup(context, extensionId, target, scene, messages);
 		}

@@ -30,6 +30,10 @@
 @screenshots *flags:
     pnpm screenshots {{flags}}
 
+# Rebuild the extension and regenerate the Chrome Web Store promo tile + marquee
+@promo:
+    pnpm screenshots --scene promo
+
 # Submit the Chrome zip to the Chrome Web Store (credentials from .env.submit). Pass --dry-run to only check credentials
 @submit-chrome *flags:
     pnpm zip

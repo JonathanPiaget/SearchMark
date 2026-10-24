@@ -14,6 +14,7 @@ Options:
 Examples:
   node screenshots/cli.mjs --store firefox
   node screenshots/cli.mjs --scene 2,3
+  node screenshots/cli.mjs --scene promo      # Chrome Web Store promo tiles
   pnpm screenshots --store chrome --scene 1   # rebuilds the extension first`;
 
 const splitValues = (values) =>
