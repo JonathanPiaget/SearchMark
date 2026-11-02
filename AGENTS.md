@@ -49,7 +49,7 @@ Checking the popup in Chrome (do it for any visible `.vue` or CSS change):
 
 Test conventions:
 
-- Tests live in `__tests__/` folders next to the code they cover, named `*.test.ts` (e.g. [src/composables/__tests__/](src/composables/__tests__/), [src/utils/__tests__/](src/utils/__tests__/)).
+- Tests live in `__tests__/` folders next to the code they cover, named `*.test.ts` (e.g. [`src/composables/__tests__/`](src/composables/__tests__/), [`src/utils/__tests__/`](src/utils/__tests__/)).
 - Vitest is configured via [vitest.config.ts](vitest.config.ts) using the `WxtVitest()` plugin, which mocks the `browser.*` extension APIs.
 - Shared test fixtures live in [src/test-utils/](src/test-utils/) (e.g. `bookmarkFactory.ts`).
 - **Add or update tests for any composable or util you change.** Business logic should be extracted into composables/utils so it is testable without a browser.
@@ -61,7 +61,7 @@ Test conventions:
   - Lint + autofix: `pnpm run lint`
   - Both (format + lint + organize imports, autofix): `pnpm run check` — **run this after every edit and resolve all issues.**
   - `.vue` files have `noUnusedVariables` / `noUnusedImports` disabled (handled by `vue-tsc`).
-- **No useless comments** — prefer clear, self-documenting code. A comment that explains *what* the code does is a signal to refactor for clarity instead.
+- **No useless comments** — prefer clear, self-documenting code. A comment that explains _what_ the code does is a signal to refactor for clarity instead.
 - **Fail-fast** — throw loud errors rather than silently swallowing them or using `console.log`. Use the shared [src/utils/logger.ts](src/utils/logger.ts) where logging is appropriate.
 - **DRY** — avoid duplication; extract shared logic into `src/composables/` or `src/utils/`.
 - **Minimal impact** — touch only what is necessary; keep changes simple and focused (one concern per change).

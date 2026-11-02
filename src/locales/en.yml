@@ -22,7 +22,7 @@ keySpace: Space
 save: Save
 cancel: Cancel
 confirm: Delete
-themeLabel: 'Theme: $1'
+themeLabel: "Theme: $1"
 settings: Settings
 appearance: Appearance
 theme: Theme
@@ -70,7 +70,7 @@ shortcutQuickSave: Quick save to "See Later"
 shortcutSwitchView: Switch view
 openShortcut: Open SearchMark
 shortcutDescriptionChrome: Shortcut to open the popup. Use the button to rebind it.
-shortcutDescriptionFirefox: 'Shortcut to open the popup. Change it in about:addons → ⚙ → Manage Extension Shortcuts.'
+shortcutDescriptionFirefox: "Shortcut to open the popup. Change it in about:addons → ⚙ → Manage Extension Shortcuts."
 shortcutChange: Change shortcut
 support: Support
 supportMessage: If you find SearchMark helpful, consider supporting its development or leaving a review. Your feedback helps others discover this extension!
