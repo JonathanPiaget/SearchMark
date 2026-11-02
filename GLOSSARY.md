@@ -40,6 +40,10 @@ _Avoid_: quick save folder, read later, default folder
 A bookmark whose URL equals the current tab's URL. The Save view lists them so the user can see where the page is already saved and delete it.
 _Avoid_: duplicate, already saved, location
 
+**Tracking parameter**:
+A query parameter from a closed, known list (`utm_*`, `fbclid`, `gclid`, ...) that identifies where a click came from, not which page is shown. SearchMark removes them from the current tab's URL before it is saved, listed as an existing bookmark or checked for the badge, unless the user turns this off in settings. The Save view says when it did so and lets the user restore the original URL.
+_Avoid_: tracker, utm, url cleaning, canonical URL
+
 ### Finding
 
 **Save view** / **Search view**:
