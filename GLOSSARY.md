@@ -70,6 +70,28 @@ _Avoid_: typo-tolerant matching, typo matcher, second pass
 Listing a folder's bookmarks including those in its subfolders. User-facing label: "Include subfolders".
 _Avoid_: deep, nested, flattened
 
+### Hiding
+
+**Hidden folder**:
+A folder removed from the browser's bookmark tree and kept, with its whole subtree and original location, inside one or more containers. The browser no longer shows it anywhere; only SearchMark can read it.
+_Avoid_: private folder, secret folder, vault, stash
+
+**Container**:
+A native bookmark titled "SearchMark" in the browser's "Other bookmarks" folder whose URL holds the encoded content of a hidden folder. A large hidden folder spans several containers. Containers are the only place hidden folders live, so they sync, export and survive reinstalls like any bookmark.
+_Avoid_: blob, data bookmark, chunk, stash
+
+**Reveal**:
+Showing hidden folders and their bookmarks in the popup, read from their containers without restoring them to the tree. One switch for the whole popup, off again every time the popup opens. Saving into a revealed folder rewrites its containers.
+_Avoid_: show hidden, unlock, unmask, restore
+
+**Unhide**:
+Restoring a hidden folder to its original location in the bookmark tree and deleting its containers. Done from settings, permanent.
+_Avoid_: restore, reveal, unstash
+
+**Passphrase**:
+The single secret, chosen by the user and never stored, that encrypts every encrypted container, folder title and location included. A hidden folder is encrypted when a passphrase was given at hiding time; otherwise its content is only encoded. The See Later folder cannot be hidden.
+_Avoid_: password, PIN, key, secret
+
 ### Settings
 
 **Language**:
