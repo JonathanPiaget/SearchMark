@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.16.0]
 
 ### Added
+
 - Search view now finds folders as well as bookmarks from a single input; selecting a folder result narrows the search to that folder, shown as a removable chip
 - Folder results show a chevron to signal they can be drilled into
 - Fuzzy search toggle is now an icon button inside the search inputs
@@ -15,19 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.15.0]
 
 ### Added
+
 - Language setting in the options page: Auto (browser language), English or French, applied immediately to the popup and settings
 
 ### Fixed
+
 - Popup and settings no longer flash white before applying the dark theme
 
 ## [1.14.0]
 
 ### Added
+
 - Theme toggle in the popup now cycles through Auto, Light and Dark
 - Save button and confirm dialog now show their Enter / Esc key hints
 - See Later tooltip now shows the quick-save shortcut
 
 ### Changed
+
 - Search now ignores accents and tolerates a few typos, in both exact and fuzzy modes
 - Fuzzy matches now highlight every exact occurrence of the query
 - Reworded English and French strings for consistency (sentence case, plural forms, French typography)
@@ -35,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.13.4]
 
 ### Fixed
+
 - Saving a bookmark right after the popup opens no longer fails when no folder is selected yet
 - Folder dropdown now grows the popup as you type or expand folders, instead of being clipped
 - Search results now show the folder path for bookmarks whose top-level folder has no title
@@ -42,56 +48,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.13.3]
 
 ### Changed
+
 - Redrawn extension icon, clearer at small sizes
 - Folder dropdown now shows at most 50 matches, keeping the popup fast with large bookmark trees
 
 ### Fixed
+
 - Fuzzy bookmark search in the Search view no longer stops after ten matches
 
 ## [1.13.2]
 
 ### Fixed
+
 - Folder search input now reliably gets focus when the popup opens on Firefox
 - Quick-save no longer creates a duplicate See Later folder when one already exists
 
 ## [1.13.1]
 
 ### Changed
+
 - Faster folder loading when opening the popup
 
 ### Fixed
+
 - Quick-save shortcut now saves to your chosen See Later folder instead of always using the bookmarks toolbar
 - Settings page now shows the currently saved See Later folder, with a properly styled clear button
 
 ## [1.13.0]
 
 ### Added
+
 - Settings toggle to turn native notifications on or off
 
 ### Changed
+
 - Notifications are now an optional permission, requested only when you enable them
 
 ## [1.12.0]
 
 ### Added
+
 - Discoverable keyboard shortcuts panel in the popup
 - Keyboard navigation into expanded subfolders in the folder selector
 
 ### Changed
+
 - Success/error feedback now uses native OS notifications instead of in-page toasts
 
 ### Removed
+
 - Content script and the `<all_urls>` host permission, for a smaller permission footprint
 
 ## [1.11.0]
 
 ### Added
+
 - Switch between the Save and Search views with Alt+Arrow keys
 - Settings page now shows the active keyboard shortcut with a link to the rebind page
 - Folder search input auto-focuses when switching views
 - Circular view-transition animation when toggling the theme
 
 ### Fixed
+
 - Folder input flicker when switching views
 - Missing favicon on the settings page tab
 - Clear button now uses the Lucide X icon for visual consistency
@@ -99,50 +117,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.10.0]
 
 ### Added
+
 - Navigate search results with arrow keys directly from the search field
 
 ### Fixed
+
 - Folder dropdown not scrolling to top when re-focusing the bookmark toolbar option
 - Loading flicker on Firefox by deferring the initial bookmark load
 
 ## [1.9.0]
 
 ### Added
+
 - Bookmark toolbar pinned as a quick option in the folder selector when saving
 - Tooltip explaining how the fuzzy search toggle works
 - Crossed magnifier icon for the "no results" state
 - Key icons shown alongside the Shift/Space labels in the expand hint
 
 ### Changed
+
 - Replaced emoji icons with the Lucide icon set throughout the popup
 - Redesigned theme color tokens for a more consistent look in light and dark modes
 
 ### Fixed
+
 - Match count footer now uses the match count as its denominator instead of the total folder count
 
 ## [1.8.0]
 
 ### Added
+
 - Folder dropdown header redesigned with kbd-style shortcut keys for navigation hints
 - Results footer in folder dropdown showing the match count and navigation key hints
 
 ### Fixed
+
 - Popup now grows to fit the folder dropdown so all results stay reachable
 
 ## [1.7.1]
 
 ### Fixed
+
 - Toolbar badge not appearing on Firefox (MV2 uses `browserAction` API instead of `action`)
 
 ## [1.7.0]
 
 ### Added
+
 - Toolbar icon badge indicates when the current page is already bookmarked
 - Enlarged extension icon artwork for better visibility
 
 ## [1.6.0]
 
 ### Added
+
 - Delete bookmarks directly from search results
 - Full folder path displayed in search results (e.g., "Bookmarks Bar > Dev > Frontend")
 - Folder path tooltip on hover for bookmark cards
@@ -151,15 +179,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.1]
 
 ### Fixed
+
 - Clear button now only visible when there's a search query (was showing unnecessarily)
 
 ## [1.5.0]
 
 ### Added
+
 - Fuzzy search for folder selection with toggle option
 - Fuzzy search for bookmarks search
 - Clear button for bookmark search input
 - Clear selection button in FolderSelector
 
 ### Fixed
+
 - Folder dropdown scroll lag by using Vue template refs

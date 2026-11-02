@@ -1,4 +1,5 @@
 ---
+
 name: release
 description: Prepare a SearchMark release — bump the version in package.json, draft the CHANGELOG.md section from commits since the last tag, and hand back for the user to commit. Use when asked to release, cut a release, bump the version, or update the changelog for a release.
 ---

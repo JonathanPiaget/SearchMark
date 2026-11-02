@@ -49,6 +49,7 @@ SearchMark declares `data_collection_permissions: none` on Firefox and collects 
 ## Development
 
 ### Setup
+
 ```bash
 pnpm install
 pnpm run dev          # Chrome
@@ -56,6 +57,7 @@ pnpm run dev:firefox  # Firefox
 ```
 
 ### Available Scripts
+
 - `pnpm run dev` - Start development server
 - `pnpm run build` - Build for production
 - `pnpm run test` - Run unit tests
@@ -64,6 +66,7 @@ pnpm run dev:firefox  # Firefox
 - `pnpm run zip` - Create distribution package
 
 ### Tech Stack
+
 - **Framework**: [WXT](https://wxt.dev/) - Modern web extension framework
 - **Frontend**: Vue.js 3 with TypeScript
 - **Testing**: Vitest with mocked extension APIs
@@ -71,6 +74,7 @@ pnpm run dev:firefox  # Firefox
 - **Code Quality**: Biome for linting and formatting
 
 ### Code Quality
+
 This project uses [pre-commit](https://pre-commit.com/) hooks.
 
 ```bash
