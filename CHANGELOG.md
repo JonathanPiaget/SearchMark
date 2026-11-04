@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0]
+
+### Added
+
+- Tracking parameters (utm_*, fbclid, gclid, ...) are removed from the URL when saving a bookmark; the popup lists the removed parameters with a Restore button to keep them. Can be turned off in the settings
+
+### Fixed
+
+- Bookmark items in the search view show the full title, URL and folder path as separate tooltips
+- French settings: shorter "Réinitialiser" button so the "See Later" folder label no longer wraps
+
 ## [1.16.0]
 
 ### Added
