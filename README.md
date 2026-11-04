@@ -30,6 +30,9 @@ Search bookmarks across all folders or within a specific one, with typo-tolerant
 **One-Key Save for Later**
 `Ctrl+Shift+B` (`Cmd+Shift+B` on Mac) instantly saves the current page to your "See Later" folder - no popup needed. Configure the target folder in the settings.
 
+**Clean URLs**
+Tracking parameters such as `utm_source`, `fbclid` or `gclid` are removed before saving, with a one-click Restore in the popup. On by default, can be turned off in the settings.
+
 **Current Page Detection**
 See the full path where the current page is already bookmarked, and delete it directly from the popup if needed.
 
