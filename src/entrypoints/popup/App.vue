@@ -80,7 +80,7 @@ const loadCurrentTab = async () => {
 		bookmarkUrl.value = tab.url;
 		bookmarkTitle.value = tab.title;
 		rawUrl.value = tab.rawUrl;
-		removedParams.value = [...new Set(tab.removedParams)];
+		removedParams.value = tab.removedParams;
 
 		await loadFolders();
 		await searchByUrl(tab.url);

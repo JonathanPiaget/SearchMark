@@ -32,9 +32,11 @@ export const stripTrackingParams = (url: string): StrippedUrl => {
 	if (parsed?.protocol !== 'http:' && parsed?.protocol !== 'https:')
 		return { url, removed: [] };
 
-	const removed = [...parsed.searchParams.keys()].filter(isTrackingParam);
+	const removed = [...new Set(parsed.searchParams.keys())].filter(
+		isTrackingParam,
+	);
 	if (removed.length === 0) return { url, removed };
-	for (const name of new Set(removed)) parsed.searchParams.delete(name);
+	for (const name of removed) parsed.searchParams.delete(name);
 	return { url: parsed.href, removed };
 };
 

@@ -11,9 +11,9 @@ export const updateBadgeForTab = async (
 	url: string | undefined,
 ): Promise<void> => {
 	try {
+		const cleanUrl = url && (await cleanTabUrl(url)).url;
 		const isBookmarked =
-			!!url &&
-			(await findBookmarksByUrl((await cleanTabUrl(url)).url)).length > 0;
+			!!cleanUrl && (await findBookmarksByUrl(cleanUrl)).length > 0;
 		await actionApi.setBadgeText({
 			text: isBookmarked ? BOOKMARKED_BADGE_TEXT : '',
 			tabId,

@@ -31,14 +31,14 @@ describe('stripTrackingParams', () => {
 		});
 	});
 
-	it('reports every occurrence of a repeated tracker', () => {
+	it('reports a repeated tracker once', () => {
 		expect(
 			stripTrackingParams(
 				'https://example.com/?utm_source=a&id=1&utm_source=b',
 			),
 		).toEqual({
 			url: 'https://example.com/?id=1',
-			removed: ['utm_source', 'utm_source'],
+			removed: ['utm_source'],
 		});
 	});
 

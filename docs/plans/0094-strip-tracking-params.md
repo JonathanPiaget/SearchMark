@@ -27,7 +27,7 @@ Decisions already taken with the developer (do not reopen them):
 - **Rewrite only when something was removed.** If no tracker is present, return the original string byte-identical (the `URL` API re-encodes `%20` to `+`, which would break strict URL matching for already-saved bookmarks). Non-`http(s)` URLs and unparsable strings are returned untouched. `URL` already drops an empty `?` and keeps the `#fragment`.
 - **Single point of cleaning**: where the tab URL is read, not at save time. Known trade-off: a bookmark saved earlier _with_ `?utm_…` no longer lights the badge.
 - **Setting**: "Remove tracking parameters from saved URLs", on by default, in the Settings page saving section (next to See Later folder / Notifications), with a help line citing `utm_source`, `fbclid`, `gclid`. Same storage pattern as `useCachedFlag` in `src/composables/useCachedFlag.ts` (`storage.defineItem<boolean>('local:<key>', { fallback: true })`). When off, nothing is cleaned anywhere.
-- **Save view transparency**: when parameters were removed, a discreet line under the URL field "N tracking parameters removed · Restore". Restore puts the raw tab URL back in the URL field only (the Existing bookmark list is unchanged) and hides the line. Nothing is shown when the URL was already clean.
+- **Save view transparency**: when parameters were removed, a discreet line under the URL field listing the removed parameter names as tags, with a Restore / Remove toggle. Restore puts the raw tab URL back in the URL field only (the Existing bookmark list is unchanged); Remove puts the cleaned URL back. The line disappears when the user edits the URL by hand. (Step 4 replaced the original "N tracking parameters removed · Restore" line after review.) Nothing is shown when the URL was already clean.
 - **Quick Save** notification text is unchanged.
 - No ADR: the decision is reversible.
 
@@ -79,3 +79,11 @@ Commit: `feat(settings): remove tracking parameters from saved urls`
 
 Checks: `pnpm run check && pnpm run compile && pnpm run test && pnpm run test:e2e`; screenshot the popup in Chrome.
 Commit: `feat(popup): show removed tracking parameters with restore`
+
+## Step 4 (after review): Restore/Remove toggle + parameter names
+
+- Replace the count with the removed parameter names shown as tags under the URL field.
+- Restore keeps the line and turns the link into Remove, which puts the cleaned URL back. The line hides when the URL field holds neither the cleaned nor the raw URL.
+- i18n keys `trackingParamsRemoved`, `trackingParamsKept`, `remove` (en + fr); extend the e2e test.
+  Checks: `pnpm run check && pnpm run compile && pnpm run test && pnpm run test:e2e`.
+  Commit: `feat(popup): toggle tracking parameters and show their names`
