@@ -27,9 +27,15 @@ const bookmarkUrl = ref('');
 const bookmarkTitle = ref('');
 const rawUrl = ref('');
 const removedParams = ref<string[]>([]);
-const removedParamCount = computed(() =>
-	bookmarkUrl.value === currentUrl.value ? removedParams.value.length : 0,
+const trackingRemoved = computed(() => bookmarkUrl.value === currentUrl.value);
+const shownTrackingParams = computed(() =>
+	trackingRemoved.value || bookmarkUrl.value === rawUrl.value
+		? removedParams.value
+		: [],
 );
+const toggleTracking = () => {
+	bookmarkUrl.value = trackingRemoved.value ? rawUrl.value : currentUrl.value;
+};
 const selectedFolderId = ref('');
 const selectedFolderName = ref('');
 
@@ -74,7 +80,7 @@ const loadCurrentTab = async () => {
 		bookmarkUrl.value = tab.url;
 		bookmarkTitle.value = tab.title;
 		rawUrl.value = tab.rawUrl;
-		removedParams.value = tab.removedParams;
+		removedParams.value = [...new Set(tab.removedParams)];
 
 		await loadFolders();
 		await searchByUrl(tab.url);
@@ -187,9 +193,10 @@ const saveBookmark = async () => {
       <BookmarkForm
         v-model:model-url="bookmarkUrl"
         v-model:model-title="bookmarkTitle"
-        :removed-count="removedParamCount"
+        :tracking-params="shownTrackingParams"
+        :tracking-removed="trackingRemoved"
         @submit="saveBookmark"
-        @restore="bookmarkUrl = rawUrl"
+        @toggle-tracking="toggleTracking"
       />
 
       <SaveButton

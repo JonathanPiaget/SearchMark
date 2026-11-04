@@ -8,6 +8,7 @@ Glossary term: **Tracking parameter** in [GLOSSARY.md](../../GLOSSARY.md).
 - [x] Step 1: `stripTrackingParams` util + unit tests, unwired
 - [x] Step 2: setting (on by default) + wiring in `getCurrentTab` and the badge listener
 - [x] Step 3: Save view note "N tracking parameters removed · Restore" + e2e
+- [x] Step 4 (after review): Restore/Remove toggle + parameter names shown as tags in the note
 
 Tick a box only when the step's checks are green and it has been handed back.
 Each step is one commit the developer reviews alone. Stop after each step; do not commit or push (see AGENTS.md).

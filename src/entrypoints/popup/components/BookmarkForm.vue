@@ -11,9 +11,13 @@
         @input="updateUrl"
         @keydown="handleKeydown"
       >
-      <p v-if="removedCount" class="url-note">
-        {{ i18n.t('trackingParamsRemoved', removedCount) }} ·
-        <button type="button" class="url-note-restore" @click="emit('restore')">{{ i18n.t('restore') }}</button>
+      <p v-if="trackingParams.length" class="url-note">
+        {{ i18n.t(trackingRemoved ? 'trackingParamsRemoved' : 'trackingParamsKept', trackingParams.length) }}
+        <code v-for="name in trackingParams" :key="name" class="tracking-param">{{ name }}</code>
+        ·
+        <button type="button" class="url-note-toggle" @click="emit('toggleTracking')">
+          {{ i18n.t(trackingRemoved ? 'restore' : 'remove') }}
+        </button>
       </p>
     </div>
 
@@ -40,14 +44,15 @@ import { i18n } from '@/utils/i18n';
 interface Props {
 	modelUrl: string;
 	modelTitle: string;
-	removedCount: number;
+	trackingParams: string[];
+	trackingRemoved: boolean;
 }
 
 interface Emits {
 	(e: 'update:modelUrl', value: string): void;
 	(e: 'update:modelTitle', value: string): void;
 	(e: 'submit'): void;
-	(e: 'restore'): void;
+	(e: 'toggleTracking'): void;
 }
 
 const props = defineProps<Props>();
@@ -89,12 +94,24 @@ watch(
 }
 
 .url-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--text-secondary);
 }
 
-.url-note-restore {
+.tracking-param {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--shadow-primary);
+  color: var(--accent-primary);
+  font-size: 11px;
+}
+
+.url-note-toggle {
   padding: 0;
   border: none;
   background: none;
