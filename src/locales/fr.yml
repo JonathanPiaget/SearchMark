@@ -58,7 +58,7 @@ seeLaterError: Échec de l'enregistrement dans le dossier « Voir plus tard 
 quickActions: Actions rapides
 seeLaterFolder: Dossier « Voir plus tard »
 seeLaterFolderDescription: "Par défaut : crée un dossier « Voir plus tard » dans la barre de favoris"
-seeLaterResetToDefault: Rétablir la valeur par défaut
+seeLaterResetToDefault: Réinitialiser
 search: Rechercher
 noBookmarksInFolder: Aucun favori trouvé dans ce dossier
 loadingBookmarks: Chargement des favoris…
