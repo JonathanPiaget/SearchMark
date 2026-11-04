@@ -11,6 +11,10 @@
         @input="updateUrl"
         @keydown="handleKeydown"
       >
+      <p v-if="removedCount" class="url-note">
+        {{ i18n.t('trackingParamsRemoved', removedCount) }} ·
+        <button type="button" class="url-note-restore" @click="emit('restore')">{{ i18n.t('restore') }}</button>
+      </p>
     </div>
 
     <div class="form-group">
@@ -36,12 +40,14 @@ import { i18n } from '@/utils/i18n';
 interface Props {
 	modelUrl: string;
 	modelTitle: string;
+	removedCount: number;
 }
 
 interface Emits {
 	(e: 'update:modelUrl', value: string): void;
 	(e: 'update:modelTitle', value: string): void;
 	(e: 'submit'): void;
+	(e: 'restore'): void;
 }
 
 const props = defineProps<Props>();
@@ -80,5 +86,21 @@ watch(
 
 .form-group {
   margin-bottom: 16px;
+}
+
+.url-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.url-note-restore {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--accent-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>

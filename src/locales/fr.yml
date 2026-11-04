@@ -38,6 +38,10 @@ languageAuto: Auto (langue du navigateur)
 notifications: Notifications
 notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
 stripTrackingParams: Retirer les paramètres de suivi des URL enregistrées
+trackingParamsRemoved:
+  1: 1 paramètre de suivi retiré
+  n: $1 paramètres de suivi retirés
+restore: Rétablir
 stripTrackingParamsDescription: Supprimer les paramètres comme utm_source, fbclid ou gclid, qui servent seulement à suivre votre provenance
 alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Favori supprimé

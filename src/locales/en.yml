@@ -36,6 +36,10 @@ languageAuto: Auto (browser language)
 notifications: Notifications
 notificationsDescription: Show a system notification after saving a bookmark
 stripTrackingParams: Remove tracking parameters from saved URLs
+trackingParamsRemoved:
+  1: 1 tracking parameter removed
+  n: $1 tracking parameters removed
+restore: Restore
 stripTrackingParamsDescription: Drop parameters such as utm_source, fbclid or gclid that only track where you came from
 alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
