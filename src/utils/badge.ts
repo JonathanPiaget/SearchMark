@@ -1,6 +1,7 @@
 import { actionApi } from '@/utils/action';
 import { findBookmarksByUrl } from '@/utils/bookmark';
 import { logError } from '@/utils/logger';
+import { cleanTabUrl } from '@/utils/trackingParams';
 
 const BOOKMARKED_BADGE_TEXT = '✓';
 const BOOKMARKED_BADGE_COLOR = '#7f45e5';
@@ -10,7 +11,9 @@ export const updateBadgeForTab = async (
 	url: string | undefined,
 ): Promise<void> => {
 	try {
-		const isBookmarked = !!url && (await findBookmarksByUrl(url)).length > 0;
+		const cleanUrl = url && (await cleanTabUrl(url)).url;
+		const isBookmarked =
+			!!cleanUrl && (await findBookmarksByUrl(cleanUrl)).length > 0;
 		await actionApi.setBadgeText({
 			text: isBookmarked ? BOOKMARKED_BADGE_TEXT : '',
 			tabId,

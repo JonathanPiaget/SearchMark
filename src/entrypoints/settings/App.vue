@@ -88,6 +88,19 @@
             @change="handleNotificationsToggle"
           >
         </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="strip-tracking-toggle" class="setting-label">{{ i18n.t('stripTrackingParams') }}</label>
+            <p class="setting-description">{{ i18n.t('stripTrackingParamsDescription') }}</p>
+          </div>
+          <input
+            id="strip-tracking-toggle"
+            v-model="stripTrackingParams"
+            type="checkbox"
+            class="toggle-checkbox"
+          >
+        </div>
       </section>
 
       <section class="settings-section support-section">
@@ -138,6 +151,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useCachedFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
@@ -148,6 +162,7 @@ import {
 	setSeeLaterFolderId,
 	watchSeeLaterFolderId,
 } from '@/utils/seeLater';
+import { STRIP_TRACKING_PARAMS_KEY } from '@/utils/trackingParams';
 import IconChevronDown from '~icons/lucide/chevron-down';
 import IconStar from '~icons/lucide/star';
 
@@ -162,6 +177,8 @@ const selectedTheme = ref<Theme>('auto');
 const selectedLanguage = ref<Language>('auto');
 const selectedFolderId = ref('');
 const notificationsEnabled = ref(false);
+const { flag: stripTrackingParams, load: loadStripTrackingParams } =
+	useCachedFlag(STRIP_TRACKING_PARAMS_KEY);
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
 
@@ -197,6 +214,7 @@ onMounted(async () => {
 	selectedFolderId.value = (await getSeeLaterFolderId()) ?? '';
 	selectedTheme.value = currentTheme.value;
 	selectedLanguage.value = await languageItem.getValue();
+	await loadStripTrackingParams();
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],
 	});
