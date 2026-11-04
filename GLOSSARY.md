@@ -37,7 +37,7 @@ The folder Quick Save targets. Either chosen by the user in settings, or created
 _Avoid_: quick save folder, read later, default folder
 
 **Existing bookmark**:
-A bookmark whose URL equals the current tab's URL. The Save view lists them so the user can see where the page is already saved and delete it.
+A bookmark whose URL equals the current tab's URL, after tracking parameters were removed when that setting is on. The Save view lists them so the user can see where the page is already saved and delete it.
 _Avoid_: duplicate, already saved, location
 
 ### Finding
