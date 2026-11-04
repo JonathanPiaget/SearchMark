@@ -30,6 +30,8 @@ describe('getCurrentTab', () => {
 		await expect(getCurrentTab()).resolves.toEqual({
 			title: 'Page',
 			url: 'https://example.com',
+			rawUrl: 'https://example.com',
+			removedParams: [],
 		});
 	});
 
@@ -41,6 +43,35 @@ describe('getCurrentTab', () => {
 		await expect(getCurrentTab()).resolves.toEqual({
 			title: 'https://example.com',
 			url: 'https://example.com',
+			rawUrl: 'https://example.com',
+			removedParams: [],
+		});
+	});
+
+	it('removes tracking parameters from the url', async () => {
+		vi.spyOn(tabs, 'query').mockResolvedValue([
+			tab({ title: 'Page', url: 'https://example.com/?id=1&utm_source=x' }),
+		]);
+
+		await expect(getCurrentTab()).resolves.toEqual({
+			title: 'Page',
+			url: 'https://example.com/?id=1',
+			rawUrl: 'https://example.com/?id=1&utm_source=x',
+			removedParams: ['utm_source'],
+		});
+	});
+
+	it('keeps tracking parameters when the setting is off', async () => {
+		await storage.setItem('local:searchmark_stripTrackingParams', false);
+		vi.spyOn(tabs, 'query').mockResolvedValue([
+			tab({ title: 'Page', url: 'https://example.com/?utm_source=x' }),
+		]);
+
+		await expect(getCurrentTab()).resolves.toEqual({
+			title: 'Page',
+			url: 'https://example.com/?utm_source=x',
+			rawUrl: 'https://example.com/?utm_source=x',
+			removedParams: [],
 		});
 	});
 

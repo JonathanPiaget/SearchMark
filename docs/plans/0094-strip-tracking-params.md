@@ -6,7 +6,7 @@ Glossary term: **Tracking parameter** in [GLOSSARY.md](../../GLOSSARY.md).
 ## Progress
 
 - [x] Step 1: `stripTrackingParams` util + unit tests, unwired
-- [ ] Step 2: setting (on by default) + wiring in `getCurrentTab` and the badge listener
+- [x] Step 2: setting (on by default) + wiring in `getCurrentTab` and the badge listener
 - [ ] Step 3: Save view note "N tracking parameters removed · Restore" + e2e
 
 Tick a box only when the step's checks are green and it has been handed back.

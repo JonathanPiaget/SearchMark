@@ -264,6 +264,27 @@ describe('quickSave', () => {
 		expect(result).toEqual({ folderTitle: 'Read Later' });
 	});
 
+	it('saves the tab url without its tracking parameters', async () => {
+		await browser.storage.local.set({ [KEY]: 'F1' });
+		vi.spyOn(tabs, 'query').mockResolvedValue([
+			tab({ title: 'Page', url: 'https://example.com/?id=1&fbclid=x' }),
+		]);
+		vi.spyOn(bookmarks, 'get').mockResolvedValue([
+			node({ id: 'F1', title: 'Read Later' }),
+		]);
+		const create = vi
+			.spyOn(bookmarks, 'create')
+			.mockResolvedValue(node({ id: 'B1' }));
+
+		await quickSave();
+
+		expect(create).toHaveBeenCalledWith({
+			title: 'Page',
+			url: 'https://example.com/?id=1',
+			parentId: 'F1',
+		});
+	});
+
 	it('creates the See Later folder when none is stored, then saves into it', async () => {
 		vi.spyOn(tabs, 'query').mockResolvedValue([
 			tab({ title: 'Page', url: 'https://example.com' }),

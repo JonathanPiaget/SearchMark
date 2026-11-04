@@ -35,6 +35,8 @@ languageDescription: Choose the language of SearchMark
 languageAuto: Auto (browser language)
 notifications: Notifications
 notificationsDescription: Show a system notification after saving a bookmark
+stripTrackingParams: Remove tracking parameters from saved URLs
+stripTrackingParamsDescription: Drop parameters such as utm_source, fbclid or gclid that only track where you came from
 alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark

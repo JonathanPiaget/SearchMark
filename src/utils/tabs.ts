@@ -1,6 +1,10 @@
+import { cleanTabUrl } from '@/utils/trackingParams';
+
 export const getCurrentTab = async (): Promise<{
 	url: string;
 	title: string;
+	rawUrl: string;
+	removedParams: string[];
 }> => {
 	const [tab] = await browser.tabs.query({
 		active: true,
@@ -9,5 +13,11 @@ export const getCurrentTab = async (): Promise<{
 	if (!tab?.url) {
 		throw new Error('No current tab');
 	}
-	return { url: tab.url, title: tab.title || tab.url };
+	const { url, removed } = await cleanTabUrl(tab.url);
+	return {
+		url,
+		title: tab.title || url,
+		rawUrl: tab.url,
+		removedParams: removed,
+	};
 };

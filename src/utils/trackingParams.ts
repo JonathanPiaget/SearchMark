@@ -37,3 +37,15 @@ export const stripTrackingParams = (url: string): StrippedUrl => {
 	for (const name of new Set(removed)) parsed.searchParams.delete(name);
 	return { url: parsed.href, removed };
 };
+
+export const STRIP_TRACKING_PARAMS_KEY = 'searchmark_stripTrackingParams';
+
+const stripTrackingParamsItem = storage.defineItem<boolean>(
+	`local:${STRIP_TRACKING_PARAMS_KEY}`,
+	{ fallback: true },
+);
+
+export const cleanTabUrl = async (url: string): Promise<StrippedUrl> =>
+	(await stripTrackingParamsItem.getValue())
+		? stripTrackingParams(url)
+		: { url, removed: [] };

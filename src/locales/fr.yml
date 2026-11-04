@@ -37,6 +37,8 @@ languageDescription: Choisissez la langue de SearchMark
 languageAuto: Auto (langue du navigateur)
 notifications: Notifications
 notificationsDescription: Afficher une notification système après l'enregistrement d'un favori
+stripTrackingParams: Retirer les paramètres de suivi des URL enregistrées
+stripTrackingParamsDescription: Supprimer les paramètres comme utm_source, fbclid ou gclid, qui servent seulement à suivre votre provenance
 alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Favori supprimé
 delete: Supprimer le favori
