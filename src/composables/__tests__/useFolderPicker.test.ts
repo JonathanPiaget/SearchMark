@@ -20,7 +20,10 @@ const FOLDERS = [
 	folder('wine', 'Wine'),
 	folder('work-a', 'Work A'),
 	folder('work-b', 'Work B'),
+	{ ...folder('recipes', 'Recipes'), parentId: 'toolbar' },
 ];
+
+type Picker = ReturnType<typeof useFolderPicker>;
 
 const key = (key: string, shiftKey = false) => ({
 	key,
@@ -49,7 +52,7 @@ const setup = async (
 	return { picker, modelValue, onChange, onSubmit };
 };
 
-const type = (picker: ReturnType<typeof useFolderPicker>, text: string) => {
+const type = (picker: Picker, text: string) => {
 	picker.inputText.value = text;
 	picker.onInput();
 };
@@ -382,5 +385,164 @@ describe('useFolderPicker', () => {
 		await nextTick();
 		expect(picker.rows.value.map((r) => r.folder.id)).toContain('wine');
 		expect(await storage.getItem('local:searchmark_fuzzy_search')).toBe(true);
+	});
+
+	describe('pending folder', () => {
+		const setupCreate = async (
+			overrides: Partial<Parameters<typeof useFolderPicker>[0]> = {},
+		) => {
+			const onPending = vi.fn();
+			return { ...(await setup({ onPending, ...overrides })), onPending };
+		};
+
+		it('Shift+Enter makes the typed text a pending folder in the bookmark toolbar', async () => {
+			const { picker, onPending, onChange } = await setupCreate();
+			type(picker, ' tarts ');
+
+			const event = key('Enter', true);
+			expect(picker.onKeydown(event)).toBe(true);
+
+			const pending = { title: 'tarts', parentId: 'toolbar' };
+			expect(event.preventDefault).toHaveBeenCalled();
+			expect(onPending).toHaveBeenCalledWith(pending);
+			expect(picker.pending.value).toEqual(pending);
+			expect(picker.selected.value).toBeNull();
+			expect(onChange).toHaveBeenCalledWith(null);
+			expect(picker.inputText.value).toBe('tarts');
+			expect(picker.isOpen.value).toBe(false);
+		});
+
+		it.each([
+			['with a toolbar row', 'Toolbar'],
+			['without a toolbar row', undefined],
+		])(
+			'Enter with no folder match makes a pending folder %s, a second Enter submits',
+			async (_, toolbarRowTitle) => {
+				const { picker, onPending, onSubmit } = await setupCreate({
+					toolbarRowTitle,
+				});
+				type(picker, 'tarts');
+
+				picker.onKeydown(key('Enter'));
+				await nextTick();
+
+				expect(onPending).toHaveBeenCalledWith({
+					title: 'tarts',
+					parentId: 'toolbar',
+				});
+				expect(onSubmit).not.toHaveBeenCalled();
+				expect(picker.pending.value?.title).toBe('tarts');
+				expect(picker.inputText.value).toBe('tarts');
+
+				picker.onKeydown(key('Enter'));
+				expect(onSubmit).toHaveBeenCalledOnce();
+				expect(picker.isOpen.value).toBe(false);
+			},
+		);
+
+		it('replaces the selected folder and survives the cleared modelValue', async () => {
+			const { picker, modelValue } = await setupCreate();
+			picker.selectFolder(FOLDERS[2] as BookmarkFolder);
+			await nextTick();
+
+			type(picker, 'tarts');
+			picker.onKeydown(key('Enter', true));
+			await nextTick();
+
+			expect(modelValue.value).toBe('');
+			expect(picker.pending.value?.title).toBe('tarts');
+			expect(picker.inputText.value).toBe('tarts');
+		});
+
+		it.each([
+			[
+				'choosing a folder',
+				(p: Picker) => {
+					type(p, 'wine');
+					p.onKeydown(key('Enter'));
+				},
+			],
+			['clearing', (p: Picker) => p.clear()],
+		])('%s drops the pending folder', async (_, act) => {
+			const { picker, onPending } = await setupCreate();
+			type(picker, 'tarts');
+			picker.onKeydown(key('Enter', true));
+
+			act(picker);
+
+			expect(picker.pending.value).toBeNull();
+			expect(onPending).toHaveBeenLastCalledWith(null);
+		});
+
+		it('a title already in the bookmark toolbar, ignoring case, cannot be created', async () => {
+			const { picker, onPending, onChange } = await setupCreate();
+			type(picker, 'RECIPES ');
+			expect(picker.canCreate.value).toBe(false);
+
+			picker.onKeydown(key('Enter', true));
+
+			expect(onPending).not.toHaveBeenCalled();
+			expect(onChange).toHaveBeenCalledWith(
+				expect.objectContaining({ id: 'recipes' }),
+			);
+		});
+
+		it('a title used outside the bookmark toolbar can be created', async () => {
+			const { picker } = await setupCreate();
+			type(picker, 'wine');
+
+			expect(picker.canCreate.value).toBe(true);
+		});
+
+		it.each([
+			['blur', (p: Picker) => p.onBlur()],
+			['Escape', (p: Picker) => p.onKeydown(key('Escape'))],
+		])(
+			'%s restores the pending title after the query was changed',
+			async (_, leave) => {
+				const { picker } = await setupCreate();
+				type(picker, 'tarts');
+				picker.onKeydown(key('Enter', true));
+
+				picker.onFocus();
+				type(picker, 'wo');
+				leave(picker);
+
+				expect(picker.inputText.value).toBe('tarts');
+				expect(picker.pending.value?.title).toBe('tarts');
+			},
+		);
+
+		it('is off without onPending: Shift+Enter picks the highlighted folder, Enter with no match submits', async () => {
+			const { picker, onChange, onSubmit } = await setup({
+				toolbarRowTitle: 'Toolbar',
+			});
+			type(picker, 'wine');
+			expect(picker.canCreate.value).toBe(false);
+			picker.onKeydown(key('Enter', true));
+			expect(onChange).toHaveBeenCalledWith(
+				expect.objectContaining({ id: 'wine' }),
+			);
+
+			type(picker, 'tarts');
+			picker.onKeydown(key('Enter'));
+			expect(onSubmit).toHaveBeenCalledOnce();
+			expect(picker.pending.value).toBeNull();
+		});
+
+		it('Enter with no folder match picks the bookmark toolbar row when it is highlighted', async () => {
+			const { picker, onPending, onChange } = await setupCreate({
+				toolbarRowTitle: 'Toolbar',
+			});
+			type(picker, 'tarts');
+			picker.onKeydown(key('ArrowUp'));
+
+			picker.onKeydown(key('Enter'));
+
+			expect(onPending).not.toHaveBeenCalled();
+			expect(onChange).toHaveBeenCalledWith(
+				expect.objectContaining({ id: 'toolbar' }),
+			);
+		});
 	});
 });

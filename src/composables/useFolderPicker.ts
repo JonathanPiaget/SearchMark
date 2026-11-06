@@ -12,6 +12,11 @@ export interface PickerRow {
 	indexes: readonly number[] | null;
 }
 
+export interface PendingFolder {
+	title: string;
+	parentId: string;
+}
+
 export type PickerKeyEvent = Pick<
 	KeyboardEvent,
 	'key' | 'shiftKey' | 'preventDefault'
@@ -25,6 +30,7 @@ export interface FolderPickerOptions {
 	toolbarRowTitle?: string;
 	onChange: (folder: BookmarkFolder | null) => void;
 	onSubmit: () => void;
+	onPending?: (pending: PendingFolder | null) => void;
 }
 
 export function useFolderPicker(options: FolderPickerOptions) {
@@ -35,6 +41,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		'searchmark_fuzzy_search',
 	);
 	const selected = ref<BookmarkFolder | null>(null);
+	const pending = ref<PendingFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
 
@@ -91,10 +98,14 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	const settle = () => {
-		inputText.value = selected.value?.title ?? '';
+		inputText.value = selected.value?.title ?? pending.value?.title ?? '';
 	};
 
 	const apply = (folder: BookmarkFolder | null) => {
+		if (pending.value) {
+			pending.value = null;
+			options.onPending?.(null);
+		}
 		selected.value = folder;
 		settle();
 	};
@@ -107,6 +118,30 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const select = (row: PickerRow) => commit(row.folder);
 	const selectFolder = (folder: BookmarkFolder) =>
 		commit(findFolder(folder.id) ?? folder);
+
+	const canCreate = computed(() => {
+		const title = inputText.value.trim().toLowerCase();
+		return (
+			Boolean(options.onPending && isOpen.value && title) &&
+			!folders.value.some(
+				(f) =>
+					f.parentId === options.toolbarId.value &&
+					f.title.toLowerCase() === title,
+			)
+		);
+	});
+
+	const createPending = () => {
+		pending.value = {
+			title: inputText.value.trim(),
+			parentId: options.toolbarId.value,
+		};
+		selected.value = null;
+		settle();
+		close();
+		options.onChange(null);
+		options.onPending?.(pending.value);
+	};
 
 	const clear = () => {
 		apply(null);
@@ -135,7 +170,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 
 	const onBlur = () => {
 		close();
-		if (selected.value) inputText.value = selected.value.title;
+		if (selected.value || pending.value) settle();
 	};
 
 	const currentRow = () => rows.value[highlighted.value.row];
@@ -183,10 +218,22 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	const onKeydown = (event: PickerKeyEvent): boolean => {
+		const noMatch = matchCount.value.total === 0 && !currentRow();
+		if (
+			event.key === 'Enter' &&
+			canCreate.value &&
+			(event.shiftKey || noMatch)
+		) {
+			event.preventDefault();
+			createPending();
+			return true;
+		}
+
 		if (
 			!isOpen.value &&
 			inputText.value.trim() &&
-			(event.key === 'ArrowDown' || (event.key === 'Enter' && !selected.value))
+			(event.key === 'ArrowDown' ||
+				(event.key === 'Enter' && !selected.value && !pending.value))
 		) {
 			open();
 			return true;
@@ -215,7 +262,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		}
 
 		if (event.key === 'Enter') {
-			if (selected.value) options.onSubmit();
+			if (selected.value || pending.value) options.onSubmit();
 			return true;
 		}
 		if (event.key === 'Escape') {
@@ -227,8 +274,9 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	watch(modelValue, (id) => {
-		if (!id) apply(null);
-		else if (selected.value?.id !== id) {
+		if (!id) {
+			if (selected.value) apply(null);
+		} else if (selected.value?.id !== id) {
 			const folder = findFolder(id);
 			if (folder) apply(folder);
 		}
@@ -243,6 +291,8 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		highlighted,
 		expandedId,
 		selected,
+		pending,
+		canCreate,
 		init,
 		onInput,
 		onFocus,
