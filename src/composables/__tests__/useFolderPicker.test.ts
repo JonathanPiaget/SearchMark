@@ -495,17 +495,19 @@ describe('useFolderPicker', () => {
 			expect(onPending).toHaveBeenLastCalledWith(null);
 		});
 
-		it('a title already in the bookmark toolbar, ignoring case, cannot be created', async () => {
-			const { picker, onPending, onChange } = await setupCreate();
+		it('a title already in the bookmark toolbar, ignoring case, cannot be created: Shift+Enter does nothing', async () => {
+			const { picker, onPending, onChange, onSubmit } = await setupCreate();
 			type(picker, 'RECIPES ');
 			expect(picker.canCreate.value).toBe(false);
 
-			picker.onKeydown(key('Enter', true));
+			const event = key('Enter', true);
+			expect(picker.onKeydown(event)).toBe(true);
 
+			expect(event.preventDefault).toHaveBeenCalled();
 			expect(onPending).not.toHaveBeenCalled();
-			expect(onChange).toHaveBeenCalledWith(
-				expect.objectContaining({ id: 'recipes' }),
-			);
+			expect(onChange).not.toHaveBeenCalled();
+			expect(onSubmit).not.toHaveBeenCalled();
+			expect(picker.isOpen.value).toBe(true);
 		});
 
 		it('a title used outside the bookmark toolbar can be created', async () => {
@@ -708,6 +710,8 @@ describe('useFolderPicker', () => {
 
 			type(picker, 'KITCHEN');
 			expect(picker.canCreate.value).toBe(false);
+			picker.onKeydown(key('Enter', true));
+			expect(picker.scope.value?.id).toBe('home');
 			type(picker, 'garden');
 			expect(picker.canCreate.value).toBe(true);
 		});

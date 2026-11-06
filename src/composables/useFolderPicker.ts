@@ -133,16 +133,19 @@ export function useFolderPicker(options: FolderPickerOptions) {
 
 	const pendingLocationId = () => scope.value?.id ?? options.toolbarId.value;
 
-	const canCreate = computed(() => {
+	const titleTaken = computed(() => {
 		const title = inputText.value.trim().toLowerCase();
-		return (
-			Boolean(options.onPending && isOpen.value && title) &&
-			!folders.value.some(
-				(f) =>
-					f.parentId === pendingLocationId() && f.title.toLowerCase() === title,
-			)
+		return folders.value.some(
+			(f) =>
+				f.parentId === pendingLocationId() && f.title.toLowerCase() === title,
 		);
 	});
+
+	const canCreate = computed(
+		() =>
+			Boolean(options.onPending && isOpen.value && inputText.value.trim()) &&
+			!titleTaken.value,
+	);
 
 	const createPending = () => {
 		pending.value = {
@@ -269,6 +272,16 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		) {
 			event.preventDefault();
 			createPending();
+			return true;
+		}
+		if (
+			event.key === 'Enter' &&
+			event.shiftKey &&
+			options.onPending &&
+			isOpen.value &&
+			titleTaken.value
+		) {
+			event.preventDefault();
 			return true;
 		}
 

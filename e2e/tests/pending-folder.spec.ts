@@ -95,6 +95,12 @@ test('Shift+Enter is not offered for a title already in the bookmark toolbar', a
 	).toBeVisible();
 
 	await expect(popup.locator('.create-folder-button')).toBeHidden();
+
+	await popup.press('#folder-search', 'Shift+Enter');
+
+	await expect(popup.locator('.dropdown-container')).toBeVisible();
+	await expect(popup.locator('.pending-badge')).toBeHidden();
+	await expect(popup.locator('#folder-search')).toHaveValue('recipes');
 });
 
 test('a retry after the bookmark fails reuses the folder already created', async ({
