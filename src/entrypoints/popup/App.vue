@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
+import type { PendingFolder } from '@/composables/useFolderPicker';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { useTheme } from '@/composables/useTheme';
 import { i18n } from '@/utils/i18n';
@@ -38,6 +39,7 @@ const toggleTracking = () => {
 };
 const selectedFolderId = ref('');
 const selectedFolderName = ref('');
+const pendingFolder = ref<PendingFolder | null>(null);
 
 const hasOpenedSearch = ref(false);
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
@@ -113,20 +115,29 @@ const saveBookmark = async () => {
 	isLoading.value = true;
 	try {
 		await loadFolders();
-		const folderId = selectedFolderId.value || toolbarId.value;
+		const pending = pendingFolder.value;
+		if (pending) {
+			const folder = await browser.bookmarks.create(pending);
+			// a retry after the bookmark fails must reuse this folder, not create a second one
+			pendingFolder.value = null;
+			selectedFolderId.value = folder.id;
+			selectedFolderName.value = folder.title;
+		}
 
 		await browser.bookmarks.create({
 			title: bookmarkTitle.value,
 			url: bookmarkUrl.value,
-			parentId: folderId,
+			parentId: selectedFolderId.value || toolbarId.value,
 		});
 
 		notify(
-			selectedFolderName.value
-				? i18n.t('bookmarkSavedInFolder', {
-						folderName: selectedFolderName.value,
-					})
-				: i18n.t('bookmarkSaved'),
+			pending
+				? i18n.t('bookmarkSavedInNewFolder', { folderName: pending.title })
+				: selectedFolderName.value
+					? i18n.t('bookmarkSavedInFolder', {
+							folderName: selectedFolderName.value,
+						})
+					: i18n.t('bookmarkSaved'),
 		);
 
 		window.close();
@@ -186,7 +197,9 @@ const saveBookmark = async () => {
         ref="folderSelectorRef"
         v-model="selectedFolderId"
         :show-toolbar-option="true"
+        :allow-create="true"
         @change="(folder) => selectedFolderName = folder?.title ?? ''"
+        @pending="(pending) => pendingFolder = pending"
         @submit="saveBookmark"
       />
 

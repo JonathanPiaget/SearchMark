@@ -301,6 +301,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		highlight,
 		select,
 		selectFolder,
+		createPending,
 		clear,
 	};
 }
