@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0]
+
+### Added
+
+- Create a folder straight from the folder picker when saving: type a name and press Enter when nothing matches, or Shift+Enter to force a new folder. The folder is created on save and the bookmark goes into it
+- Type "/" in the folder picker to enter the highlighted folder: the search is limited to that folder and a new folder is created inside it. Header hints show the available keys
+
 ## [1.17.0]
 
 ### Added
