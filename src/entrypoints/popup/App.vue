@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
-import type { PendingFolder } from '@/composables/useFolderPicker';
 import { useFolderTree } from '@/composables/useFolderTree';
+import { useSaveBookmark } from '@/composables/useSaveBookmark';
 import { useTheme } from '@/composables/useTheme';
 import { i18n } from '@/utils/i18n';
-import { notify } from '@/utils/notify';
 import { getCurrentTab } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
@@ -37,9 +36,8 @@ const shownTrackingParams = computed(() =>
 const toggleTracking = () => {
 	bookmarkUrl.value = trackingRemoved.value ? rawUrl.value : currentUrl.value;
 };
-const selectedFolderId = ref('');
-const selectedFolderName = ref('');
-const pendingFolder = ref<PendingFolder | null>(null);
+const { selectedFolderId, selectedFolderName, pendingFolder, save } =
+	useSaveBookmark();
 
 const hasOpenedSearch = ref(false);
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
@@ -67,7 +65,7 @@ const handleViewShortcut = (event: KeyboardEvent) => {
 };
 
 const { initTheme } = useTheme();
-const { folderMap, toolbarId, loadFolders, refreshFolders } = useFolderTree();
+const { folderMap, loadFolders } = useFolderTree();
 const {
 	bookmarkLocations,
 	isLoading: isSearching,
@@ -114,33 +112,7 @@ const handleBookmarkDeleted = async () => {
 const saveBookmark = async () => {
 	isLoading.value = true;
 	try {
-		await loadFolders();
-		const pending = pendingFolder.value;
-		if (pending) {
-			const folder = await browser.bookmarks.create(pending);
-			// a retry after the bookmark fails must reuse this folder, not create a second one
-			pendingFolder.value = null;
-			await refreshFolders();
-			selectedFolderId.value = folder.id;
-			selectedFolderName.value = folder.title;
-		}
-
-		await browser.bookmarks.create({
-			title: bookmarkTitle.value,
-			url: bookmarkUrl.value,
-			parentId: selectedFolderId.value || toolbarId.value,
-		});
-
-		notify(
-			pending
-				? i18n.t('bookmarkSavedInNewFolder', { folderName: pending.title })
-				: selectedFolderName.value
-					? i18n.t('bookmarkSavedInFolder', {
-							folderName: selectedFolderName.value,
-						})
-					: i18n.t('bookmarkSaved'),
-		);
-
+		await save({ title: bookmarkTitle.value, url: bookmarkUrl.value });
 		window.close();
 	} catch {
 		message.value = i18n.t('bookmarkError');
