@@ -63,7 +63,7 @@ Typing in the Search view's single input to find folders and bookmarks by title,
 _Avoid_: bookmark filter, bookmark search, global search, filter
 
 **Scope**:
-The folder a search is narrowed to, shown as a chip in the input. In the Search view, selecting a folder result sets it and removing the chip clears it. In folder search, pressing "/" on the highlighted folder sets it and Backspace on an empty input clears it; a pending folder is created inside the scope.
+The folder a search is narrowed to, shown as a chip in the input. In the Search view, selecting a folder result sets it and removing the chip clears it. In folder search, pressing "/" on the highlighted folder sets it, Backspace on an empty input moves it to the parent folder and clears it at the bookmark toolbar; a pending folder is created inside the scope.
 _Avoid_: folder filter, selected folder, current folder, context, parent
 
 **Fuzzy matching** / **Exact matching**:

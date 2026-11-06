@@ -62,9 +62,13 @@ export function useFolderPicker(options: FolderPickerOptions) {
 			: null,
 	);
 
+	const browsingScope = computed(
+		() => scope.value !== null && !inputText.value.trim(),
+	);
+
 	const rows = computed<PickerRow[]>(() => {
-		if (scope.value && !inputText.value.trim()) {
-			return (scope.value.children ?? []).map((folder) => ({
+		if (browsingScope.value) {
+			return (scope.value?.children ?? []).map((folder) => ({
 				kind: 'folder',
 				folder,
 				indexes: null,
@@ -217,7 +221,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 			return;
 		}
 		expandedId.value = null;
-		highlight(Math.max(row - 1, 0));
+		highlight(Math.max(row - 1, browsingScope.value ? -1 : 0));
 	};
 
 	const toggleExpand = () => {
@@ -233,6 +237,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		nextScope: BookmarkFolder | null = folder,
 	) => {
 		scope.value = nextScope;
+		isOpen.value = nextScope !== null;
 		apply(folder);
 		options.onChange(folder);
 		inputText.value = '';

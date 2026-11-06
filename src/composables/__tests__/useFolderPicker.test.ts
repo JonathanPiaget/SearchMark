@@ -640,6 +640,19 @@ describe('useFolderPicker', () => {
 			expect(picker.isOpen.value).toBe(true);
 		});
 
+		it('ArrowUp from the first subfolder of the scope goes back to nothing highlighted', async () => {
+			const { picker, onSubmit } = await setupScope();
+			enter(picker, 'home');
+			picker.onKeydown(key('ArrowDown'));
+			expect(picker.highlighted.value.row).toBe(0);
+
+			picker.onKeydown(key('ArrowUp'));
+
+			expect(picker.highlighted.value.row).toBe(-1);
+			picker.onKeydown(key('Enter'));
+			expect(onSubmit).toHaveBeenCalledOnce();
+		});
+
 		it('searches every descendant of the scope, without the toolbar row', async () => {
 			const { picker } = await setupScope();
 			enter(picker, 'home');
@@ -742,7 +755,9 @@ describe('useFolderPicker', () => {
 				expect.objectContaining({ id: 'toolbar', title: 'Toolbar' }),
 			);
 			expect(picker.inputText.value).toBe('');
-			expect(picker.isOpen.value).toBe(true);
+			expect(picker.isOpen.value).toBe(false);
+			expect(picker.onKeydown(key('ArrowDown'))).toBe(false);
+			expect(picker.highlighted.value.row).toBe(-1);
 		});
 
 		it('Backspace is left to the input when it has text or there is no scope', async () => {
