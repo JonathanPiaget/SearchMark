@@ -2,6 +2,7 @@ saveBookmark: Enregistrer le favori
 saving: Enregistrement...
 bookmarkSaved: Favori enregistré
 bookmarkSavedInFolder: Favori enregistré dans « {folderName} »
+bookmarkSavedInNewFolder: Favori enregistré dans le nouveau dossier « {folderName} »
 bookmarkError: Erreur lors de l'enregistrement du favori
 url: URL
 title: Titre
@@ -18,7 +19,17 @@ matches:
   n: résultats
 noFoldersFound: Aucun dossier trouvé
 tryDifferentSearch: Essayez un autre terme de recherche
-expandHint: déplier les dossiers
+createFolderNamed: Nouveau dossier « {title} »
+createFolderNamedIn: Nouveau « {title} » dans {folder}
+noFolderNamed: Aucun dossier « {title} »
+pendingFolderCreatedIn: Il sera créé dans {folder}
+createThisFolder: Créer ce dossier
+pendingFolderBadge: Nouveau
+pendingFolderIn: dans
+expandHint: déplier
+enterFolderHint: entrer dans le dossier
+leaveScopeHint: sortir de {folder}
+scopeSearchHint: recherche limitée à ce dossier
 keyShift: Maj
 keySpace: Espace
 save: Enregistrer

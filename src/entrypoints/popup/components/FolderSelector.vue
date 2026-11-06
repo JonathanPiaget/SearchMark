@@ -3,13 +3,19 @@
     <div class="form-group">
       <label for="folder-search">{{ i18n.t('folder') }}</label>
       <div class="search-container input-with-clear">
+        <span v-if="scope" ref="scopeChip" class="scope-chip">
+          <IconFolder class="key-icon" />
+          <span class="scope-title">{{ scope.title }}</span>
+          <span class="scope-sep">/</span>
+        </span>
         <input
           ref="folderInput"
           id="folder-search"
           v-model="inputText"
           type="text"
           class="form-input"
-          :class="{ 'has-clear': selected }"
+          :class="{ 'has-clear': selected || pending, 'has-pending': showPendingBadge }"
+          :style="scope ? { paddingLeft: `${scopeChipWidth + 14}px` } : undefined"
           :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
           :disabled="isInitializing"
           @input="onInput"
@@ -17,8 +23,9 @@
           @focus="onFocus"
           @blur="onBlur"
         >
+        <span v-if="showPendingBadge" class="pending-badge">{{ i18n.t('pendingFolderBadge') }}</span>
         <button
-          v-if="selected && inputText"
+          v-if="(selected || pending) && inputText"
           type="button"
           class="clear-button"
           @mousedown.prevent="picker.clear"
@@ -38,16 +45,27 @@
           <IconApproximately />
         </button>
         <div
-          v-if="isOpen && inputText.trim()"
+          v-if="isOpen && (inputText.trim() || scope)"
           ref="dropdownRef"
           class="dropdown-container"
           :style="dropdownMaxHeight ? { maxHeight: `${dropdownMaxHeight}px` } : undefined"
         >
           <div class="dropdown-header" @mousedown.prevent>
-            <div class="shortcut-hint">
+            <div v-if="scope" class="shortcut-hint">
+              <kbd class="key">⌫</kbd>
+              <span class="shortcut-text">{{ i18n.t('leaveScopeHint', { folder: scope.title }) }}</span>
+              <span class="key-sep">·</span>
+              <span class="shortcut-text">{{ i18n.t('scopeSearchHint') }}</span>
+            </div>
+            <div v-else class="shortcut-hint">
               <kbd class="key"><IconArrowBigUp class="key-icon" />{{ i18n.t('keyShift') }}</kbd>
               <kbd class="key"><IconSpace class="key-icon" />{{ i18n.t('keySpace') }}</kbd>
               <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
+              <template v-if="allowCreate">
+                <span class="key-sep">·</span>
+                <kbd class="key">/</kbd>
+                <span class="shortcut-text">{{ i18n.t('enterFolderHint') }}</span>
+              </template>
             </div>
           </div>
           <template v-for="(row, index) in rows" :key="row.folder.id">
@@ -120,10 +138,21 @@
               </div>
             </div>
           </template>
-          <div v-if="matchCount.total === 0" class="no-results">
-            <div class="no-results-icon"><IconSearchX /></div>
-            <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
-            <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
+          <div v-if="matchCount.total === 0" class="no-results" @mousedown.prevent>
+            <template v-if="canCreate">
+              <div class="no-results-text">{{ i18n.t('noFolderNamed', { title: inputText.trim() }) }}</div>
+              <div class="no-results-hint">{{ i18n.t('pendingFolderCreatedIn', { folder: folderLabel(picker.pendingParentId()) }) }}</div>
+              <button type="button" class="create-folder-cta" @click="picker.createPending">
+                <IconFolderPlus class="key-icon" />{{ i18n.t('createThisFolder') }}
+                <kbd class="key">↵</kbd>
+              </button>
+            </template>
+            <div v-else-if="scope && !inputText.trim()" class="no-results-text">{{ i18n.t('emptyFolderMessage') }}</div>
+            <template v-else>
+              <div class="no-results-icon"><IconSearchX /></div>
+              <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
+              <div class="no-results-hint">{{ i18n.t('tryDifferentSearch') }}</div>
+            </template>
           </div>
           <div
             v-else
@@ -137,7 +166,19 @@
                 {{ i18n.t('matches', matchCount.total) }}
               </span>
             </div>
-            <div class="footer-keys">
+            <button
+              v-if="canCreate"
+              type="button"
+              class="create-folder-button"
+              @click="picker.createPending"
+            >
+              <IconFolderPlus class="key-icon" />
+              <span class="create-folder-label">{{ scope
+                ? i18n.t('createFolderNamedIn', { title: inputText.trim(), folder: scope.title })
+                : i18n.t('createFolderNamed', { title: inputText.trim() }) }}</span>
+              <kbd class="key">⇧</kbd><kbd class="key">↵</kbd>
+            </button>
+            <div v-else class="footer-keys">
               <kbd class="key">↑</kbd>
               <kbd class="key">↓</kbd>
               <span class="key-sep">·</span>
@@ -146,14 +187,20 @@
           </div>
         </div>
       </div>
+      <p v-if="pending" class="pending-path">
+        {{ i18n.t('pendingFolderIn') }} <b>{{ folderLabel(pending.parentId) }}</b>
+      </p>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, ref, toRef } from 'vue';
+import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue';
 import { useDropdownFit } from '@/composables/useDropdownFit';
-import { useFolderPicker } from '@/composables/useFolderPicker';
+import {
+	type PendingFolder,
+	useFolderPicker,
+} from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
@@ -161,6 +208,7 @@ import { i18n } from '@/utils/i18n';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
 import IconApproximately from '~icons/lucide/equal-approximately';
 import IconFolder from '~icons/lucide/folder';
+import IconFolderPlus from '~icons/lucide/folder-plus';
 import IconFolders from '~icons/lucide/folders';
 import IconLibrary from '~icons/lucide/library';
 import IconSearchX from '~icons/lucide/search-x';
@@ -172,18 +220,21 @@ interface Props {
 	autofocus?: boolean;
 	autoSelectDefault?: boolean;
 	showToolbarOption?: boolean;
+	allowCreate?: boolean;
 }
 
 interface Emits {
 	(e: 'update:modelValue', value: string): void;
 	(e: 'change', folder: BookmarkFolder | null): void;
 	(e: 'submit'): void;
+	(e: 'pending', pending: PendingFolder | null): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	autofocus: true,
 	autoSelectDefault: true,
 	showToolbarOption: false,
+	allowCreate: false,
 });
 const emit = defineEmits<Emits>();
 
@@ -192,7 +243,8 @@ const isInitializing = ref(true);
 const dropdownRef = ref<HTMLElement | null>(null);
 const dropdownItemRefs = ref<HTMLElement[]>([]);
 
-const { allFolders, toolbarId, loadFolders, parentPath } = useFolderTree();
+const { allFolders, folderMap, toolbarId, loadFolders, parentPath } =
+	useFolderTree();
 const picker = useFolderPicker({
 	folders: allFolders,
 	modelValue: toRef(props, 'modelValue'),
@@ -206,6 +258,9 @@ const picker = useFolderPicker({
 		emit('change', folder);
 	},
 	onSubmit: () => emit('submit'),
+	onPending: props.allowCreate
+		? (pending) => emit('pending', pending)
+		: undefined,
 });
 const {
 	inputText,
@@ -216,7 +271,25 @@ const {
 	highlighted,
 	expandedId,
 	selected,
+	pending,
+	canCreate,
+	scope,
 } = picker;
+
+const showPendingBadge = computed(
+	() => pending.value !== null && inputText.value === pending.value.title,
+);
+const folderLabel = (id: string) =>
+	id === toolbarId.value
+		? i18n.t('bookmarkToolbar')
+		: (folderMap.value.get(id)?.path ?? '');
+
+const scopeChip = ref<HTMLElement>();
+const scopeChipWidth = ref(0);
+watch(scope, async () => {
+	await nextTick();
+	scopeChipWidth.value = scopeChip.value?.offsetWidth ?? 0;
+});
 
 const { maxHeight: dropdownMaxHeight } = useDropdownFit(
 	isOpen,
@@ -331,6 +404,123 @@ onMounted(async () => {
 
 .search-container .clear-button {
   right: 36px;
+}
+
+.search-container .form-input.has-pending {
+  padding-right: 128px;
+}
+
+.pending-badge {
+  position: absolute;
+  right: 64px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.scope-chip {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 45%;
+  height: 26px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.scope-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scope-sep {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pending-path {
+  margin: 6px 0 0 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pending-path b {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.create-folder-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 28px;
+  margin: -4px -6px -4px 0;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-secondary);
+  cursor: pointer;
+}
+
+.create-folder-button:hover {
+  background: var(--accent-soft);
+}
+
+.create-folder-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.create-folder-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-primary);
+  color: var(--accent-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-folder-cta:hover {
+  background: var(--accent-hover);
+}
+
+.create-folder-cta .key {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: transparent;
+  box-shadow: none;
+  color: inherit;
 }
 
 .search-container .fuzzy-button {

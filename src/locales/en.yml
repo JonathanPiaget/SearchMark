@@ -2,6 +2,7 @@ saveBookmark: Save bookmark
 saving: Saving...
 bookmarkSaved: Bookmark saved successfully
 bookmarkSavedInFolder: Bookmark saved to "{folderName}"
+bookmarkSavedInNewFolder: Bookmark saved to the new folder "{folderName}"
 bookmarkError: Error saving bookmark
 url: URL
 title: Title
@@ -16,7 +17,17 @@ matches:
   n: matches
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
-expandHint: to expand folders
+createFolderNamed: New folder "{title}"
+createFolderNamedIn: New "{title}" in {folder}
+noFolderNamed: No folder "{title}"
+pendingFolderCreatedIn: It will be created in {folder}
+createThisFolder: Create this folder
+pendingFolderBadge: New
+pendingFolderIn: in
+expandHint: expand
+enterFolderHint: enter folder
+leaveScopeHint: leave {folder}
+scopeSearchHint: search limited to this folder
 keyShift: Shift
 keySpace: Space
 save: Save

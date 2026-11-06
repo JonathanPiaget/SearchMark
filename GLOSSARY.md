@@ -44,6 +44,10 @@ _Avoid_: duplicate, already saved, location
 A query parameter from a closed, known list (`utm_*`, `fbclid`, `gclid`, ...) that identifies where a click came from, not which page is shown. SearchMark removes them from the current tab's URL before it is saved, listed as an existing bookmark or checked for the badge, unless the user turns this off in settings. The Save view says when it did so and lets the user restore the original URL.
 _Avoid_: tracker, utm, url cleaning, canonical URL
 
+**Pending folder**:
+A folder named in the Save view that does not exist yet. It is created, inside the scope or else in the bookmark toolbar, only when the bookmark is saved; closing the popup leaves nothing behind. A pending folder cannot share its title (ignoring case) with a folder already in the same place.
+_Avoid_: new folder, draft folder, folder to create
+
 ### Finding
 
 **Save view** / **Search view**:
@@ -59,8 +63,8 @@ Typing in the Search view's single input to find folders and bookmarks by title,
 _Avoid_: bookmark filter, bookmark search, global search, filter
 
 **Scope**:
-The folder a search is narrowed to, shown as a chip in the search input. Selecting a folder result sets it; removing the chip clears it.
-_Avoid_: folder filter, selected folder, current folder, context
+The folder a search is narrowed to, shown as a chip in the input. In the Search view, selecting a folder result sets it and removing the chip clears it. In folder search, pressing "/" on the highlighted folder sets it, Backspace on an empty input moves it to the parent folder and clears it at the bookmark toolbar; a pending folder is created inside the scope.
+_Avoid_: folder filter, selected folder, current folder, context, parent
 
 **Fuzzy matching** / **Exact matching**:
 The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. Folder search and search each remember their own choice.

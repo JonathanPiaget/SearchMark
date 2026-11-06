@@ -68,9 +68,21 @@ const loadFolders = () => {
 	return loading;
 };
 
+const refreshFolders = () => {
+	loading = null;
+	return loadFolders();
+};
+
 const parentPath = (folder: BookmarkFolder) =>
 	folderMap.value.get(folder.parentId ?? '')?.path ?? '';
 
 export function useFolderTree() {
-	return { allFolders, folderMap, toolbarId, loadFolders, parentPath };
+	return {
+		allFolders,
+		folderMap,
+		toolbarId,
+		loadFolders,
+		refreshFolders,
+		parentPath,
+	};
 }
