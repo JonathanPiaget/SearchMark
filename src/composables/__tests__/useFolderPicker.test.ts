@@ -3,6 +3,7 @@ import { nextTick, ref } from 'vue';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useFolderPicker } from '@/composables/useFolderPicker';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
+import { createFolder } from '@/test-utils/bookmarkFactory';
 import { stubLocalStorage } from '@/test-utils/localStorage';
 
 const folder = (
@@ -543,6 +544,251 @@ describe('useFolderPicker', () => {
 			expect(onChange).toHaveBeenCalledWith(
 				expect.objectContaining({ id: 'toolbar' }),
 			);
+		});
+	});
+
+	describe('scope', () => {
+		const pies = createFolder({
+			id: 'pies',
+			title: 'Pies',
+			parentId: 'kitchen',
+		});
+		const kitchen = createFolder({
+			id: 'kitchen',
+			title: 'Kitchen',
+			parentId: 'home',
+			children: [pies],
+		});
+		const home = createFolder({
+			id: 'home',
+			title: 'Home',
+			parentId: 'toolbar',
+			children: [kitchen],
+		});
+		const gardenPies = createFolder({
+			id: 'garden-pies',
+			title: 'Pies',
+			parentId: 'garden',
+		});
+		const garden = createFolder({
+			id: 'garden',
+			title: 'Garden',
+			parentId: 'toolbar',
+			children: [gardenPies],
+		});
+		const TREE = [
+			folder('toolbar', 'Bookmarks Bar', [home, garden]),
+			home,
+			kitchen,
+			pies,
+			garden,
+			gardenPies,
+		];
+
+		const setupScope = async (
+			overrides: Partial<Parameters<typeof useFolderPicker>[0]> = {},
+		) => {
+			const onPending = vi.fn();
+			const result = await setup({
+				folders: ref(TREE),
+				toolbarRowTitle: 'Toolbar',
+				onPending,
+				...overrides,
+			});
+			return { ...result, onPending };
+		};
+
+		const enter = (picker: Picker, query: string) => {
+			type(picker, query);
+			return picker.onKeydown(key('/'));
+		};
+
+		it('"/" enters the highlighted folder and selects it', async () => {
+			const { picker, onChange } = await setupScope();
+			type(picker, 'kitch');
+			const event = key('/');
+
+			expect(picker.onKeydown(event)).toBe(true);
+
+			expect(event.preventDefault).toHaveBeenCalled();
+			expect(picker.scope.value?.id).toBe('kitchen');
+			expect(picker.selected.value?.id).toBe('kitchen');
+			expect(onChange).toHaveBeenLastCalledWith(kitchen);
+			expect(picker.inputText.value).toBe('');
+			expect(picker.isOpen.value).toBe(true);
+		});
+
+		it('searches every descendant of the scope, without the toolbar row', async () => {
+			const { picker } = await setupScope();
+			enter(picker, 'home');
+
+			type(picker, 'pies');
+
+			expect(picker.rows.value.map((r) => r.folder.id)).toEqual(['pies']);
+			expect(picker.highlighted.value.row).toBe(0);
+			expect(picker.matchCount.value).toEqual({ current: 1, total: 1 });
+		});
+
+		it('keeps the list open when the query is erased inside a scope', async () => {
+			const { picker } = await setupScope();
+			enter(picker, 'home');
+			type(picker, 'k');
+
+			type(picker, '');
+
+			expect(picker.isOpen.value).toBe(true);
+			expect(picker.scope.value?.id).toBe('home');
+		});
+
+		it('Shift+Enter creates a direct child of the scope and leaves it', async () => {
+			const { picker, onPending } = await setupScope();
+			enter(picker, 'home');
+			type(picker, 'tarts');
+
+			picker.onKeydown(key('Enter', true));
+
+			expect(onPending).toHaveBeenLastCalledWith({
+				title: 'tarts',
+				parentId: 'home',
+			});
+			expect(picker.scope.value).toBeNull();
+			expect(picker.isOpen.value).toBe(false);
+		});
+
+		it('blocks a title already in the scope, not one elsewhere', async () => {
+			const { picker } = await setupScope();
+			enter(picker, 'home');
+
+			type(picker, 'KITCHEN');
+			expect(picker.canCreate.value).toBe(false);
+			type(picker, 'garden');
+			expect(picker.canCreate.value).toBe(true);
+		});
+
+		it('Enter on the empty input saves into the scope', async () => {
+			const { picker, onSubmit, modelValue } = await setupScope();
+			enter(picker, 'home');
+
+			picker.onKeydown(key('Enter'));
+
+			expect(onSubmit).toHaveBeenCalledOnce();
+			expect(modelValue.value).toBe('home');
+		});
+
+		it('Backspace on the empty input climbs to the parent, then leaves at the top', async () => {
+			const { picker, onChange } = await setupScope();
+			enter(picker, 'kitch');
+
+			expect(picker.onKeydown(key('Backspace'))).toBe(true);
+			expect(picker.scope.value?.id).toBe('home');
+			expect(picker.selected.value?.id).toBe('home');
+			expect(onChange).toHaveBeenLastCalledWith(home);
+
+			picker.onKeydown(key('Backspace'));
+			expect(picker.scope.value).toBeNull();
+			expect(picker.selected.value?.id).toBe('toolbar');
+			expect(onChange).toHaveBeenLastCalledWith(
+				expect.objectContaining({ id: 'toolbar', title: 'Toolbar' }),
+			);
+			expect(picker.inputText.value).toBe('');
+			expect(picker.isOpen.value).toBe(true);
+		});
+
+		it('Backspace is left to the input when it has text or there is no scope', async () => {
+			const { picker } = await setupScope();
+			type(picker, 'k');
+			expect(picker.onKeydown(key('Backspace'))).toBe(false);
+
+			enter(picker, 'kitch');
+			type(picker, 'p');
+			expect(picker.onKeydown(key('Backspace'))).toBe(false);
+			expect(picker.scope.value?.id).toBe('kitchen');
+		});
+
+		it('"/" enters the highlighted child of an expanded row', async () => {
+			const { picker } = await setupScope();
+			type(picker, 'home');
+			picker.onKeydown(key(' ', true));
+			picker.onKeydown(key('ArrowDown'));
+
+			picker.onKeydown(key('/'));
+
+			expect(picker.scope.value?.id).toBe('kitchen');
+		});
+
+		it('"/" enters the highlighted child of the expanded toolbar row', async () => {
+			const { picker } = await setupScope();
+			type(picker, 'zzz');
+			picker.onKeydown(key('ArrowUp'));
+			picker.onKeydown(key(' ', true));
+			picker.onKeydown(key('ArrowDown'));
+
+			picker.onKeydown(key('/'));
+
+			expect(picker.scope.value?.id).toBe('home');
+		});
+
+		it.each([
+			['before typing', (p: Picker) => p.onFocus()],
+			[
+				'after Escape',
+				(p: Picker) => {
+					type(p, 'home');
+					p.onKeydown(key('Escape'));
+				},
+			],
+		])('"/" is swallowed while the list is closed (%s)', async (_, act) => {
+			const { picker } = await setupScope();
+			act(picker);
+			const event = key('/');
+
+			expect(picker.onKeydown(event)).toBe(true);
+
+			expect(event.preventDefault).toHaveBeenCalled();
+			expect(picker.scope.value).toBeNull();
+		});
+
+		it('"/" on the toolbar row or on no row is swallowed and ignored', async () => {
+			const { picker, onChange } = await setupScope();
+			type(picker, 'zzz');
+			const none = key('/');
+			expect(picker.onKeydown(none)).toBe(true);
+			expect(none.preventDefault).toHaveBeenCalled();
+
+			picker.onKeydown(key('ArrowUp'));
+			picker.onKeydown(key('/'));
+
+			expect(picker.scope.value).toBeNull();
+			expect(onChange).not.toHaveBeenCalled();
+		});
+
+		it('"/" is typed as text without onPending', async () => {
+			const { picker } = await setupScope({ onPending: undefined });
+			type(picker, 'home');
+
+			expect(picker.onKeydown(key('/'))).toBe(false);
+			expect(picker.scope.value).toBeNull();
+		});
+
+		it.each([
+			['Escape', (p: Picker) => p.onKeydown(key('Escape'))],
+			['blur', (p: Picker) => p.onBlur()],
+			[
+				'choosing a row',
+				(p: Picker) => {
+					type(p, 'pies');
+					p.onKeydown(key('Enter'));
+				},
+			],
+		])('%s leaves the scope, keeping the chosen folder', async (_, leave) => {
+			const { picker } = await setupScope();
+			enter(picker, 'home');
+
+			leave(picker);
+
+			expect(picker.scope.value).toBeNull();
+			expect(picker.isOpen.value).toBe(false);
+			expect(picker.inputText.value).toBe(picker.selected.value?.title);
 		});
 	});
 });

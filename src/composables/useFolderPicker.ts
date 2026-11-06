@@ -6,6 +6,9 @@ import { matchByTitle } from '@/utils/matchByTitle';
 
 const MAX_RESULTS = 50;
 
+const descendants = (folder: BookmarkFolder): BookmarkFolder[] =>
+	(folder.children ?? []).flatMap((child) => [child, ...descendants(child)]);
+
 export interface PickerRow {
 	kind: 'toolbar' | 'folder';
 	folder: BookmarkFolder;
@@ -44,12 +47,13 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const pending = ref<PendingFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });
 	const expandedId = ref<string | null>(null);
+	const scope = ref<BookmarkFolder | null>(null);
 
 	const findFolder = (id: string) => folders.value.find((f) => f.id === id);
 	const toolbar = computed(() => findFolder(options.toolbarId.value) ?? null);
 
 	const toolbarRow = computed<PickerRow | null>(() =>
-		toolbar.value && options.toolbarRowTitle !== undefined
+		toolbar.value && options.toolbarRowTitle !== undefined && !scope.value
 			? {
 					kind: 'toolbar',
 					folder: { ...toolbar.value, title: options.toolbarRowTitle },
@@ -60,7 +64,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 
 	const rows = computed<PickerRow[]>(() => {
 		const matches = matchByTitle(
-			folders.value,
+			scope.value ? descendants(scope.value) : folders.value,
 			inputText.value,
 			isFuzzy.value,
 			MAX_RESULTS,
@@ -90,6 +94,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		isOpen.value = false;
 		highlight(-1);
 		expandedId.value = null;
+		scope.value = null;
 	};
 
 	const open = () => {
@@ -119,14 +124,15 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const selectFolder = (folder: BookmarkFolder) =>
 		commit(findFolder(folder.id) ?? folder);
 
+	const pendingLocationId = () => scope.value?.id ?? options.toolbarId.value;
+
 	const canCreate = computed(() => {
 		const title = inputText.value.trim().toLowerCase();
 		return (
 			Boolean(options.onPending && isOpen.value && title) &&
 			!folders.value.some(
 				(f) =>
-					f.parentId === options.toolbarId.value &&
-					f.title.toLowerCase() === title,
+					f.parentId === pendingLocationId() && f.title.toLowerCase() === title,
 			)
 		);
 	});
@@ -134,7 +140,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const createPending = () => {
 		pending.value = {
 			title: inputText.value.trim(),
-			parentId: options.toolbarId.value,
+			parentId: pendingLocationId(),
 		};
 		selected.value = null;
 		settle();
@@ -159,7 +165,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	const onInput = () => {
-		isOpen.value = inputText.value.trim().length > 0;
+		isOpen.value = Boolean(scope.value || inputText.value.trim());
 		highlightFirstFolder();
 	};
 
@@ -209,11 +215,38 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		highlight(highlighted.value.row);
 	};
 
-	const confirm = () => {
+	const moveTo = (
+		folder: BookmarkFolder,
+		nextScope: BookmarkFolder | null = folder,
+	) => {
+		scope.value = nextScope;
+		apply(folder);
+		options.onChange(folder);
+		inputText.value = '';
+		highlight(-1);
+		expandedId.value = null;
+	};
+
+	const exitScope = () => {
+		const parentId = scope.value?.parentId;
+		const parent = parentId ? findFolder(parentId) : undefined;
+		if (parent && parent.id !== options.toolbarId.value) {
+			moveTo(parent);
+			return;
+		}
+		scope.value = null;
+		const top = toolbarRow.value?.folder ?? toolbar.value;
+		if (top) moveTo(top, null);
+	};
+
+	const highlightedFolder = () => {
 		const child = expandedChildren()[highlighted.value.child];
-		const row = currentRow();
-		if (child) selectFolder(child);
-		else if (row) select(row);
+		return child ? (findFolder(child.id) ?? child) : currentRow()?.folder;
+	};
+
+	const confirm = () => {
+		const folder = highlightedFolder();
+		if (folder) commit(folder);
 		else options.onSubmit();
 	};
 
@@ -236,6 +269,18 @@ export function useFolderPicker(options: FolderPickerOptions) {
 				(event.key === 'Enter' && !selected.value && !pending.value))
 		) {
 			open();
+			return true;
+		}
+
+		if (event.key === '/' && options.onPending) {
+			event.preventDefault();
+			const folder = isOpen.value ? highlightedFolder() : undefined;
+			if (folder && folder.id !== options.toolbarId.value) moveTo(folder);
+			return true;
+		}
+		if (event.key === 'Backspace' && scope.value && !inputText.value) {
+			event.preventDefault();
+			exitScope();
 			return true;
 		}
 
@@ -292,6 +337,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		expandedId,
 		selected,
 		pending,
+		scope,
 		canCreate,
 		init,
 		onInput,
