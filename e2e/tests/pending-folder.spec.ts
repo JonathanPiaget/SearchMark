@@ -124,6 +124,8 @@ test('a retry after the bookmark fails reuses the folder already created', async
 	await popup.press('#folder-search', 'Enter');
 	await popup.click('.save-button');
 	await expect(popup.locator('.save-view .message.error')).toBeVisible();
+	await expect(popup.locator('.pending-badge')).toBeHidden();
+	await expect(popup.locator('#folder-search')).toHaveValue('Tarts');
 
 	await popup.click('.save-button');
 

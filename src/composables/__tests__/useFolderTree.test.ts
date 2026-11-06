@@ -96,14 +96,22 @@ describe('useFolderTree', () => {
 					],
 				},
 			] as BookmarkTreeNode[]);
-		const { loadFolders, allFolders, folderMap, toolbarId, parentPath } =
-			useFolderTree();
+		const {
+			loadFolders,
+			refreshFolders,
+			allFolders,
+			folderMap,
+			toolbarId,
+			parentPath,
+		} = useFolderTree();
 
 		await expect(loadFolders()).rejects.toThrow('boom');
 		await Promise.all([loadFolders(), loadFolders()]);
 		await loadFolders();
-
 		expect(getTree).toHaveBeenCalledTimes(2);
+
+		await refreshFolders();
+		expect(getTree).toHaveBeenCalledTimes(3);
 		expect(allFolders.value.map((f) => f.id)).toEqual([
 			'toolbar',
 			'1',

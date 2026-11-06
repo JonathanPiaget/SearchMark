@@ -67,7 +67,7 @@ const handleViewShortcut = (event: KeyboardEvent) => {
 };
 
 const { initTheme } = useTheme();
-const { folderMap, toolbarId, loadFolders } = useFolderTree();
+const { folderMap, toolbarId, loadFolders, refreshFolders } = useFolderTree();
 const {
 	bookmarkLocations,
 	isLoading: isSearching,
@@ -120,6 +120,7 @@ const saveBookmark = async () => {
 			const folder = await browser.bookmarks.create(pending);
 			// a retry after the bookmark fails must reuse this folder, not create a second one
 			pendingFolder.value = null;
+			await refreshFolders();
 			selectedFolderId.value = folder.id;
 			selectedFolderName.value = folder.title;
 		}

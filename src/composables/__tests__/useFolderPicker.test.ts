@@ -455,6 +455,26 @@ describe('useFolderPicker', () => {
 			expect(picker.inputText.value).toBe('tarts');
 		});
 
+		it('is replaced by the created folder once it is in the tree and modelValue', async () => {
+			const folders = ref([...FOLDERS]);
+			const { picker, modelValue, onPending } = await setupCreate({ folders });
+			type(picker, 'tarts');
+			picker.onKeydown(key('Enter', true));
+
+			folders.value = [
+				...FOLDERS,
+				{ ...folder('tarts', 'tarts'), parentId: 'toolbar' },
+			];
+			modelValue.value = 'tarts';
+			await nextTick();
+
+			expect(picker.pending.value).toBeNull();
+			expect(onPending).toHaveBeenLastCalledWith(null);
+			expect(picker.selected.value?.id).toBe('tarts');
+			type(picker, 'Tarts');
+			expect(picker.canCreate.value).toBe(false);
+		});
+
 		it.each([
 			[
 				'choosing a folder',
