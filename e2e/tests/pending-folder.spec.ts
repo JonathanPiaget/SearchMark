@@ -24,6 +24,12 @@ const savedUrlsIn = async (serviceWorker: Worker, title: string) => {
 	return children.map((node) => node.url);
 };
 
+// Enter saves and closes the popup, which can end the page before press resolves.
+const pressEnterToSave = (popup: Page) =>
+	popup.press('#folder-search', 'Enter').catch((error) => {
+		if (!popup.isClosed()) throw error;
+	});
+
 const expectPendingField = async (popup: Page, title: string) => {
 	await expect(popup.locator('#folder-search')).toHaveValue(title);
 	await expect(popup.locator('.pending-badge')).toBeVisible();
@@ -68,7 +74,7 @@ test('Enter with no match stages a pending folder, a second Enter saves into it'
 
 	await expectPendingField(popup, 'Quiches');
 
-	await popup.press('#folder-search', 'Enter');
+	await pressEnterToSave(popup);
 
 	await expect
 		.poll(() => savedUrlsIn(serviceWorker, 'Quiches'))
@@ -129,4 +135,91 @@ test('a retry after the bookmark fails reuses the folder already created', async
 		await getToolbarId(serviceWorker),
 	);
 	expect(toolbar.filter((node) => node.title === 'Tarts')).toHaveLength(1);
+});
+
+test('"/" scopes the picker to a folder and Shift+Enter creates inside it', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	const ids = await seedBookmarks(serviceWorker, [
+		{ folder: 'Kitchen' },
+		{ folder: 'Garden' },
+	]);
+	const popup = await openPopup(context, extensionId, { tab: TAB });
+
+	await popup.fill('#folder-search', 'Kitch');
+	await popup.press('#folder-search', '/');
+
+	await expect(popup.locator('.scope-chip')).toHaveText(/Kitchen\s*\//);
+	await expect(popup.locator('#folder-search')).toHaveValue('');
+	await expect(popup.locator('.dropdown-header')).toContainText(
+		'leave Kitchen',
+	);
+	await expect(popup.locator('.no-results')).toContainText(
+		'This folder is empty',
+	);
+
+	await popup.fill('#folder-search', 'Tarts');
+	await popup.press('#folder-search', 'Shift+Enter');
+
+	await expect(popup.locator('.scope-chip')).toBeHidden();
+	await expect(popup.locator('.pending-parent')).toContainText('Kitchen');
+
+	await popup.click('.save-button');
+
+	await expect
+		.poll(async () => {
+			const kitchen = await listBookmarks(serviceWorker, ids.Kitchen ?? '');
+			const tarts = kitchen.find((node) => node.title === 'Tarts');
+			return tarts && (await listBookmarks(serviceWorker, tarts.id));
+		})
+		.toMatchObject([{ url: TAB.url }]);
+});
+
+test('Backspace on the empty input leaves the scope', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedBookmarks(serviceWorker, [{ folder: 'Kitchen' }]);
+	const popup = await openPopup(context, extensionId, { tab: TAB });
+
+	await popup.fill('#folder-search', 'Kitch');
+	await popup.press('#folder-search', '/');
+	await expect(popup.locator('.scope-chip')).toBeVisible();
+
+	await popup.press('#folder-search', 'Backspace');
+
+	await expect(popup.locator('.scope-chip')).toBeHidden();
+	await expect(popup.locator('.dropdown-container')).toBeHidden();
+});
+
+test('an empty input inside a scope lists its subfolders and Enter saves into the scope', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	const ids = await seedBookmarks(serviceWorker, [{ folder: 'Kitchen' }]);
+	await serviceWorker.evaluate(
+		(parentId) => chrome.bookmarks.create({ parentId, title: 'Desserts' }),
+		ids.Kitchen ?? '',
+	);
+	const popup = await openPopup(context, extensionId, { tab: TAB });
+
+	await popup.fill('#folder-search', 'Kitch');
+	await popup.press('#folder-search', '/');
+
+	await expect(
+		popup.locator('.dropdown-item', { hasText: 'Desserts' }),
+	).toBeVisible();
+	await expect(popup.locator('.dropdown-item.highlighted')).toHaveCount(0);
+
+	await pressEnterToSave(popup);
+
+	await expect
+		.poll(async () =>
+			(await listBookmarks(serviceWorker, ids.Kitchen ?? '')).map((n) => n.url),
+		)
+		.toContain(TAB.url);
 });

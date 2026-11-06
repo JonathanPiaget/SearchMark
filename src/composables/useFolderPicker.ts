@@ -63,6 +63,13 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	);
 
 	const rows = computed<PickerRow[]>(() => {
+		if (scope.value && !inputText.value.trim()) {
+			return (scope.value.children ?? []).map((folder) => ({
+				kind: 'folder',
+				folder,
+				indexes: null,
+			}));
+		}
 		const matches = matchByTitle(
 			scope.value ? descendants(scope.value) : folders.value,
 			inputText.value,
@@ -150,6 +157,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	};
 
 	const clear = () => {
+		close();
 		apply(null);
 		options.onChange(null);
 	};
@@ -166,7 +174,9 @@ export function useFolderPicker(options: FolderPickerOptions) {
 
 	const onInput = () => {
 		isOpen.value = Boolean(scope.value || inputText.value.trim());
-		highlightFirstFolder();
+		// Nothing highlighted on an empty input, so Enter saves into the scope.
+		if (inputText.value.trim()) highlightFirstFolder();
+		else highlight(-1);
 	};
 
 	const onFocus = () => {
@@ -339,6 +349,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		pending,
 		scope,
 		canCreate,
+		pendingLocationId,
 		init,
 		onInput,
 		onFocus,

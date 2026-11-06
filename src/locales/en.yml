@@ -18,12 +18,16 @@ matches:
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
 createFolderNamed: New folder "{title}"
+createFolderNamedIn: New "{title}" in {parent}
 noFolderNamed: No folder "{title}"
 pendingFolderCreatedIn: It will be created in {parent}
 createThisFolder: Create this folder
 pendingFolderBadge: New
 pendingFolderIn: in
-expandHint: to expand folders
+expandHint: expand
+enterFolderHint: enter folder
+leaveScopeHint: leave {folder}
+scopeSearchHint: search limited to this folder
 keyShift: Shift
 keySpace: Space
 save: Save

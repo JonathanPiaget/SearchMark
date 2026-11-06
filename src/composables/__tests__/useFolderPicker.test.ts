@@ -640,6 +640,33 @@ describe('useFolderPicker', () => {
 			expect(picker.scope.value?.id).toBe('home');
 		});
 
+		it('lists the direct children of the scope on the empty input, none highlighted', async () => {
+			const { picker, onSubmit, modelValue } = await setupScope();
+			enter(picker, 'home');
+			type(picker, 'k');
+
+			type(picker, '');
+
+			expect(picker.rows.value.map((r) => r.folder.id)).toEqual(['kitchen']);
+			expect(picker.highlighted.value.row).toBe(-1);
+			picker.onKeydown(key('Enter'));
+			expect(onSubmit).toHaveBeenCalledOnce();
+			expect(modelValue.value).toBe('home');
+		});
+
+		it('clear leaves the scope and closes the list', async () => {
+			const { picker, modelValue } = await setupScope();
+			enter(picker, 'home');
+			type(picker, 'k');
+
+			picker.clear();
+
+			expect(picker.scope.value).toBeNull();
+			expect(picker.isOpen.value).toBe(false);
+			expect(picker.highlighted.value.row).toBe(-1);
+			expect(modelValue.value).toBe('');
+		});
+
 		it('Shift+Enter creates a direct child of the scope and leaves it', async () => {
 			const { picker, onPending } = await setupScope();
 			enter(picker, 'home');

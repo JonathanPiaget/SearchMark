@@ -3,6 +3,11 @@
     <div class="form-group">
       <label for="folder-search">{{ i18n.t('folder') }}</label>
       <div class="search-container input-with-clear">
+        <span v-if="scope" ref="scopeChip" class="scope-chip">
+          <IconFolder class="key-icon" />
+          <span class="scope-title">{{ scope.title }}</span>
+          <span class="scope-sep">/</span>
+        </span>
         <input
           ref="folderInput"
           id="folder-search"
@@ -10,6 +15,7 @@
           type="text"
           class="form-input"
           :class="{ 'has-clear': selected || pending, 'has-pending': showPendingBadge }"
+          :style="scope ? { paddingLeft: `${scopeChipWidth + 14}px` } : undefined"
           :placeholder="isInitializing ? i18n.t('loadingFolders') : i18n.t('searchFolders')"
           :disabled="isInitializing"
           @input="onInput"
@@ -39,16 +45,27 @@
           <IconApproximately />
         </button>
         <div
-          v-if="isOpen && inputText.trim()"
+          v-if="isOpen && (inputText.trim() || scope)"
           ref="dropdownRef"
           class="dropdown-container"
           :style="dropdownMaxHeight ? { maxHeight: `${dropdownMaxHeight}px` } : undefined"
         >
           <div class="dropdown-header" @mousedown.prevent>
-            <div class="shortcut-hint">
+            <div v-if="scope" class="shortcut-hint">
+              <kbd class="key">⌫</kbd>
+              <span class="shortcut-text">{{ i18n.t('leaveScopeHint', { folder: scope.title }) }}</span>
+              <span class="key-sep">·</span>
+              <span class="shortcut-text">{{ i18n.t('scopeSearchHint') }}</span>
+            </div>
+            <div v-else class="shortcut-hint">
               <kbd class="key"><IconArrowBigUp class="key-icon" />{{ i18n.t('keyShift') }}</kbd>
               <kbd class="key"><IconSpace class="key-icon" />{{ i18n.t('keySpace') }}</kbd>
               <span class="shortcut-text">{{ i18n.t('expandHint') }}</span>
+              <template v-if="allowCreate">
+                <span class="key-sep">·</span>
+                <kbd class="key">/</kbd>
+                <span class="shortcut-text">{{ i18n.t('enterFolderHint') }}</span>
+              </template>
             </div>
           </div>
           <template v-for="(row, index) in rows" :key="row.folder.id">
@@ -124,12 +141,13 @@
           <div v-if="matchCount.total === 0" class="no-results" @mousedown.prevent>
             <template v-if="canCreate">
               <div class="no-results-text">{{ i18n.t('noFolderNamed', { title: inputText.trim() }) }}</div>
-              <div class="no-results-hint">{{ i18n.t('pendingFolderCreatedIn', { parent: i18n.t('bookmarkToolbar') }) }}</div>
+              <div class="no-results-hint">{{ i18n.t('pendingFolderCreatedIn', { parent: folderLabel(picker.pendingLocationId()) }) }}</div>
               <button type="button" class="create-folder-cta" @click="picker.createPending">
                 <IconFolderPlus class="key-icon" />{{ i18n.t('createThisFolder') }}
                 <kbd class="key">↵</kbd>
               </button>
             </template>
+            <div v-else-if="scope && !inputText.trim()" class="no-results-text">{{ i18n.t('emptyFolderMessage') }}</div>
             <template v-else>
               <div class="no-results-icon"><IconSearchX /></div>
               <div class="no-results-text">{{ i18n.t('noFoldersFound') }}</div>
@@ -155,7 +173,9 @@
               @click="picker.createPending"
             >
               <IconFolderPlus class="key-icon" />
-              <span class="create-folder-label">{{ i18n.t('createFolderNamed', { title: inputText.trim() }) }}</span>
+              <span class="create-folder-label">{{ scope
+                ? i18n.t('createFolderNamedIn', { title: inputText.trim(), parent: scope.title })
+                : i18n.t('createFolderNamed', { title: inputText.trim() }) }}</span>
               <kbd class="key">⇧</kbd><kbd class="key">↵</kbd>
             </button>
             <div v-else class="footer-keys">
@@ -168,14 +188,14 @@
         </div>
       </div>
       <p v-if="pending" class="pending-parent">
-        {{ i18n.t('pendingFolderIn') }} <b>{{ pendingParent }}</b>
+        {{ i18n.t('pendingFolderIn') }} <b>{{ folderLabel(pending.parentId) }}</b>
       </p>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, toRef } from 'vue';
+import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue';
 import { useDropdownFit } from '@/composables/useDropdownFit';
 import {
 	type PendingFolder,
@@ -253,16 +273,22 @@ const {
 	selected,
 	pending,
 	canCreate,
+	scope,
 } = picker;
 
 const showPendingBadge = computed(
 	() => pending.value !== null && inputText.value === pending.value.title,
 );
-const pendingParent = computed(() => {
-	const parentId = pending.value?.parentId ?? '';
-	return parentId === toolbarId.value
+const folderLabel = (id: string) =>
+	id === toolbarId.value
 		? i18n.t('bookmarkToolbar')
-		: (folderMap.value.get(parentId)?.path ?? '');
+		: (folderMap.value.get(id)?.path ?? '');
+
+const scopeChip = ref<HTMLElement>();
+const scopeChipWidth = ref(0);
+watch(scope, async () => {
+	await nextTick();
+	scopeChipWidth.value = scopeChip.value?.offsetWidth ?? 0;
 });
 
 const { maxHeight: dropdownMaxHeight } = useDropdownFit(
@@ -396,6 +422,38 @@ onMounted(async () => {
   font-size: 11px;
   font-weight: 600;
   pointer-events: none;
+}
+
+.scope-chip {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 45%;
+  height: 26px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.scope-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scope-sep {
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .pending-parent {
