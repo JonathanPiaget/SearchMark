@@ -141,7 +141,7 @@
           <div v-if="matchCount.total === 0" class="no-results" @mousedown.prevent>
             <template v-if="canCreate">
               <div class="no-results-text">{{ i18n.t('noFolderNamed', { title: inputText.trim() }) }}</div>
-              <div class="no-results-hint">{{ i18n.t('pendingFolderCreatedIn', { parent: folderLabel(picker.pendingLocationId()) }) }}</div>
+              <div class="no-results-hint">{{ i18n.t('pendingFolderCreatedIn', { folder: folderLabel(picker.pendingParentId()) }) }}</div>
               <button type="button" class="create-folder-cta" @click="picker.createPending">
                 <IconFolderPlus class="key-icon" />{{ i18n.t('createThisFolder') }}
                 <kbd class="key">↵</kbd>
@@ -174,7 +174,7 @@
             >
               <IconFolderPlus class="key-icon" />
               <span class="create-folder-label">{{ scope
-                ? i18n.t('createFolderNamedIn', { title: inputText.trim(), parent: scope.title })
+                ? i18n.t('createFolderNamedIn', { title: inputText.trim(), folder: scope.title })
                 : i18n.t('createFolderNamed', { title: inputText.trim() }) }}</span>
               <kbd class="key">⇧</kbd><kbd class="key">↵</kbd>
             </button>
@@ -187,7 +187,7 @@
           </div>
         </div>
       </div>
-      <p v-if="pending" class="pending-parent">
+      <p v-if="pending" class="pending-path">
         {{ i18n.t('pendingFolderIn') }} <b>{{ folderLabel(pending.parentId) }}</b>
       </p>
     </div>
@@ -456,13 +456,13 @@ onMounted(async () => {
   font-weight: 500;
 }
 
-.pending-parent {
+.pending-path {
   margin: 6px 0 0 2px;
   font-size: 12px;
   color: var(--text-secondary);
 }
 
-.pending-parent b {
+.pending-path b {
   font-weight: 600;
   color: var(--text-primary);
 }

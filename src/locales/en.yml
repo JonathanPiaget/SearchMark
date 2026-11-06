@@ -18,9 +18,9 @@ matches:
 noFoldersFound: No folders found
 tryDifferentSearch: Try a different search term
 createFolderNamed: New folder "{title}"
-createFolderNamedIn: New "{title}" in {parent}
+createFolderNamedIn: New "{title}" in {folder}
 noFolderNamed: No folder "{title}"
-pendingFolderCreatedIn: It will be created in {parent}
+pendingFolderCreatedIn: It will be created in {folder}
 createThisFolder: Create this folder
 pendingFolderBadge: New
 pendingFolderIn: in

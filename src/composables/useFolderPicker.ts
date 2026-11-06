@@ -135,13 +135,13 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const selectFolder = (folder: BookmarkFolder) =>
 		commit(findFolder(folder.id) ?? folder);
 
-	const pendingLocationId = () => scope.value?.id ?? options.toolbarId.value;
+	const pendingParentId = () => scope.value?.id ?? options.toolbarId.value;
 
 	const titleTaken = computed(() => {
 		const title = inputText.value.trim().toLowerCase();
 		return folders.value.some(
 			(f) =>
-				f.parentId === pendingLocationId() && f.title.toLowerCase() === title,
+				f.parentId === pendingParentId() && f.title.toLowerCase() === title,
 		);
 	});
 
@@ -154,7 +154,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const createPending = () => {
 		pending.value = {
 			title: inputText.value.trim(),
-			parentId: pendingLocationId(),
+			parentId: pendingParentId(),
 		};
 		selected.value = null;
 		settle();
@@ -367,7 +367,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 		pending,
 		scope,
 		canCreate,
-		pendingLocationId,
+		pendingParentId,
 		init,
 		onInput,
 		onFocus,

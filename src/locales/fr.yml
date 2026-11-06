@@ -20,9 +20,9 @@ matches:
 noFoldersFound: Aucun dossier trouvé
 tryDifferentSearch: Essayez un autre terme de recherche
 createFolderNamed: Nouveau dossier « {title} »
-createFolderNamedIn: Nouveau « {title} » dans {parent}
+createFolderNamedIn: Nouveau « {title} » dans {folder}
 noFolderNamed: Aucun dossier « {title} »
-pendingFolderCreatedIn: Il sera créé dans {parent}
+pendingFolderCreatedIn: Il sera créé dans {folder}
 createThisFolder: Créer ce dossier
 pendingFolderBadge: Nouveau
 pendingFolderIn: dans

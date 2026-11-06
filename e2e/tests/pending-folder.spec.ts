@@ -33,7 +33,7 @@ const pressEnterToSave = (popup: Page) =>
 const expectPendingField = async (popup: Page, title: string) => {
 	await expect(popup.locator('#folder-search')).toHaveValue(title);
 	await expect(popup.locator('.pending-badge')).toBeVisible();
-	await expect(popup.locator('.pending-parent')).toContainText(
+	await expect(popup.locator('.pending-path')).toContainText(
 		'Bookmark toolbar',
 	);
 	await expect(popup.locator('.dropdown-container')).toBeHidden();
@@ -172,7 +172,7 @@ test('"/" scopes the picker to a folder and Shift+Enter creates inside it', asyn
 	await popup.press('#folder-search', 'Shift+Enter');
 
 	await expect(popup.locator('.scope-chip')).toBeHidden();
-	await expect(popup.locator('.pending-parent')).toContainText('Kitchen');
+	await expect(popup.locator('.pending-path')).toContainText('Kitchen');
 
 	await popup.click('.save-button');
 
