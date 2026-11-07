@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { isProxy } from 'vue';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useFolderTree } from '@/composables/useFolderTree';
@@ -100,6 +101,15 @@ describe('useSaveBookmark', () => {
 		expect(notify).toHaveBeenCalledWith(
 			'Bookmark saved to the new folder "Tarts"',
 		);
+	});
+
+	it('hands bookmarks.create a plain object, not a Vue proxy (Firefox rejects proxies)', async () => {
+		const { save, pendingFolder } = useSaveBookmark();
+		pendingFolder.value = { title: 'Tarts', parentId: 'toolbar' };
+
+		await save(BOOKMARK);
+
+		expect(created.map(isProxy)).toEqual([false, false]);
 	});
 
 	it('reloads the folder tree after creating the pending folder', async () => {

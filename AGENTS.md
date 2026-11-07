@@ -88,6 +88,7 @@ Key behaviors agents should respect (see [CLAUDE.md](CLAUDE.md) for full detail)
 - **Permissions** (declared in [wxt.config.ts](wxt.config.ts)): required `bookmarks`, `tabs`, `storage`; optional `notifications`. There is **no content script and no `<all_urls>` host permission** — user feedback uses the `notifications` API, fired from the background.
 - **Keyboard shortcuts**: `Ctrl/Cmd+Shift+X` opens the popup via the native browser-action command (`_execute_action` on MV3 / `_execute_browser_action` on MV2 Firefox) — no background handler. `Ctrl/Cmd+Shift+B` is the native `quick-save` command handled in `background.ts`. `Alt+←` / `Alt+→` switch popup Save/Search views (handled in `popup/App.vue`, not a browser command, not persisted).
   - Do **not** use `Ctrl/Cmd+Shift+S` (collides with Firefox screenshot).
+- **Never pass a Vue reactive object (`ref`/`reactive` value) to a `browser.*` API** — Firefox rejects proxies at the WebExtension boundary (Chrome accepts them, so e2e on Chromium won't catch it). Spread into a plain object first.
 - **Notifications**: popup actions send `{ type: 'NOTIFY', message }` over `runtime.sendMessage`; the background `showNotification` helper calls `browser.notifications.create`.
 
 ## Build and Deployment

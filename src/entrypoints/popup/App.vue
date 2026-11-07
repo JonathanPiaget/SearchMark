@@ -5,6 +5,7 @@ import { useFolderTree } from '@/composables/useFolderTree';
 import { useSaveBookmark } from '@/composables/useSaveBookmark';
 import { useTheme } from '@/composables/useTheme';
 import { i18n } from '@/utils/i18n';
+import { logError } from '@/utils/logger';
 import { getCurrentTab } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
@@ -84,7 +85,8 @@ const loadCurrentTab = async () => {
 
 		await loadFolders();
 		await searchByUrl(tab.url);
-	} catch {
+	} catch (error) {
+		logError('Failed to load current tab', error);
 		message.value = i18n.t('bookmarkError');
 		setTimeout(() => {
 			message.value = '';
@@ -114,7 +116,8 @@ const saveBookmark = async () => {
 	try {
 		await save({ title: bookmarkTitle.value, url: bookmarkUrl.value });
 		window.close();
-	} catch {
+	} catch (error) {
+		logError('Failed to save bookmark', error);
 		message.value = i18n.t('bookmarkError');
 		setTimeout(() => {
 			message.value = '';

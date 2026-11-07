@@ -14,7 +14,8 @@ export function useSaveBookmark() {
 		await loadFolders();
 		const pending = pendingFolder.value;
 		if (pending) {
-			const folder = await browser.bookmarks.create(pending);
+			// Firefox rejects Vue reactive proxies at the WebExtension API boundary
+			const folder = await browser.bookmarks.create({ ...pending });
 			// a retry after the bookmark fails must reuse this folder, not create a second one
 			pendingFolder.value = null;
 			await refreshFolders();
