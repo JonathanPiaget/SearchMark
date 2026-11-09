@@ -42,6 +42,7 @@ const { selectedFolderId, selectedFolderName, pendingFolder, save } =
 
 const hasOpenedSearch = ref(false);
 const isBlank = computed(() => isBlankPage(bookmarkUrl.value));
+const isTabBlank = computed(() => isBlankPage(currentUrl.value));
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const searchViewRef = ref<{ focus: () => void } | null>(null);
 
@@ -199,7 +200,7 @@ const saveBookmark = async () => {
         @save="saveBookmark"
       />
 
-      <SeeLaterButton v-if="!isBlank" />
+      <SeeLaterButton v-if="!isTabBlank" />
     </div>
 
     <!-- Search View -->

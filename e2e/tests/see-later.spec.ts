@@ -72,6 +72,10 @@ test('hides the see-later link when there is nothing to save', async ({
 	await expect(popup.locator('.save-button')).toBeDisabled();
 	await expect(popup.locator('.see-later-button')).toHaveCount(0);
 
+	await popup.locator('#url').fill('https://example.com');
+	await expect(popup.locator('.save-button')).toBeEnabled();
+	await expect(popup.locator('.see-later-button')).toHaveCount(0);
+
 	expect(
 		seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
 	).toHaveLength(0);
