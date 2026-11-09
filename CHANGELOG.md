@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0]
+
+### Added
+
+- Blank pages (new tab, about:blank) can no longer be bookmarked: the Save button and the quick-save shortcut show "Nothing to save on this page" instead
+- When a search finds nothing, a "Retry with typo tolerance" link runs it again with typo-tolerant matching
+
+### Changed
+
+- Typo-tolerant search is now a setting shared by the folder picker and the search view; the toggle button inside the search inputs is gone
+- "See Later" is now a text link under the Save button instead of a separate button
+- The folder field placeholder now says "Search or create a folder..."
+
+### Fixed
+
+- Settings changed in the options page (typo-tolerant search, URL cleaning) apply to an open popup immediately
+- Tab labels no longer animate their weight when switching between Save and Search
+
 ## [1.18.1]
 
 ### Fixed
