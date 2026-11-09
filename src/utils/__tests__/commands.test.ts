@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
-import { getOpenShortcut, getQuickSaveShortcut } from '@/utils/commands';
+import {
+	getOpenShortcut,
+	getQuickSaveShortcut,
+	shortcutKeys,
+} from '@/utils/commands';
 
 type Command = Browser.commands.Command;
 
@@ -56,5 +60,16 @@ describe('getQuickSaveShortcut', () => {
 	it('returns undefined when no quick-save command exists', async () => {
 		mockCommands([{ name: '_execute_action', shortcut: 'Ctrl+Shift+X' }]);
 		expect(await getQuickSaveShortcut()).toBeUndefined();
+	});
+});
+
+describe('shortcutKeys', () => {
+	it('maps Firefox modifier names to symbols', () => {
+		expect(shortcutKeys('Command+Shift+B')).toEqual(['⌘', '⇧', 'B']);
+		expect(shortcutKeys('Ctrl+Shift+B')).toEqual(['⌃', '⇧', 'B']);
+	});
+
+	it('splits Chrome symbol strings', () => {
+		expect(shortcutKeys('⌘⇧B')).toEqual(['⌘', '⇧', 'B']);
 	});
 });

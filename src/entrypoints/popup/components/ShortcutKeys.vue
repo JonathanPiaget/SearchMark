@@ -6,38 +6,11 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-
-const SYMBOLS: Record<string, string> = {
-	command: '⌘',
-	cmd: '⌘',
-	ctrl: '⌃',
-	control: '⌃',
-	macctrl: '⌃',
-	shift: '⇧',
-	alt: '⌥',
-	option: '⌥',
-};
-
-const tokenize = (shortcut: string): string[] => {
-	if (shortcut.includes('+')) return shortcut.split('+');
-	const symbols = ['⌘', '⌃', '⇧', '⌥'];
-	const tokens: string[] = [];
-	let rest = shortcut;
-	while (rest && symbols.includes(rest.charAt(0))) {
-		tokens.push(rest.charAt(0));
-		rest = rest.slice(1);
-	}
-	if (rest) tokens.push(rest);
-	return tokens;
-};
+import { shortcutKeys } from '@/utils/commands';
 
 const props = defineProps<{ shortcut: string }>();
 
-const keys = computed(() =>
-	tokenize(props.shortcut).map(
-		(token) => SYMBOLS[token.toLowerCase()] ?? token,
-	),
-);
+const keys = computed(() => shortcutKeys(props.shortcut));
 </script>
 
 <style scoped>

@@ -13,14 +13,14 @@
     </button>
     <template v-if="shortcut">
       <span aria-hidden="true">·</span>
-      <kbd class="see-later-key" aria-hidden="true">{{ shortcut }}</kbd>
+      <kbd class="see-later-key" aria-hidden="true">{{ shortcutKeys(shortcut).join('') }}</kbd>
     </template>
   </p>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
-import { getQuickSaveShortcut } from '@/utils/commands';
+import { getQuickSaveShortcut, shortcutKeys } from '@/utils/commands';
 import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
