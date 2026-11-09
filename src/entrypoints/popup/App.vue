@@ -198,7 +198,7 @@ const saveBookmark = async () => {
         @save="saveBookmark"
       />
 
-      <SeeLaterButton />
+      <SeeLaterButton v-if="!isBlank" />
     </div>
 
     <!-- Search View -->

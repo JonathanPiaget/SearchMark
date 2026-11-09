@@ -36,9 +36,10 @@ const shortFolderTitle = computed(() =>
 		? `${folderTitle.value.slice(0, MAX_FOLDER_CHARS - 1).trimEnd()}…`
 		: folderTitle.value,
 );
-const label = computed(() =>
-	i18n.t('seeLaterInstead', { folder: folderTitle.value }),
-);
+const label = computed(() => {
+	const text = i18n.t('seeLaterInstead', { folder: folderTitle.value });
+	return shortcut.value ? `${text} (${shortcut.value})` : text;
+});
 
 onMounted(async () => {
 	[shortcut.value, folderTitle.value] = await Promise.all([
@@ -83,11 +84,17 @@ const handleSeeLater = async () => {
   font: inherit;
   color: var(--accent-primary);
   text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
+  transition: color 0.15s ease;
 }
 
 .see-later-button:hover:not(:disabled) {
   color: var(--accent-hover);
+}
+
+.see-later-button:active:not(:disabled) {
+  opacity: 0.7;
 }
 
 .see-later-button:disabled {

@@ -53,7 +53,7 @@ test('creates, reuses, then recreates the See Later folder', async ({
 	await expect.poll(childCounts).toEqual([1]);
 });
 
-test('notifies an error and keeps the popup open when there is no active tab', async ({
+test('hides the see-later link when there is nothing to save', async ({
 	context,
 	serviceWorker,
 	extensionId,
@@ -66,25 +66,11 @@ test('notifies an error and keeps the popup open when there is no active tab', a
 				configurable: true,
 				value: () => Promise.resolve([]),
 			});
-			globalThis.__sentMessages = [];
-			const original = chrome.runtime.sendMessage.bind(chrome.runtime);
-			Object.defineProperty(chrome.runtime, 'sendMessage', {
-				configurable: true,
-				value: (message: { type: string; message: string }) => {
-					globalThis.__sentMessages?.push(message);
-					return original(message);
-				},
-			});
 		},
 	});
 
-	await popup.click('.see-later-button');
-
-	await expect
-		.poll(() => popup.evaluate(() => globalThis.__sentMessages ?? []))
-		.toContainEqual(expect.objectContaining({ type: 'NOTIFY' }));
-
-	expect(popup.isClosed()).toBe(false);
+	await expect(popup.locator('.save-button')).toBeDisabled();
+	await expect(popup.locator('.see-later-button')).toHaveCount(0);
 
 	expect(
 		seeLaterFolders(await listBookmarks(serviceWorker, toolbarId)),
