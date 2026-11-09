@@ -66,6 +66,7 @@ seeLater: Voir plus tard
 seeLaterTooltip: Enregistrer dans votre dossier « Voir plus tard »
 seeLaterSuccess: Enregistré dans « {folderName} » pour plus tard
 seeLaterError: Échec de l'enregistrement dans le dossier « Voir plus tard »
+nothingToSave: Rien à enregistrer sur cette page
 quickActions: Actions rapides
 seeLaterFolder: Dossier « Voir plus tard »
 seeLaterFolderDescription: "Par défaut : crée un dossier « Voir plus tard » dans la barre de favoris"

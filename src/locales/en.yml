@@ -64,6 +64,7 @@ seeLater: See Later
 seeLaterTooltip: Save to your "See Later" folder
 seeLaterSuccess: Saved to "{folderName}" for later
 seeLaterError: Failed to save to "See Later" folder
+nothingToSave: Nothing to save on this page
 quickActions: Quick actions
 seeLaterFolder: '"See Later" folder'
 seeLaterFolderDescription: 'Default: creates a "See Later" folder in your Bookmarks Toolbar'

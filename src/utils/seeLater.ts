@@ -1,6 +1,6 @@
 import { getBookmarkToolbarId } from '@/utils/bookmark';
 import { allTranslations, i18n } from '@/utils/i18n';
-import { getCurrentTab } from '@/utils/tabs';
+import { getCurrentTab, isBlankPage, NothingToSaveError } from '@/utils/tabs';
 
 const seeLaterFolderItem = storage.defineItem<string | null>(
 	'local:searchmark_seeLaterFolder',
@@ -71,6 +71,9 @@ export const getOrCreateSeeLaterFolder = async (): Promise<{
 
 export const quickSave = async (): Promise<{ folderTitle: string }> => {
 	const tab = await getCurrentTab();
+	if (isBlankPage(tab.url)) {
+		throw new NothingToSaveError();
+	}
 	const folder = await getOrCreateSeeLaterFolder();
 	await browser.bookmarks.create({
 		title: tab.title,

@@ -1,6 +1,6 @@
 <template>
   <div class="save-section">
-    <button @click="handleSave" class="save-button" :disabled="isLoading">
+    <button @click="handleSave" class="save-button" :disabled="isLoading || disabled">
       <span>{{ isLoading ? i18n.t('saving') : i18n.t('saveBookmark') }}</span>
       <kbd v-if="!isLoading" class="key" aria-hidden="true">↵</kbd>
     </button>
@@ -16,6 +16,7 @@ import { i18n } from '@/utils/i18n';
 interface Props {
 	message?: string;
 	isLoading?: boolean;
+	disabled?: boolean;
 }
 
 type Emits = (e: 'save') => void;

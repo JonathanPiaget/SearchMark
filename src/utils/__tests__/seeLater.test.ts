@@ -11,6 +11,7 @@ import {
 	setSeeLaterFolderId,
 	watchSeeLaterFolderId,
 } from '@/utils/seeLater';
+import { NothingToSaveError } from '@/utils/tabs';
 
 type BookmarkTreeNode = Browser.bookmarks.BookmarkTreeNode;
 
@@ -242,6 +243,16 @@ describe('getOrCreateSeeLaterFolder', () => {
 });
 
 describe('quickSave', () => {
+	it('refuses to save a blank page without touching bookmarks', async () => {
+		vi.spyOn(tabs, 'query').mockResolvedValue([
+			tab({ title: 'New Tab', url: 'about:newtab' }),
+		]);
+		const create = vi.spyOn(bookmarks, 'create');
+
+		await expect(quickSave()).rejects.toBeInstanceOf(NothingToSaveError);
+		expect(create).not.toHaveBeenCalled();
+	});
+
 	it('saves the current tab into the stored See Later folder', async () => {
 		await browser.storage.local.set({ [KEY]: 'F1' });
 		vi.spyOn(tabs, 'query').mockResolvedValue([

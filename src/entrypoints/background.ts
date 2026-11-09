@@ -3,6 +3,7 @@ import { i18n, loadLanguage } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import type { ExtensionMessage } from '@/utils/notify';
 import { quickSave } from '@/utils/seeLater';
+import { NothingToSaveError } from '@/utils/tabs';
 
 const showNotification = async (message: string) => {
 	const granted = await browser.permissions.contains({
@@ -25,6 +26,10 @@ const handleQuickSave = async () => {
 		const { folderTitle } = await quickSave();
 		showNotification(i18n.t('seeLaterSuccess', { folderName: folderTitle }));
 	} catch (error) {
+		if (error instanceof NothingToSaveError) {
+			showNotification(i18n.t('nothingToSave'));
+			return;
+		}
 		logError('Quick save failed', error);
 		showNotification(i18n.t('seeLaterError'));
 	}

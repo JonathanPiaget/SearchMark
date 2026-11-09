@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { getCurrentTab } from '@/utils/tabs';
+import { getCurrentTab, isBlankPage } from '@/utils/tabs';
 
 interface TabsApi {
 	query(info: Browser.tabs.QueryInfo): Promise<Browser.tabs.Tab[]>;
@@ -86,4 +86,20 @@ describe('getCurrentTab', () => {
 
 		await expect(getCurrentTab()).rejects.toThrow('No current tab');
 	});
+});
+
+describe('isBlankPage', () => {
+	it.each([
+		'',
+		'about:blank',
+		'about:newtab',
+		'About:NewTab',
+		'chrome://newtab/',
+	])('is true for %j', (url) => expect(isBlankPage(url)).toBe(true));
+
+	it.each([
+		'https://example.com',
+		'about:config',
+		'chrome://extensions/shortcuts',
+	])('is false for %j', (url) => expect(isBlankPage(url)).toBe(false));
 });

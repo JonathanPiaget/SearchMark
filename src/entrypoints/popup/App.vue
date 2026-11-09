@@ -6,7 +6,7 @@ import { useSaveBookmark } from '@/composables/useSaveBookmark';
 import { useTheme } from '@/composables/useTheme';
 import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
-import { getCurrentTab } from '@/utils/tabs';
+import { getCurrentTab, isBlankPage } from '@/utils/tabs';
 import IconBookmarkPlus from '~icons/lucide/bookmark-plus';
 import IconSearch from '~icons/lucide/search';
 import BookmarkForm from './components/BookmarkForm.vue';
@@ -41,6 +41,7 @@ const { selectedFolderId, selectedFolderName, pendingFolder, save } =
 	useSaveBookmark();
 
 const hasOpenedSearch = ref(false);
+const isBlank = computed(() => isBlankPage(bookmarkUrl.value));
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const searchViewRef = ref<{ focus: () => void } | null>(null);
 
@@ -112,6 +113,9 @@ const handleBookmarkDeleted = async () => {
 };
 
 const saveBookmark = async () => {
+	if (isBlank.value) {
+		return;
+	}
 	isLoading.value = true;
 	try {
 		await save({ title: bookmarkTitle.value, url: bookmarkUrl.value });
@@ -189,8 +193,9 @@ const saveBookmark = async () => {
       />
 
       <SaveButton
-        :message="message"
+        :message="isBlank ? i18n.t('nothingToSave') : message"
         :is-loading="isLoading"
+        :disabled="isBlank"
         @save="saveBookmark"
       />
     </div>
