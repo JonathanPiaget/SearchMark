@@ -55,11 +55,22 @@
       v-if="!error"
       :results="results"
       :is-loading="isLoading"
-      :empty-message="scopeId ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch')"
+      :empty-message="emptyMessage"
       @select="handleSelect"
       @bookmark-deleted="remove"
       @escape-top="focus"
-    />
+    >
+      <template #empty-action>
+        <button
+          v-if="query.trim() && !fuzzy"
+          type="button"
+          class="fuzzy-retry"
+          @click="fuzzy = true"
+        >
+          {{ i18n.t('retryWithFuzzy') }}
+        </button>
+      </template>
+    </BookmarkList>
 
     <div v-if="hiddenCount" class="more-results">
       {{ i18n.t('moreResults', hiddenCount) }}
@@ -89,6 +100,7 @@ const {
 	scopeId,
 	query,
 	recursive,
+	fuzzy,
 	results,
 	hiddenCount,
 	isLoading,
@@ -98,6 +110,12 @@ const {
 } = useBookmarkBrowser(folderMap, allFolders);
 
 const scope = computed(() => folderMap.value.get(scopeId.value));
+const emptyMessage = computed(() => {
+	if (query.value.trim())
+		return i18n.t('noResultsFor', { query: query.value.trim() });
+	return scopeId.value ? i18n.t('emptyFolderMessage') : i18n.t('typeToSearch');
+});
+
 const errorMessage = computed(() => (error.value ? i18n.t(error.value) : ''));
 
 const focus = () => {
@@ -155,6 +173,24 @@ onMounted(async () => {
   border-radius: 6px;
   font-size: 13px;
   text-align: center;
+}
+
+.fuzzy-retry {
+  margin-top: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.fuzzy-retry:hover {
+  background: var(--accent-primary);
+  color: var(--accent-text);
 }
 
 .search-options {

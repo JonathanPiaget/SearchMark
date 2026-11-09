@@ -8,6 +8,7 @@
     <div v-else-if="results.length === 0" class="empty-state">
       <span class="icon"><IconInbox /></span>
       <span class="message">{{ emptyMessage || i18n.t('noBookmarksInFolder') }}</span>
+      <slot name="empty-action" />
     </div>
 
     <div v-else class="bookmark-items">

@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures';
 import {
 	findTabIdByUrl,
+	getStorage,
 	openPopup,
 	seedBookmarks,
 	setStorage,
@@ -190,4 +191,12 @@ test('typo tolerance switched off in settings hides fuzzy matches', async ({
 	await switchToSearch(popup);
 	await searchInput(popup).fill('alhpa');
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
+
+	await popup
+		.getByRole('button', { name: 'Retry with typo tolerance' })
+		.click();
+	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(1);
+	await expect
+		.poll(() => getStorage(serviceWorker, 'searchmark_fuzzy_search'))
+		.toBe(true);
 });
