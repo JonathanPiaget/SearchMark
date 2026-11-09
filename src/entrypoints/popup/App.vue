@@ -193,6 +193,7 @@ const saveBookmark = async () => {
 
       <SaveButton
         :message="isBlank ? i18n.t('nothingToSave') : message"
+        :error="!isBlank && !!message"
         :is-loading="isLoading"
         :disabled="isBlank"
         @save="saveBookmark"

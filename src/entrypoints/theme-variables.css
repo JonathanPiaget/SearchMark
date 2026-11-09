@@ -40,9 +40,9 @@
 	--error-bg: #fef2f2;
 	--error-text: #dc2626;
 	--error-border: #fecaca;
-	--success-bg: var(--surface-2);
-	--success-text: var(--accent-line);
-	--success-border: var(--border);
+	--warning-bg: #fffbeb;
+	--warning-text: #b45309;
+	--warning-border: #fde68a;
 }
 
 html[data-theme="dark"] {
@@ -64,6 +64,9 @@ html[data-theme="dark"] {
 	--error-bg: #3d1f1f;
 	--error-text: #ff6b6b;
 	--error-border: #5a2f2f;
+	--warning-bg: #3a2a12;
+	--warning-text: #fbbf24;
+	--warning-border: #5c4318;
 
 	--accent-secondary: oklch(0.58 0.2 295);
 	--accent-hover: oklch(0.72 0.17 295);

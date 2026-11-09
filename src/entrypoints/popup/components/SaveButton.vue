@@ -4,17 +4,22 @@
       <span>{{ isLoading ? i18n.t('saving') : i18n.t('saveBookmark') }}</span>
       <kbd v-if="!isLoading" class="key" aria-hidden="true">↵</kbd>
     </button>
-    <div v-if="message" class="message" :class="{ 'error': message.includes('Error') }">
-      {{ message }}
+    <div v-if="message" class="message" :class="{ error }">
+      <IconCircleAlert v-if="error" class="message-icon" />
+      <IconInfo v-else class="message-icon" />
+      <span>{{ message }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { i18n } from '@/utils/i18n';
+import IconCircleAlert from '~icons/lucide/circle-alert';
+import IconInfo from '~icons/lucide/info';
 
 interface Props {
 	message?: string;
+	error?: boolean;
 	isLoading?: boolean;
 	disabled?: boolean;
 }
@@ -77,14 +82,24 @@ const handleSave = () => {
 }
 
 .message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-size: 13px;
   padding: 8px 12px;
   border-radius: 6px;
   text-align: center;
-  background: var(--success-bg);
-  color: var(--success-text);
-  border: 1px solid var(--success-border);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.message-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
 }
 
 .message.error {
