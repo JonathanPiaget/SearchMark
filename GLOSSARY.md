@@ -67,7 +67,7 @@ The folder a search is narrowed to, shown as a chip in the input. In the Search 
 _Avoid_: folder filter, selected folder, current folder, context, parent
 
 **Fuzzy matching** / **Exact matching**:
-The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. Folder search and search each remember their own choice.
+The two ways a typed query is compared to a title. Both ignore case and accents ("developpement" finds "Développement"). Fuzzy accepts skipped letters as long as they stay in order, and tolerates typos (a swapped, wrong, extra or missing letter) in each word of the query, the longer the word the more typos; exact requires a substring. In both modes the matched letters are highlighted in the result; for a typo-corrected word the whole word is highlighted. One setting, on by default and changed in Settings, applies to both folder search and search; when a search finds nothing, the empty state offers to switch it on.
 _Avoid_: fuzzy search, strict, substring mode
 
 **Typo tier**:

@@ -22,7 +22,7 @@ Supercharge your browser's **native bookmarks**: fast fuzzy search, keyboard-fir
 Open the popup with `Ctrl+Shift+X` (`Cmd+Shift+X` on Mac) - the current page title and URL are pre-filled, ready to edit and save to the folder you pick.
 
 **Folder Search**
-Find bookmark folders by typing their names with real-time filtering. Toggle between fuzzy and exact matching. Navigate results with arrow keys, expand child folders, and see breadcrumb paths with highlighted matches.
+Find bookmark folders by typing their names with real-time filtering and typo-tolerant matching (switchable in Settings). Navigate results with arrow keys, expand child folders, and see breadcrumb paths with highlighted matches.
 
 **Bookmark Search**
 Search bookmarks across all folders or within a specific one, with typo-tolerant fuzzy matching and highlighted results. Browse folder contents recursively or directly.
