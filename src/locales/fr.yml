@@ -63,7 +63,6 @@ bookmarkDeleted: Favori supprimé
 delete: Supprimer le favori
 confirmDelete: Voulez-vous vraiment supprimer ce favori ?
 seeLater: Voir plus tard
-seeLaterTooltip: Enregistrer dans votre dossier « Voir plus tard »
 seeLaterInstead: Enregistrer plutôt dans « {folder} »
 seeLaterSuccess: Enregistré dans « {folderName} » pour plus tard
 seeLaterError: Échec de l'enregistrement dans le dossier « Voir plus tard »

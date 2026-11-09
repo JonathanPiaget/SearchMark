@@ -61,7 +61,6 @@ bookmarkDeleted: Bookmark deleted successfully
 delete: Delete bookmark
 confirmDelete: Are you sure you want to delete this bookmark?
 seeLater: See Later
-seeLaterTooltip: Save to your "See Later" folder
 seeLaterInstead: Save to "{folder}" instead
 seeLaterSuccess: Saved to "{folderName}" for later
 seeLaterError: Failed to save to "See Later" folder
