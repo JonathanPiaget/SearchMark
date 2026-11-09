@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { useCachedFlag } from '@/composables/useCachedFlag';
 import { stubLocalStorage } from '@/test-utils/localStorage';
+import { triggerStorageChange } from '@/test-utils/storageEvents';
 
 const KEY = 'test_flag';
 const cache = stubLocalStorage();
@@ -40,5 +41,16 @@ describe('useCachedFlag', () => {
 		await nextTick();
 		expect(cache.get(KEY)).toBe('false');
 		expect(await storage.getItem(`local:${KEY}`)).toBe(false);
+	});
+
+	it('follows a change made elsewhere to the same key', async () => {
+		const a = useCachedFlag(KEY);
+		const b = useCachedFlag(KEY);
+		b.flag.value = false;
+		await nextTick();
+		await triggerStorageChange('local', {
+			[KEY]: { oldValue: true, newValue: false },
+		});
+		expect(a.flag.value).toBe(false);
 	});
 });

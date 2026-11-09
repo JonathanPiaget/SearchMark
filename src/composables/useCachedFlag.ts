@@ -14,6 +14,10 @@ export function useCachedFlag(key: string) {
 		flag.value = await item.getValue();
 	};
 
+	item.watch((value) => {
+		flag.value = value;
+	});
+
 	return { flag, load };
 }
 
