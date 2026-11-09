@@ -140,7 +140,6 @@ const saveBookmark = async () => {
         <h1>SearchMark</h1>
       </div>
       <div class="header-buttons">
-        <SeeLaterButton />
         <ShortcutsHelp />
         <SettingsButton />
         <ThemeToggle />
@@ -198,6 +197,8 @@ const saveBookmark = async () => {
         :disabled="isBlank"
         @save="saveBookmark"
       />
+
+      <SeeLaterButton />
     </div>
 
     <!-- Search View -->
@@ -257,5 +258,9 @@ const saveBookmark = async () => {
 
 .save-view .form-group {
   margin-bottom: 16px;
+}
+
+.save-view .see-later {
+  margin-top: 12px;
 }
 </style>

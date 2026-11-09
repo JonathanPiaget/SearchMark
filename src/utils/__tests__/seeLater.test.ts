@@ -7,6 +7,7 @@ import { languageItem, loadLanguage } from '@/utils/i18n';
 import {
 	getOrCreateSeeLaterFolder,
 	getSeeLaterFolderId,
+	getSeeLaterFolderTitle,
 	quickSave,
 	setSeeLaterFolderId,
 	watchSeeLaterFolderId,
@@ -133,6 +134,34 @@ describe('watchSeeLaterFolderId', () => {
 		});
 
 		expect(callback).not.toHaveBeenCalled();
+	});
+});
+
+describe('getSeeLaterFolderTitle', () => {
+	it('returns the stored folder title', async () => {
+		await browser.storage.local.set({ [KEY]: 'F1' });
+		vi.spyOn(bookmarks, 'get').mockResolvedValue([
+			node({ id: 'F1', title: 'Read Later' }),
+		]);
+
+		await expect(getSeeLaterFolderTitle()).resolves.toBe('Read Later');
+	});
+
+	it('returns the title of an existing See Later folder when nothing is stored', async () => {
+		vi.spyOn(bookmarks, 'search').mockResolvedValue([
+			node({ id: 'OLD', title: 'See Later' }),
+		]);
+
+		await expect(getSeeLaterFolderTitle()).resolves.toBe('See Later');
+		await expect(storedId()).resolves.toBeUndefined();
+	});
+
+	it('falls back to the translated default without creating anything', async () => {
+		mockEmptyToolbarTree();
+		const create = vi.spyOn(bookmarks, 'create');
+
+		await expect(getSeeLaterFolderTitle()).resolves.toBe('See Later');
+		expect(create).not.toHaveBeenCalled();
 	});
 });
 

@@ -46,6 +46,12 @@ const findExistingSeeLaterFolder = async () => {
 	return null;
 };
 
+export const getSeeLaterFolderTitle = async (): Promise<string> => {
+	const folder =
+		(await getStoredFolder()) ?? (await findExistingSeeLaterFolder());
+	return folder?.title || i18n.t('seeLater');
+};
+
 export const getOrCreateSeeLaterFolder = async (): Promise<{
 	id: string;
 	title: string;

@@ -1,15 +1,21 @@
 <template>
-  <button
-    class="see-later-button"
-    :aria-label="i18n.t('seeLater')"
-    :title="tooltip"
-    :disabled="isLoading"
-    @click="handleSeeLater"
-  >
-    <span class="see-later-icon" :class="{ loading: isLoading }">
-      <IconClock />
-    </span>
-  </button>
+  <p class="see-later">
+    <button
+      type="button"
+      class="see-later-button"
+      :class="{ loading: isLoading }"
+      :title="label"
+      :disabled="isLoading"
+      @click="handleSeeLater"
+    >
+      <IconClock class="see-later-icon" />
+      <span>{{ i18n.t('seeLaterInstead', { folder: shortFolderTitle }) }}</span>
+    </button>
+    <template v-if="shortcut">
+      <span aria-hidden="true">·</span>
+      <kbd class="see-later-key" aria-hidden="true">{{ shortcut }}</kbd>
+    </template>
+  </p>
 </template>
 
 <script lang="ts" setup>
@@ -18,21 +24,28 @@ import { getQuickSaveShortcut } from '@/utils/commands';
 import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
-import { quickSave } from '@/utils/seeLater';
+import { getSeeLaterFolderTitle, quickSave } from '@/utils/seeLater';
 import IconClock from '~icons/lucide/clock';
 
 const isLoading = ref(false);
 const shortcut = ref<string>();
+const folderTitle = ref(i18n.t('seeLater'));
+const MAX_FOLDER_CHARS = 24;
+const shortFolderTitle = computed(() =>
+	folderTitle.value.length > MAX_FOLDER_CHARS
+		? `${folderTitle.value.slice(0, MAX_FOLDER_CHARS - 1).trimEnd()}…`
+		: folderTitle.value,
+);
+const label = computed(() =>
+	i18n.t('seeLaterInstead', { folder: folderTitle.value }),
+);
 
 onMounted(async () => {
-	shortcut.value = await getQuickSaveShortcut();
+	[shortcut.value, folderTitle.value] = await Promise.all([
+		getQuickSaveShortcut(),
+		getSeeLaterFolderTitle(),
+	]);
 });
-
-const tooltip = computed(() =>
-	shortcut.value
-		? `${i18n.t('seeLaterTooltip')} (${shortcut.value})`
-		: i18n.t('seeLaterTooltip'),
-);
 
 const handleSeeLater = async () => {
 	isLoading.value = true;
@@ -50,42 +63,56 @@ const handleSeeLater = async () => {
 </script>
 
 <style scoped>
-.see-later-button {
-  background: transparent;
-  border: 1px solid var(--border-primary);
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.see-later {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 32px;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.see-later-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--accent-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .see-later-button:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  transform: scale(1.05);
-}
-
-.see-later-button:active:not(:disabled) {
-  transform: scale(0.95);
+  color: var(--accent-hover);
 }
 
 .see-later-button:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.see-later-icon {
-  font-size: 16px;
-  display: inline-block;
+.see-later-button.loading {
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-.see-later-icon.loading {
-  animation: pulse 1.5s ease-in-out infinite;
+.see-later-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.see-later-key {
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: var(--input-bg);
+  border: 1px solid var(--border-secondary);
+  border-radius: 5px;
 }
 
 @keyframes pulse {
