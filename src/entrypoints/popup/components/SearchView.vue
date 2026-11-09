@@ -32,16 +32,6 @@
         >
           <IconX />
         </button>
-        <button
-          type="button"
-          class="fuzzy-button"
-          :class="{ active: fuzzy }"
-          :aria-pressed="fuzzy"
-          :title="i18n.t('fuzzySearchTooltip')"
-          @mousedown.prevent="fuzzy = !fuzzy"
-        >
-          <IconApproximately />
-        </button>
       </div>
     </div>
 
@@ -87,7 +77,6 @@ import {
 } from '@/composables/useBookmarkBrowser';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { i18n } from '@/utils/i18n';
-import IconApproximately from '~icons/lucide/equal-approximately';
 import IconFolder from '~icons/lucide/folder';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
@@ -100,7 +89,6 @@ const {
 	scopeId,
 	query,
 	recursive,
-	fuzzy,
 	results,
 	hiddenCount,
 	isLoading,
@@ -247,30 +235,6 @@ onMounted(async () => {
 }
 
 .scope-clear:hover {
-  color: var(--text-primary);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.checkbox-input {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: var(--accent-primary);
-}
-
-.checkbox-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.checkbox-label:hover .checkbox-text {
   color: var(--text-primary);
 }
 

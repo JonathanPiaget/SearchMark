@@ -16,3 +16,5 @@ export function useCachedFlag(key: string) {
 
 	return { flag, load };
 }
+
+export const useFuzzyFlag = () => useCachedFlag('searchmark_fuzzy_search');

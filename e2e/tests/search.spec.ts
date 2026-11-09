@@ -1,6 +1,11 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures';
-import { findTabIdByUrl, openPopup, seedBookmarks } from '../helpers';
+import {
+	findTabIdByUrl,
+	openPopup,
+	seedBookmarks,
+	setStorage,
+} from '../helpers';
 
 const searchInput = (popup: Page) =>
 	popup.locator('.search-view .search-input');
@@ -54,10 +59,10 @@ test('a scope lists its subfolder items and narrows the search within it', async
 		.poll(sortedTitles)
 		.toEqual(['Nested Doc', 'Sub', 'Work Root Doc']);
 
-	await popup.locator('.search-view .search-options .checkbox-input').uncheck();
+	await popup.getByRole('checkbox', { name: 'Include subfolders' }).uncheck();
 	await expect.poll(sortedTitles).toEqual(['Sub', 'Work Root Doc']);
 
-	await popup.locator('.search-view .search-options .checkbox-input').check();
+	await popup.getByRole('checkbox', { name: 'Include subfolders' }).check();
 	await expect
 		.poll(sortedTitles)
 		.toEqual(['Nested Doc', 'Sub', 'Work Root Doc']);
@@ -163,7 +168,7 @@ test('fuzzy matching without a scope lists more than ten matches', async ({
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(30);
 });
 
-test('the fuzzy button toggles typo tolerance', async ({
+test('typo tolerance switched off in settings hides fuzzy matches', async ({
 	context,
 	serviceWorker,
 	extensionId,
@@ -177,13 +182,12 @@ test('the fuzzy button toggles typo tolerance', async ({
 
 	const popup = await openPopup(context, extensionId);
 	await switchToSearch(popup);
-	const fuzzyButton = popup.locator('.search-view .fuzzy-button');
-	await expect(fuzzyButton).toHaveAttribute('aria-pressed', 'true');
-
 	await searchInput(popup).fill('alhpa');
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(1);
 
-	await fuzzyButton.click();
-	await expect(fuzzyButton).toHaveAttribute('aria-pressed', 'false');
+	await setStorage(serviceWorker, 'searchmark_fuzzy_search', false);
+	await popup.reload();
+	await switchToSearch(popup);
+	await searchInput(popup).fill('alhpa');
 	await expect(popup.locator('.search-view .bookmark-item')).toHaveCount(0);
 });

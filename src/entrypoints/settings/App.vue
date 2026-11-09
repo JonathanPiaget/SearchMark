@@ -103,6 +103,23 @@
         </div>
       </section>
 
+      <section class="settings-section">
+        <h2>{{ i18n.t('search') }}</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="fuzzy-search-toggle" class="setting-label">{{ i18n.t('fuzzySearch') }}</label>
+            <p class="setting-description">{{ i18n.t('fuzzySearchDescription') }}</p>
+          </div>
+          <input
+            id="fuzzy-search-toggle"
+            v-model="fuzzySearch"
+            type="checkbox"
+            class="toggle-checkbox"
+          >
+        </div>
+      </section>
+
       <section class="settings-section support-section">
         <h2>{{ i18n.t('support') }}</h2>
 
@@ -151,7 +168,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { useCachedFlag } from '@/composables/useCachedFlag';
+import { useCachedFlag, useFuzzyFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import type { Theme } from '@/composables/useTheme';
 import { useTheme } from '@/composables/useTheme';
@@ -179,6 +196,7 @@ const selectedFolderId = ref('');
 const notificationsEnabled = ref(false);
 const { flag: stripTrackingParams, load: loadStripTrackingParams } =
 	useCachedFlag(STRIP_TRACKING_PARAMS_KEY);
+const { flag: fuzzySearch, load: loadFuzzySearch } = useFuzzyFlag();
 
 const isFirefox = computed(() => navigator.userAgent.includes('Firefox'));
 
@@ -215,6 +233,7 @@ onMounted(async () => {
 	selectedTheme.value = currentTheme.value;
 	selectedLanguage.value = await languageItem.getValue();
 	await loadStripTrackingParams();
+	await loadFuzzySearch();
 	notificationsEnabled.value = await browser.permissions.contains({
 		permissions: ['notifications'],
 	});

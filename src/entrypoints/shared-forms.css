@@ -71,38 +71,27 @@
 	color: var(--bg-primary);
 }
 
-/* Fuzzy matching toggle inside search inputs */
-.fuzzy-button {
+/* Checkbox with label */
+.checkbox-label {
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	width: 24px;
-	height: 24px;
-	padding: 0;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	background: none;
-	color: var(--text-secondary);
+	gap: 8px;
 	cursor: pointer;
-	flex-shrink: 0;
-	transition:
-		color 0.15s ease,
-		background-color 0.15s ease,
-		border-color 0.15s ease;
+	user-select: none;
 }
 
-.fuzzy-button svg {
+.checkbox-input {
 	width: 16px;
 	height: 16px;
+	cursor: pointer;
+	accent-color: var(--accent-primary);
 }
 
-.fuzzy-button:hover {
-	background: var(--bg-tertiary);
+.checkbox-text {
+	font-size: 13px;
+	color: var(--text-secondary);
+}
+
+.checkbox-label:hover .checkbox-text {
 	color: var(--text-primary);
-}
-
-.fuzzy-button.active {
-	background: var(--accent-soft);
-	border-color: var(--accent-primary);
-	color: var(--accent-primary);
 }

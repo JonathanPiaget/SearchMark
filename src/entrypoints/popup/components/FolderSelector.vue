@@ -33,17 +33,6 @@
         >
           <IconX />
         </button>
-        <button
-          type="button"
-          class="fuzzy-button"
-          :class="{ active: isFuzzy }"
-          :aria-pressed="isFuzzy"
-          :title="i18n.t('fuzzySearchTooltip')"
-          :disabled="isInitializing"
-          @mousedown.prevent="isFuzzy = !isFuzzy"
-        >
-          <IconApproximately />
-        </button>
         <div
           v-if="isOpen && (inputText.trim() || scope)"
           ref="dropdownRef"
@@ -206,7 +195,6 @@ import { useFolderTree } from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
 import { i18n } from '@/utils/i18n';
 import IconArrowBigUp from '~icons/lucide/arrow-big-up';
-import IconApproximately from '~icons/lucide/equal-approximately';
 import IconFolder from '~icons/lucide/folder';
 import IconFolderPlus from '~icons/lucide/folder-plus';
 import IconFolders from '~icons/lucide/folders';
@@ -265,7 +253,6 @@ const picker = useFolderPicker({
 const {
 	inputText,
 	isOpen,
-	isFuzzy,
 	rows,
 	matchCount,
 	highlighted,
@@ -394,25 +381,13 @@ onMounted(async () => {
   position: relative;
 }
 
-.search-container .form-input {
-  padding-right: 36px;
-}
-
-.search-container .form-input.has-clear {
-  padding-right: 60px;
-}
-
-.search-container .clear-button {
-  right: 36px;
-}
-
 .search-container .form-input.has-pending {
-  padding-right: 128px;
+  padding-right: 100px;
 }
 
 .pending-badge {
   position: absolute;
-  right: 64px;
+  right: 36px;
   top: 50%;
   transform: translateY(-50%);
   padding: 2px 8px;
@@ -521,13 +496,6 @@ onMounted(async () => {
   border-color: transparent;
   box-shadow: none;
   color: inherit;
-}
-
-.search-container .fuzzy-button {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .dropdown-header {

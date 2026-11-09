@@ -84,7 +84,8 @@ moreResults:
   1: 1 more result...
   n: $1 more results...
 bookmarkToolbar: Bookmark toolbar
-fuzzySearchTooltip: Finds results from partial input, even with skipped letters (as long as they stay in order), missing accents or a few typos.
+fuzzySearch: Typo-tolerant search
+fuzzySearchDescription: 'Tolerate typos and abbreviations when searching folders and bookmarks: "gudie" or "gd" find "Guide"'
 clearSelection: Clear selection
 clearScope: Clear folder
 shortcutsTitle: Keyboard shortcuts

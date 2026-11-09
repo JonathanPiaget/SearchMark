@@ -133,17 +133,17 @@ describe('useBookmarkBrowser', () => {
 		state.query.value = 'alp';
 		expect(state.results.value[0]?.indexes).toEqual([0, 1, 2]);
 		await flush();
-		expect(await storage.getItem('local:searchmark_fuzzy_filter')).toBe(false);
+		expect(await storage.getItem('local:searchmark_fuzzy_search')).toBe(false);
 	});
 
 	it('starts from the cached fuzzy choice and caches changes', async () => {
-		cache.set('searchmark_fuzzy_filter', 'false');
+		cache.set('searchmark_fuzzy_search', 'false');
 		const state = useBookmarkBrowser(folderMap, allFolders);
 		expect(state.fuzzy.value).toBe(false);
 
 		state.fuzzy.value = true;
 		await flush();
-		expect(cache.get('searchmark_fuzzy_filter')).toBe('true');
+		expect(cache.get('searchmark_fuzzy_search')).toBe('true');
 	});
 
 	it('caps results and reports the hidden count', async () => {

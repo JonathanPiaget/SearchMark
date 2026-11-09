@@ -1,6 +1,6 @@
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
-import { useCachedFlag } from '@/composables/useCachedFlag';
+import { useFuzzyFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { matchByTitle } from '@/utils/matchByTitle';
 
@@ -40,9 +40,7 @@ export function useFolderPicker(options: FolderPickerOptions) {
 	const { folders, modelValue } = options;
 	const inputText = ref('');
 	const isOpen = ref(false);
-	const { flag: isFuzzy, load: loadFuzzy } = useCachedFlag(
-		'searchmark_fuzzy_search',
-	);
+	const { flag: isFuzzy, load: loadFuzzy } = useFuzzyFlag();
 	const selected = ref<BookmarkFolder | null>(null);
 	const pending = ref<PendingFolder | null>(null);
 	const highlighted = ref({ row: -1, child: -1 });

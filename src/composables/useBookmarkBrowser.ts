@@ -2,7 +2,7 @@ import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { BookmarkItem } from '@/composables/useBookmarkFolder';
 import { useBookmarkFolder } from '@/composables/useBookmarkFolder';
-import { useCachedFlag } from '@/composables/useCachedFlag';
+import { useFuzzyFlag } from '@/composables/useCachedFlag';
 import type { BookmarkFolder } from '@/composables/useFolderTree';
 import { logError } from '@/utils/logger';
 import type { TitleMatch } from '@/utils/matchByTitle';
@@ -26,9 +26,7 @@ export function useBookmarkBrowser(
 	const scopeId = ref('');
 	const query = ref('');
 	const recursive = ref(true);
-	const { flag: fuzzy, load: loadFuzzy } = useCachedFlag(
-		'searchmark_fuzzy_filter',
-	);
+	const { flag: fuzzy, load: loadFuzzy } = useFuzzyFlag();
 
 	const scoped = useBookmarkFolder(folderMap);
 	const all = useBookmarkFolder(folderMap);
