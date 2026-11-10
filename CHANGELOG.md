@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0]
+
+### Changed
+
+- The save view no longer shows the URL field: the current page's URL is saved as is
+- Removed tracking parameters are now listed just above the Save button, with a shield icon and the Restore / Remove link
+
+### Fixed
+
+- Firefox: the quick-save shortcut next to "See Later" is shown with key symbols (⌘⇧B) instead of plain text
+
 ## [1.19.0]
 
 ### Added
