@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures';
-import { openPopup } from '../helpers';
+import { getToolbarId, listBookmarks, openPopup } from '../helpers';
 
 const TAB = {
 	url: 'https://example.com/article?id=1&utm_source=x&fbclid=y',
@@ -8,14 +8,13 @@ const TAB = {
 
 test('the Save view toggles tracking parameters and names them', async ({
 	context,
+	serviceWorker,
 	extensionId,
 }) => {
 	const popup = await openPopup(context, extensionId, { tab: TAB });
-	const url = popup.locator('#url');
-	const note = popup.locator('.url-note');
-	const clean = 'https://example.com/article?id=1';
+	const note = popup.locator('.tracking-note');
 
-	await expect(url).toHaveValue(clean);
+	await expect(popup.locator('#url')).toHaveCount(0);
 	await expect(note).toContainText('Tracking parameters removed');
 	await expect(note.locator('.tracking-param')).toHaveText([
 		'utm_source',
@@ -24,7 +23,6 @@ test('the Save view toggles tracking parameters and names them', async ({
 
 	await note.getByRole('button', { name: 'Restore' }).click();
 
-	await expect(url).toHaveValue(TAB.url);
 	await expect(note).not.toContainText('removed');
 	await expect(note.locator('.tracking-param')).toHaveText([
 		'utm_source',
@@ -33,19 +31,17 @@ test('the Save view toggles tracking parameters and names them', async ({
 
 	await note.getByRole('button', { name: 'Remove' }).click();
 
-	await expect(url).toHaveValue(clean);
 	await expect(note).toContainText('Tracking parameters removed');
-});
 
-test('the note disappears once the url is edited by hand', async ({
-	context,
-	extensionId,
-}) => {
-	const popup = await openPopup(context, extensionId, { tab: TAB });
+	await note.getByRole('button', { name: 'Restore' }).click();
+	await popup.locator('.save-button').click();
 
-	await popup.fill('#url', 'https://example.com/other');
-
-	await expect(popup.locator('.url-note')).toHaveCount(0);
+	const toolbarId = await getToolbarId(serviceWorker);
+	await expect
+		.poll(async () =>
+			(await listBookmarks(serviceWorker, toolbarId)).map((b) => b.url),
+		)
+		.toContain(TAB.url);
 });
 
 test('the Save view shows no note when the url is already clean', async ({
@@ -56,8 +52,6 @@ test('the Save view shows no note when the url is already clean', async ({
 		tab: { url: 'https://example.com/article?id=1', title: 'Clean' },
 	});
 
-	await expect(popup.locator('#url')).toHaveValue(
-		'https://example.com/article?id=1',
-	);
-	await expect(popup.getByRole('button', { name: 'Restore' })).toHaveCount(0);
+	await expect(popup.locator('#title')).toHaveValue('Clean');
+	await expect(popup.locator('.tracking-note')).toHaveCount(0);
 });

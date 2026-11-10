@@ -29,11 +29,6 @@ const bookmarkTitle = ref('');
 const rawUrl = ref('');
 const removedParams = ref<string[]>([]);
 const trackingRemoved = computed(() => bookmarkUrl.value === currentUrl.value);
-const shownTrackingParams = computed(() =>
-	trackingRemoved.value || bookmarkUrl.value === rawUrl.value
-		? removedParams.value
-		: [],
-);
 const toggleTracking = () => {
 	bookmarkUrl.value = trackingRemoved.value ? rawUrl.value : currentUrl.value;
 };
@@ -42,7 +37,6 @@ const { selectedFolderId, selectedFolderName, pendingFolder, save } =
 
 const hasOpenedSearch = ref(false);
 const isBlank = computed(() => isBlankPage(bookmarkUrl.value));
-const isTabBlank = computed(() => isBlankPage(currentUrl.value));
 const folderSelectorRef = ref<{ focus: () => void } | null>(null);
 const searchViewRef = ref<{ focus: () => void } | null>(null);
 
@@ -184,9 +178,8 @@ const saveBookmark = async () => {
       />
 
       <BookmarkForm
-        v-model:model-url="bookmarkUrl"
         v-model:model-title="bookmarkTitle"
-        :tracking-params="shownTrackingParams"
+        :tracking-params="removedParams"
         :tracking-removed="trackingRemoved"
         @submit="saveBookmark"
         @toggle-tracking="toggleTracking"
@@ -200,7 +193,7 @@ const saveBookmark = async () => {
         @save="saveBookmark"
       />
 
-      <SeeLaterButton v-if="!isTabBlank" />
+      <SeeLaterButton v-if="!isBlank" />
     </div>
 
     <!-- Search View -->

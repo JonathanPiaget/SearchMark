@@ -1,27 +1,6 @@
 <template>
   <div class="bookmark-form">
     <div class="form-group">
-      <label for="url">{{ i18n.t('url') }}</label>
-      <input
-        id="url"
-        v-model="url"
-        type="url"
-        class="form-input"
-        placeholder="https://example.com"
-        @input="updateUrl"
-        @keydown="handleKeydown"
-      >
-      <p v-if="trackingParams.length" class="url-note">
-        {{ i18n.t(trackingRemoved ? 'trackingParamsRemoved' : 'trackingParamsKept', trackingParams.length) }}
-        <code v-for="name in trackingParams" :key="name" class="tracking-param">{{ name }}</code>
-        ·
-        <button type="button" class="url-note-toggle" @click="emit('toggleTracking')">
-          {{ i18n.t(trackingRemoved ? 'restore' : 'remove') }}
-        </button>
-      </p>
-    </div>
-
-    <div class="form-group">
       <label for="title">{{ i18n.t('title') }}</label>
       <input
         id="title"
@@ -34,22 +13,33 @@
       >
     </div>
 
+    <p v-if="trackingParams.length" class="tracking-note">
+      <IconShieldCheck v-if="trackingRemoved" class="tracking-icon removed" />
+      <IconShieldOff v-else class="tracking-icon" />
+      <span class="tracking-text">
+        {{ i18n.t(trackingRemoved ? 'trackingParamsRemoved' : 'trackingParamsKept', trackingParams.length) }}
+        <code v-for="name in trackingParams" :key="name" class="tracking-param">{{ name }}</code>
+      </span>
+      <button type="button" class="tracking-toggle" @click="emit('toggleTracking')">
+        {{ i18n.t(trackingRemoved ? 'restore' : 'remove') }}
+      </button>
+    </p>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { i18n } from '@/utils/i18n';
+import IconShieldCheck from '~icons/lucide/shield-check';
+import IconShieldOff from '~icons/lucide/shield-off';
 
 interface Props {
-	modelUrl: string;
 	modelTitle: string;
 	trackingParams: string[];
 	trackingRemoved: boolean;
 }
 
 interface Emits {
-	(e: 'update:modelUrl', value: string): void;
 	(e: 'update:modelTitle', value: string): void;
 	(e: 'submit'): void;
 	(e: 'toggleTracking'): void;
@@ -58,10 +48,8 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const url = ref(props.modelUrl);
 const title = ref(props.modelTitle);
 
-const updateUrl = () => emit('update:modelUrl', url.value);
 const updateTitle = () => emit('update:modelTitle', title.value);
 
 const handleKeydown = (event: KeyboardEvent) => {
@@ -70,12 +58,6 @@ const handleKeydown = (event: KeyboardEvent) => {
 	}
 };
 
-watch(
-	() => props.modelUrl,
-	(newValue) => {
-		url.value = newValue;
-	},
-);
 watch(
 	() => props.modelTitle,
 	(newValue) => {
@@ -93,14 +75,32 @@ watch(
   margin-bottom: 16px;
 }
 
-.url-note {
+.tracking-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.tracking-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.tracking-icon.removed {
+  color: var(--accent-primary);
+}
+
+.tracking-text {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
 .tracking-param {
@@ -111,7 +111,8 @@ watch(
   font-size: 11px;
 }
 
-.url-note-toggle {
+.tracking-toggle {
+  flex-shrink: 0;
   padding: 0;
   border: none;
   background: none;
