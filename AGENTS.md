@@ -32,6 +32,7 @@ The extension surfaces are a **popup** (save + search views), a **settings** opt
 - Source lives under `src/` (`srcDir: 'src'` in [wxt.config.ts](wxt.config.ts)); the build output goes to `.output/` (gitignored).
 - A [justfile](justfile) provides shortcuts: `just chrome`, `just firefox`, `just test`, `just lint`, `just ci`, `just wt <branch>` / `just wt-rm <branch>`, `just screenshots` (rebuild + regenerate store screenshots, `--list` for options), `just submit-chrome` / `just submit-firefox` (store submission from a local `.env.submit`, see `.env.submit.example`; pass `--dry-run` to only check credentials).
 - Small fixes go straight to `main`. Larger features use a worktree (`/worktree <task>` skill, or `just wt feat/xyz`; `just chrome 3001` for a second dev server) and land via a squash PR gated by the CI checks. Run `just ci` before pushing.
+- **No plan file on `main`, ever** (`docs/plans/`, `tasks/`): a plan lives only in its feature worktree and is deleted before the squash merge. Never create, edit or restore one on `main`.
 - Import aliases (configured by WXT): `@/` and `~/` both map to `src/`, `@@/` and `~~/` map to the repo root.
 
 ## Testing Instructions

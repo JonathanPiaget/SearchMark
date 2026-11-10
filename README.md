@@ -19,7 +19,7 @@ Supercharge your browser's **native bookmarks**: fast fuzzy search, keyboard-fir
 ## Features
 
 **Quick Save**
-Open the popup with `Ctrl+Shift+X` (`Cmd+Shift+X` on Mac) - the current page title and URL are pre-filled, ready to edit and save to the folder you pick.
+Open the popup with `Ctrl+Shift+X` (`Cmd+Shift+X` on Mac) - the current tab's title is pre-filled, ready to edit and save to the folder you pick.
 
 **Folder Search**
 Find bookmark folders by typing their names with real-time filtering and typo-tolerant matching (switchable in Settings). Navigate results with arrow keys, expand child folders, and see breadcrumb paths with highlighted matches.
