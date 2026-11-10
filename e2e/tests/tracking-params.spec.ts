@@ -5,10 +5,10 @@ const TAB = {
 	url: 'https://example.com/article?id=1&utm_source=x&fbclid=y',
 	title: 'Example Article',
 };
+const CLEAN_URL = 'https://example.com/article?id=1';
 
 test('the Save view toggles tracking parameters and names them', async ({
 	context,
-	serviceWorker,
 	extensionId,
 }) => {
 	const popup = await openPopup(context, extensionId, { tab: TAB });
@@ -32,17 +32,34 @@ test('the Save view toggles tracking parameters and names them', async ({
 	await note.getByRole('button', { name: 'Remove' }).click();
 
 	await expect(note).toContainText('Tracking parameters removed');
-
-	await note.getByRole('button', { name: 'Restore' }).click();
-	await popup.locator('.save-button').click();
-
-	const toolbarId = await getToolbarId(serviceWorker);
-	await expect
-		.poll(async () =>
-			(await listBookmarks(serviceWorker, toolbarId)).map((b) => b.url),
-		)
-		.toContain(TAB.url);
 });
+
+for (const { clicks, saved } of [
+	{ clicks: [], saved: CLEAN_URL },
+	{ clicks: ['Restore'], saved: TAB.url },
+	{ clicks: ['Restore', 'Remove'], saved: CLEAN_URL },
+]) {
+	test(`saving after [${clicks.join(', ')}] stores ${saved}`, async ({
+		context,
+		serviceWorker,
+		extensionId,
+	}) => {
+		const popup = await openPopup(context, extensionId, { tab: TAB });
+		const note = popup.locator('.tracking-note');
+
+		for (const name of clicks) {
+			await note.getByRole('button', { name }).click();
+		}
+		await popup.locator('.save-button').click();
+
+		const toolbarId = await getToolbarId(serviceWorker);
+		await expect
+			.poll(async () =>
+				(await listBookmarks(serviceWorker, toolbarId)).map((b) => b.url),
+			)
+			.toEqual([saved]);
+	});
+}
 
 test('the Save view shows no note when the url is already clean', async ({
 	context,
