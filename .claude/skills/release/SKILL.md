@@ -19,12 +19,24 @@ Pushing a version bump to main triggers `.github/workflows/release.yml`: CI, sto
 
    If there are no releasable commits (only chores/deps/CI), say so and stop.
 
-2. **Infer the bump** from conventional commit prefixes, then **confirm with the user** (AskUserQuestion) before writing anything:
+2. **Refresh stale store screenshots.** Stale = the UI changed since the last commit that touched the PNGs:
+
+   ```bash
+   SHOTS=$(git log -1 --format=%H -- 'screenshots/**/*.png')
+   git diff --quiet "$SHOTS"..HEAD -- src public screenshots/*.mjs
+   ```
+
+   - Exit 0 (empty diff) → say "screenshots up to date" and move on.
+   - Exit 1 → run `just screenshots`, then Read every PNG listed by `git status --short screenshots/` to check the rendering.
+
+   Done when `git status` shows the regenerated PNGs (or no pixel change) and each modified PNG has been read.
+
+3. **Infer the bump** from conventional commit prefixes, then **confirm with the user** (AskUserQuestion) before writing anything:
    - breaking change → major
    - any `feat:` → minor
    - otherwise (`fix:` etc.) → patch
 
-3. **Draft the changelog section** and prepend it to CHANGELOG.md right after the intro (above the previous `## [x.y.z]`):
+4. **Draft the changelog section** and prepend it to CHANGELOG.md right after the intro (above the previous `## [x.y.z]`):
 
    ```markdown
    ## [x.y.z]
@@ -45,15 +57,15 @@ Pushing a version bump to main triggers `.github/workflows/release.yml`: CI, sto
    - **Skip** chores, deps bumps, CI, tests, docs, refactors with no visible effect.
    - No dates, no links — the file doesn't use them.
 
-4. **Bump the version** in `package.json` (`"version"` field only — nothing else references the version; the manifest gets it from there at build time).
+5. **Bump the version** in `package.json` (`"version"` field only — nothing else references the version; the manifest gets it from there at build time).
 
-5. **Hand back.** Show the drafted section and suggest the commit message (matches history):
+6. **Hand back.** Show the drafted section and suggest the commit message (matches history):
 
    ```
    chore(release): bump version to x.y.z
    ```
 
-   The commit should touch only `package.json` and `CHANGELOG.md`. Do not commit or push. Remind that pushing to main submits to both stores.
+   The commit should touch only `package.json`, `CHANGELOG.md`, and `screenshots/` when step 2 regenerated PNGs. Do not commit or push. Remind that pushing to main submits to both stores.
 
 ## Gotchas
 
