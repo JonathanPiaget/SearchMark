@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures';
-import { getToolbarId, listBookmarks, openPopup } from '../helpers';
+import { getToolbarId, listBookmarks, openPopup, setStorage } from '../helpers';
 
 const TAB = {
 	url: 'https://example.com/article?id=1&utm_source=x&fbclid=y',
@@ -71,4 +71,25 @@ test('the Save view shows no note when the url is already clean', async ({
 
 	await expect(popup.locator('#title')).toHaveValue('Clean');
 	await expect(popup.locator('.tracking-note')).toHaveCount(0);
+});
+
+test('with the setting off, no note is shown and the raw url is saved', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await setStorage(serviceWorker, 'searchmark_stripTrackingParams', false);
+	const popup = await openPopup(context, extensionId, { tab: TAB });
+
+	await expect(popup.locator('#title')).toHaveValue(TAB.title);
+	await expect(popup.locator('.tracking-note')).toHaveCount(0);
+
+	await popup.locator('.save-button').click();
+
+	const toolbarId = await getToolbarId(serviceWorker);
+	await expect
+		.poll(async () =>
+			(await listBookmarks(serviceWorker, toolbarId)).map((b) => b.url),
+		)
+		.toEqual([TAB.url]);
 });
