@@ -601,6 +601,8 @@ async function capturePopup(context, extensionId, target, scene, messages) {
 	await scene.setup(page);
 
 	if (!scene.keepFocus) {
+		// FolderSelector re-focuses its input for up to 550ms after mount; blurring sooner gets undone.
+		await page.waitForTimeout(600);
 		// Blurring restores the selected folder name in the input.
 		await page.evaluate(() => document.activeElement?.blur());
 	}
@@ -628,6 +630,8 @@ export async function generate({ targets = TARGETS, scenes = SCENES } = {}) {
 		args: [
 			`--disable-extensions-except=${EXTENSION_PATH}`,
 			`--load-extension=${EXTENSION_PATH}`,
+			// GPU rasterization shifts some text pixels by one colour step from run to run.
+			'--disable-gpu',
 		],
 	});
 
