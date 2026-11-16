@@ -1,5 +1,11 @@
 import { expect, test } from '../fixtures';
-import { getToolbarId, listBookmarks, openPopup, setStorage } from '../helpers';
+import {
+	getToolbarId,
+	listBookmarks,
+	openPopup,
+	seedBookmarks,
+	setStorage,
+} from '../helpers';
 
 const TAB = {
 	url: 'https://example.com/article?id=1&utm_source=x&fbclid=y',
@@ -92,4 +98,23 @@ test('with the setting off, no note is shown and the raw url is saved', async ({
 			(await listBookmarks(serviceWorker, toolbarId)).map((b) => b.url),
 		)
 		.toEqual([TAB.url]);
+});
+
+test('the Save view lists a bookmark saved with its tracking parameters', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedBookmarks(serviceWorker, [
+		{ folder: 'Reading', items: [{ title: TAB.title, url: TAB.url }] },
+	]);
+
+	const popup = await openPopup(context, extensionId, { tab: TAB });
+
+	await expect(popup.locator('.tracking-note')).toContainText(
+		'Tracking parameters removed',
+	);
+	await expect(popup.locator('.existing-bookmarks .location-item')).toHaveCount(
+		1,
+	);
 });
