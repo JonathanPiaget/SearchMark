@@ -60,6 +60,29 @@ describe('findBookmarksByUrl', () => {
 		expect(matches[0]?.id).toBe('1');
 	});
 
+	it('gathers the matches of each distinct url', async () => {
+		const searchSpy = vi
+			.spyOn(bookmarks, 'search')
+			.mockImplementation(async (query) => [
+				{
+					id: (query as { url: string }).url,
+					url: (query as { url: string }).url,
+				} as BookmarkTreeNode,
+			]);
+
+		const matches = await findBookmarksByUrl(
+			'https://a.com/',
+			'https://a.com/?utm_source=x',
+			'https://a.com/',
+		);
+
+		expect(matches.map((bookmark) => bookmark.url)).toEqual([
+			'https://a.com/',
+			'https://a.com/?utm_source=x',
+		]);
+		expect(searchSpy).toHaveBeenCalledTimes(2);
+	});
+
 	it('returns an empty array when the search throws', async () => {
 		vi.spyOn(console, 'error').mockImplementation(() => {});
 		vi.spyOn(bookmarks, 'search').mockRejectedValue(new Error('boom'));

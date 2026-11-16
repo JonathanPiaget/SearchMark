@@ -35,6 +35,22 @@ describe('updateBadgeForTab', () => {
 		expect(setBadgeText).toHaveBeenCalledWith({ text: '✓', tabId: 7 });
 	});
 
+	it('marks a tracked tab url as bookmarked when it was saved with its tracking parameters', async () => {
+		const trackedUrl = 'https://example.com/article/?utm_source=x';
+		vi.spyOn(bookmarks, 'search').mockImplementation(async ({ url }) =>
+			url === trackedUrl
+				? [{ id: 'B2', url: trackedUrl } as BookmarkTreeNode]
+				: [],
+		);
+		const setBadgeText = vi
+			.spyOn(actionApi, 'setBadgeText')
+			.mockResolvedValue();
+
+		await updateBadgeForTab(7, trackedUrl);
+
+		expect(setBadgeText).toHaveBeenCalledWith({ text: '✓', tabId: 7 });
+	});
+
 	it('compares the raw tab url when the setting is off', async () => {
 		await storage.setItem('local:searchmark_stripTrackingParams', false);
 		const setBadgeText = vi

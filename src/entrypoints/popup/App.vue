@@ -78,7 +78,7 @@ const loadCurrentTab = async () => {
 		removedParams.value = tab.removedParams;
 
 		await loadFolders();
-		await searchByUrl(tab.url);
+		await searchByUrl(tab.url, tab.rawUrl);
 	} catch (error) {
 		logError('Failed to load current tab', error);
 		message.value = i18n.t('bookmarkError');
@@ -101,7 +101,7 @@ onUnmounted(() => {
 const handleBookmarkDeleted = async () => {
 	// Refresh the bookmark search after deletion
 	if (currentUrl.value) {
-		await searchByUrl(currentUrl.value);
+		await searchByUrl(currentUrl.value, rawUrl.value);
 	}
 };
 

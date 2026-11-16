@@ -37,11 +37,11 @@ The folder Quick Save targets. Either chosen by the user in settings, or created
 _Avoid_: quick save folder, read later, default folder
 
 **Existing bookmark**:
-A bookmark whose URL equals the current tab's URL, after tracking parameters were removed when that setting is on. The Save view lists them so the user can see where the page is already saved and delete it.
+A bookmark whose URL equals the current tab's URL, either as the tab shows it or after tracking parameters were removed when that setting is on. The Save view lists them so the user can see where the page is already saved and delete it.
 _Avoid_: duplicate, already saved, location
 
 **Tracking parameter**:
-A query parameter from a closed, known list (`utm_*`, `fbclid`, `gclid`, ...) that identifies where a click came from, not which page is shown. SearchMark removes them from the current tab's URL before it is saved, listed as an existing bookmark or checked for the badge, unless the user turns this off in settings. The Save view says when it did so and lets the user restore the original URL.
+A query parameter from a closed, known list (`utm_*`, `fbclid`, `gclid`, ...) that identifies where a click came from, not which page is shown. SearchMark removes them from the current tab's URL before it is saved, unless the user turns this off in settings. Existing bookmarks and the badge match the URL both with and without them. The Save view says when it did so and lets the user restore the original URL.
 _Avoid_: tracker, utm, url cleaning, canonical URL
 
 **Pending folder**:
