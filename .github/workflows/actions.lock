@@ -10,6 +10,8 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
         - 'pnpm/action-setup@v6.1.0'
         - 'pre-commit/action@v3.0.1'
+    '.github/workflows/dependabot-auto-merge.yml':
+        - 'dependabot/fetch-metadata@v3.1.0'
     '.github/workflows/manual-release.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
@@ -57,6 +59,11 @@ dependencies:
         commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
+    'dependabot/fetch-metadata@v3.1.0':
+        ref: 'v3.1.0'
+        commit: 'sha1-25dd0e34f4fe68f24cc83900b1fe3fe149efef98'
+        owner_id: 27347476
+        repo_id: 371068214
     'mindsers/changelog-reader-action@v2.4.0':
         ref: 'v2.4.0'
         commit: 'sha1-1faaf50aa09d5793d9a100819973df801febfb31'
