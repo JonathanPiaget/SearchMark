@@ -12,6 +12,9 @@ updates:
       all-github-actions:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     cooldown:
       default-days: 7
 
@@ -26,6 +29,9 @@ updates:
       all-npm-dependencies:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
