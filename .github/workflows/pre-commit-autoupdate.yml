@@ -36,6 +36,7 @@ jobs:
         run: pre-commit run sync-pre-commit-deps --all-files || true
 
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v8.1.1
         with:
           token: ${{ secrets.PR_TOKEN }}
@@ -44,3 +45,11 @@ jobs:
           commit-message: Auto-update pre-commit hooks
           body: Update versions of tools in pre-commit configs to latest version
           labels: update
+
+      # The ruleset on main holds the merge until the required checks pass
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-number
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GH_TOKEN: ${{ secrets.PR_TOKEN }}
