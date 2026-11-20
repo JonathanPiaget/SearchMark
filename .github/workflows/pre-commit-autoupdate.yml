@@ -32,8 +32,9 @@ jobs:
       - name: Autoupdate template
         run: pre-commit autoupdate
 
-      - name: Sync additional_dependencies
-        run: pre-commit run sync-pre-commit-deps --all-files || true
+      # All hooks, not the sync alone: biome restores the indentation the sync rewrites
+      - name: Apply hook fixes
+        run: pre-commit run --all-files || true
 
       - name: Create Pull Request
         id: cpr
