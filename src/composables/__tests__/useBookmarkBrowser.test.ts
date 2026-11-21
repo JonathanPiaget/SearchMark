@@ -230,4 +230,64 @@ describe('useBookmarkBrowser', () => {
 			expect.any(Error),
 		);
 	});
+
+	const openableIds = (state: ReturnType<typeof useBookmarkBrowser>) =>
+		state.openable.value.map((bookmark) => bookmark.id);
+
+	it('offers the scope bookmarks to open, without folders, narrowed by the query', async () => {
+		stubChildren();
+		const state = await setup();
+		state.scopeId.value = 'f1';
+		await flush();
+		expect(openableIds(state)).toEqual(['b1', 'b2']);
+
+		state.query.value = 'alp';
+		expect(openableIds(state)).toEqual(['b1']);
+	});
+
+	it('offers every bookmark to open past the display cap', async () => {
+		vi.spyOn(bookmarks, 'getChildren').mockResolvedValue(
+			Array.from({ length: 120 }, (_, i) =>
+				link(`b${i}`, `Item ${i}`, 'other'),
+			),
+		);
+		const state = await setup();
+		state.scopeId.value = 'other';
+		await flush();
+
+		expect(state.results.value).toHaveLength(100);
+		expect(state.openable.value).toHaveLength(120);
+	});
+
+	it('offers nothing to open without a scope', async () => {
+		stubTree(['Alpha']);
+		const state = await setup();
+		state.query.value = 'al';
+		await flush();
+
+		expect(ids(state)).toEqual(['t0']);
+		expect(state.openable.value).toEqual([]);
+	});
+
+	it('offers nothing to open while the new scope is loading', async () => {
+		let finishLoad = () => {};
+		const pending = new Promise<BookmarkTreeNode[]>((resolve) => {
+			finishLoad = () => resolve([link('b3', 'Gamma', 'other')]);
+		});
+		vi.spyOn(bookmarks, 'getChildren').mockImplementation(async (id) =>
+			id === 'other' ? pending : [link('b1', 'Alpha', 'f1')],
+		);
+		const state = await setup();
+		state.scopeId.value = 'f1';
+		await flush();
+		expect(openableIds(state)).toEqual(['b1']);
+
+		state.scopeId.value = 'other';
+		await nextTick();
+		expect(openableIds(state)).toEqual([]);
+
+		finishLoad();
+		await flush();
+		expect(openableIds(state)).toEqual(['b3']);
+	});
 });

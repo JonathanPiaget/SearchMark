@@ -76,6 +76,11 @@ export function useBookmarkBrowser(
 		Math.max(0, matches.value.length - MAX_RESULTS),
 	);
 
+	const openable = computed<BookmarkItem[]>(() => {
+		if (!scopeId.value || isLoading.value) return [];
+		return matches.value.flatMap(({ item }) => (isFolder(item) ? [] : [item]));
+	});
+
 	const loadAll = () => {
 		allLoading ??= all.loadAllBookmarks().catch((err) => {
 			allLoading = null;
@@ -119,6 +124,7 @@ export function useBookmarkBrowser(
 		fuzzy,
 		results,
 		hiddenCount,
+		openable,
 		isLoading,
 		error,
 		init,
