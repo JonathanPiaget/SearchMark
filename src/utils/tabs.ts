@@ -1,3 +1,4 @@
+import { logError } from '@/utils/logger';
 import { cleanTabUrl } from '@/utils/trackingParams';
 
 const BLANK_PAGES = new Set([
@@ -40,4 +41,18 @@ export const getCurrentTab = async (): Promise<{
 		rawUrl: tab.url,
 		removedParams: removed,
 	};
+};
+
+export const openInBackgroundTabs = async (urls: string[]): Promise<number> => {
+	let refused = 0;
+	// Sequential so the tabs land in list order.
+	for (const url of urls) {
+		try {
+			await browser.tabs.create({ url, active: false });
+		} catch (error) {
+			logError(`Opening ${url}`, error);
+			refused++;
+		}
+	}
+	return refused;
 };
