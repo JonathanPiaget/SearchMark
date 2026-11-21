@@ -177,10 +177,18 @@ const handleSelect = (item: SearchItem) => {
 const confirmOpenAllVisible = ref(false);
 const refusedCount = ref(0);
 
+const isOpeningAll = ref(false);
+
 const openAll = async () => {
-	refusedCount.value = await openInBackgroundTabs(
-		openable.value.map((bookmark) => bookmark.url),
-	);
+	if (isOpeningAll.value) return;
+	isOpeningAll.value = true;
+	try {
+		refusedCount.value = await openInBackgroundTabs(
+			openable.value.map((bookmark) => bookmark.url),
+		);
+	} finally {
+		isOpeningAll.value = false;
+	}
 };
 
 const requestOpenAll = () => {

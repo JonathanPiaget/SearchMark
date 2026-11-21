@@ -48,6 +48,22 @@ test('open all opens every bookmark of the scope in list order, folders left out
 	await expect(popup.locator('.dialog-container')).toHaveCount(0);
 });
 
+test('open all opens each bookmark once on a double click', async ({
+	context,
+	serviceWorker,
+	extensionId,
+}) => {
+	await seedWork(serviceWorker, 3);
+
+	const popup = await openPopup(context, extensionId);
+	await scopeToWork(popup);
+	await popup.getByRole('button', { name: 'Open all (3)' }).dblclick();
+
+	await expect
+		.poll(() => docTabUrls(serviceWorker))
+		.toEqual([0, 1, 2].map((i) => `https://example.com/doc/${i}`));
+});
+
 test('open all asks before opening 15 tabs and opens nothing on cancel', async ({
 	context,
 	serviceWorker,
