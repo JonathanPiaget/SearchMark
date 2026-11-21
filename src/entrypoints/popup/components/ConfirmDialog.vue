@@ -11,8 +11,12 @@
               <span>{{ i18n.t('cancel') }}</span>
               <kbd class="key" aria-hidden="true">Esc</kbd>
             </button>
-            <button class="dialog-button confirm-button" @click="handleConfirm">
-              <span>{{ i18n.t('confirm') }}</span>
+            <button
+              class="dialog-button confirm-button"
+              :class="{ primary: tone === 'primary' }"
+              @click="handleConfirm"
+            >
+              <span>{{ confirmLabel ?? i18n.t('confirm') }}</span>
               <kbd class="key" aria-hidden="true">↵</kbd>
             </button>
           </div>
@@ -29,6 +33,8 @@ import { i18n } from '@/utils/i18n';
 interface Props {
 	modelValue: boolean;
 	message: string;
+	confirmLabel?: string;
+	tone?: 'danger' | 'primary';
 }
 
 interface Emits {
@@ -174,6 +180,16 @@ onUnmounted(() => {
 .confirm-button:hover {
   background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.confirm-button.primary {
+  background: var(--accent-primary);
+  color: var(--accent-text);
+}
+
+.confirm-button.primary:hover {
+  background: var(--accent-hover);
+  box-shadow: none;
 }
 
 .confirm-button:active {
