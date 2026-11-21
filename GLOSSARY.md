@@ -78,6 +78,10 @@ _Avoid_: typo-tolerant matching, typo matcher, second pass
 Listing a folder's bookmarks including those in its subfolders. User-facing label: "Include subfolders".
 _Avoid_: deep, nested, flattened
 
+**Open all**:
+Opening at once, each in its own background tab, every bookmark the search matches in the scope, including those past the displayed results. Folders are not opened.
+_Avoid_: open folder, bulk open, open tabs
+
 ### Settings
 
 **Language**:

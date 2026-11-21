@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
-import { getCurrentTab, isBlankPage } from '@/utils/tabs';
+import { getCurrentTab, isBlankPage, openInBackgroundTabs } from '@/utils/tabs';
 
 interface TabsApi {
 	query(info: Browser.tabs.QueryInfo): Promise<Browser.tabs.Tab[]>;
+	create(props: Browser.tabs.CreateProperties): Promise<Browser.tabs.Tab>;
 }
 
 const tabs = browser.tabs as unknown as TabsApi;
@@ -102,4 +103,38 @@ describe('isBlankPage', () => {
 		'about:config',
 		'chrome://extensions/shortcuts',
 	])('is false for %j', (url) => expect(isBlankPage(url)).toBe(false));
+});
+
+describe('openInBackgroundTabs', () => {
+	it('opens each url in order in a background tab', async () => {
+		const create = vi.spyOn(tabs, 'create').mockResolvedValue(tab({}));
+
+		await expect(
+			openInBackgroundTabs(['https://a', 'https://b']),
+		).resolves.toBe(0);
+
+		expect(create.mock.calls).toEqual([
+			[{ url: 'https://a', active: false }],
+			[{ url: 'https://b', active: false }],
+		]);
+	});
+
+	it('counts a refused url and still opens the following ones', async () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		const create = vi
+			.spyOn(tabs, 'create')
+			.mockImplementation(async ({ url }) => {
+				if (url === 'javascript:void(0)') throw new Error('Illegal URL');
+				return tab({});
+			});
+
+		await expect(
+			openInBackgroundTabs(['https://a', 'javascript:void(0)', 'https://b']),
+		).resolves.toBe(1);
+
+		expect(create).toHaveBeenLastCalledWith({
+			url: 'https://b',
+			active: false,
+		});
+	});
 });

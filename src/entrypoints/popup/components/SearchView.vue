@@ -44,7 +44,28 @@
         >
         <span class="checkbox-text">{{ i18n.t('includeSubfolders') }}</span>
       </label>
+      <button
+        v-if="openable.length"
+        type="button"
+        class="open-all"
+        @click="requestOpenAll"
+      >
+        <IconExternalLink />
+        {{ i18n.t('openAll', [openable.length]) }}
+      </button>
     </div>
+
+    <div v-if="refusedCount" class="open-all-failed" role="status">
+      {{ i18n.t('openAllFailed', refusedCount) }}
+    </div>
+
+    <ConfirmDialog
+      v-model="confirmOpenAllVisible"
+      :message="i18n.t('confirmOpenAll', [openable.length])"
+      :confirm-label="i18n.t('open')"
+      tone="primary"
+      @confirm="openAll"
+    />
 
     <div v-if="error" class="error-message">
       {{ errorMessage }}
@@ -80,7 +101,7 @@
 
 <script lang="ts" setup>
 import type { ComponentPublicInstance } from 'vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import {
 	isFolder,
 	type SearchItem,
@@ -88,9 +109,14 @@ import {
 } from '@/composables/useBookmarkBrowser';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { i18n } from '@/utils/i18n';
+import { openInBackgroundTabs } from '@/utils/tabs';
+import IconExternalLink from '~icons/lucide/external-link';
 import IconFolder from '~icons/lucide/folder';
 import IconX from '~icons/lucide/x';
 import BookmarkList from './BookmarkList.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
+
+const CONFIRM_OPEN_ALL_FROM = 15;
 
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 const searchInputRef = ref<HTMLInputElement | null>(null);
@@ -103,6 +129,7 @@ const {
 	fuzzy,
 	results,
 	hiddenCount,
+	openable,
 	isLoading,
 	error,
 	init,
@@ -146,6 +173,35 @@ const handleSelect = (item: SearchItem) => {
 	}
 	browser.tabs.create({ url: item.url, active: false });
 };
+
+const confirmOpenAllVisible = ref(false);
+const refusedCount = ref(0);
+
+const isOpeningAll = ref(false);
+
+const openAll = async () => {
+	if (isOpeningAll.value) return;
+	isOpeningAll.value = true;
+	try {
+		refusedCount.value = await openInBackgroundTabs(
+			openable.value.map((bookmark) => bookmark.url),
+		);
+	} finally {
+		isOpeningAll.value = false;
+	}
+};
+
+const requestOpenAll = () => {
+	if (openable.value.length >= CONFIRM_OPEN_ALL_FROM) {
+		confirmOpenAllVisible.value = true;
+		return;
+	}
+	openAll();
+};
+
+watch([scopeId, query, recursive], () => {
+	refusedCount.value = 0;
+});
 
 defineExpose({ focus });
 
@@ -194,10 +250,45 @@ onMounted(async () => {
 }
 
 .search-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
   padding: 6px 8px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-primary);
   border-radius: 6px;
+}
+
+.open-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.open-all:hover {
+  background: var(--accent-primary);
+  color: var(--accent-text);
+}
+
+.open-all-failed {
+  padding: 6px 10px;
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border: 1px solid var(--warning-border);
+  border-radius: 6px;
+  font-size: 12px;
 }
 
 .search-box {

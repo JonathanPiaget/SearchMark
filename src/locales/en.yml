@@ -84,6 +84,12 @@ retryWithFuzzy: Retry with typo tolerance
 moreResults:
   1: 1 more result...
   n: $1 more results...
+openAll: Open all ($1)
+open: Open
+confirmOpenAll: Open $1 tabs?
+openAllFailed:
+  1: 1 bookmark could not be opened.
+  n: $1 bookmarks could not be opened.
 bookmarkToolbar: Bookmark toolbar
 fuzzySearch: Typo-tolerant search
 fuzzySearchDescription: 'Tolerate typos and abbreviations when searching folders and bookmarks: "gudie" or "gd" find "Guide"'
