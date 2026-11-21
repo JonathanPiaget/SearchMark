@@ -1,0 +1,123 @@
+name: CI autofix
+
+# When CI fails on a bot PR, a Claude agent tries one fix and this workflow
+# pushes it to the PR branch. Nothing here merges: the user does.
+#
+# This file says when it runs, with which permissions, and which token each
+# step gets. What each step does is in .github/autofix/, always run from the
+# main checkout, never from the PR's copy.
+on:
+  workflow_run: # zizmor: ignore[dangerous-triggers] same-repo bot PRs only (gate), the agent has no shell and no write token
+    workflows: ["Release"]
+    types: [completed]
+
+permissions: {}
+
+# No token here nor in a job env: it would reach the agent step
+env:
+  GH_REPO: ${{ github.repository }}
+  BRANCH: ${{ github.event.workflow_run.head_branch }}
+  HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+  RUN_ID: ${{ github.event.workflow_run.id }}
+
+jobs:
+  gate:
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_commit.author.name != 'ci-autofix'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    outputs:
+      pr: ${{ steps.pick.outputs.pr }}
+      automerge: ${{ steps.pick.outputs.automerge }}
+    steps:
+      - name: Check out the scripts (main)
+        uses: actions/checkout@v7.0.1
+        with:
+          path: main
+          sparse-checkout: .github/autofix
+          persist-credentials: false
+
+      - name: Pick the PR
+        id: pick
+        run: main/.github/autofix/gate.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  fix:
+    needs: gate
+    if: needs.gate.outputs.pr
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: autofix-${{ github.event.workflow_run.head_branch }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      actions: read
+    env:
+      PR: ${{ needs.gate.outputs.pr }}
+    steps:
+      - name: Check out the scripts (main)
+        uses: actions/checkout@v7.0.1
+        with:
+          path: main
+          sparse-checkout: .github/autofix
+          persist-credentials: false
+
+      # Before the agent, so no green CI can merge between the push and the disable
+      - name: Disable auto-merge
+        id: disable
+        if: needs.gate.outputs.automerge == 'true'
+        run: gh pr merge --disable-auto "$PR"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+
+      # Before the PR checkout, outside it: a PR's .npmrc must not pick the registry
+      - name: Install Claude Code
+        working-directory: ${{ runner.temp }}
+        run: npm install -g @anthropic-ai/claude-code@2.1.330 # zizmor: ignore[adhoc-packages] exact version pinned, one global CLI
+
+      - name: Check out the PR (untrusted)
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: pr
+          persist-credentials: false
+
+      - name: Collect the failure
+        run: main/.github/autofix/collect-failure.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Run the agent
+        working-directory: pr
+        run: ../main/.github/autofix/run-agent.sh
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Push the fix
+        id: push
+        working-directory: pr
+        run: ../main/.github/autofix/push-fix.sh
+        env:
+          PR_TOKEN: ${{ secrets.PR_TOKEN }}
+
+      - name: Comment on the PR
+        if: always()
+        run: main/.github/autofix/comment.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSHED: ${{ steps.push.outputs.pushed }}
+          DISABLED: ${{ steps.disable.outcome }}
