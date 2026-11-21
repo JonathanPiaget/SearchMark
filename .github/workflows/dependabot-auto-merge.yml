@@ -1,6 +1,10 @@
 name: Dependabot auto-merge
 
-on: pull_request
+# Opened only: auto-merge survives later pushes, and a synchronize from the CI
+# autofix push must not turn it back on after that workflow disabled it
+on:
+  pull_request:
+    types: [opened]
 
 permissions: {}
 
