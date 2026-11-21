@@ -79,7 +79,7 @@ Listing a folder's bookmarks including those in its subfolders. User-facing labe
 _Avoid_: deep, nested, flattened
 
 **Open all**:
-Opening at once, each in its own background tab, every bookmark the search shows in the scope. Folders are not opened.
+Opening at once, each in its own background tab, every bookmark the search matches in the scope, including those past the displayed results. Folders are not opened.
 _Avoid_: open folder, bulk open, open tabs
 
 ### Settings
