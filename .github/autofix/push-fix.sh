@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Commits what the agent left changed in the PR checkout (the working
-# directory) and pushes it to the PR branch. Needs PR_TOKEN, PR, BRANCH.
+# Working directory: the PR checkout. Needs PR_TOKEN, PR, BRANCH.
 # Writes pushed to GITHUB_OUTPUT.
 set -euo pipefail
 
@@ -9,7 +8,8 @@ if [ -z "$(git status --porcelain)" ]; then
 	exit 0
 fi
 
-# The ci-autofix author is the loop guard: the gate skips a run on its commits
+# The ci-autofix author is the loop guard: the gate job's `if` in
+# ci-autofix.yml skips a run on a commit with that author name
 git add -A
 git -c user.name=ci-autofix -c user.email=ci-autofix@users.noreply.github.com \
 	-c core.hooksPath=/dev/null \

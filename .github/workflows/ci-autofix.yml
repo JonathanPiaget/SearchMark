@@ -1,11 +1,8 @@
 name: CI autofix
 
-# When CI fails on a bot PR, a Claude agent tries one fix and this workflow
-# pushes it to the PR branch. Nothing here merges: the user does.
-#
-# This file says when it runs, with which permissions, and which token each
-# step gets. What each step does is in .github/autofix/, always run from the
-# main checkout, never from the PR's copy.
+# Nothing here merges: the user does.
+# The .github/autofix/ scripts always run from the main checkout, never from
+# the PR's copy: push-fix.sh gets PR_TOKEN.
 on:
   workflow_run: # zizmor: ignore[dangerous-triggers] same-repo bot PRs only (gate), the agent has no shell and no write token
     workflows: ["Release"]
@@ -22,6 +19,7 @@ env:
 
 jobs:
   gate:
+    # ci-autofix is the author push-fix.sh commits as: no run on its own commit
     if: >-
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.event == 'pull_request' &&
@@ -33,8 +31,8 @@ jobs:
       pull-requests: read
       issues: read
     outputs:
-      pr: ${{ steps.pick.outputs.pr }}
-      automerge: ${{ steps.pick.outputs.automerge }}
+      pr: ${{ steps.gate.outputs.pr }}
+      automerge: ${{ steps.gate.outputs.automerge }}
     steps:
       - name: Check out the scripts (main)
         uses: actions/checkout@v7.0.1
@@ -43,8 +41,8 @@ jobs:
           sparse-checkout: .github/autofix
           persist-credentials: false
 
-      - name: Pick the PR
-        id: pick
+      - name: Gate
+        id: gate
         run: main/.github/autofix/gate.sh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -120,4 +118,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PUSHED: ${{ steps.push.outputs.pushed }}
-          DISABLED: ${{ steps.disable.outcome }}
+          DISABLE_OUTCOME: ${{ steps.disable.outcome }}

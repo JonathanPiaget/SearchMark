@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Saves what the agent reads about the failure, in the only folder it may read
-# outside the PR checkout. Needs GH_TOKEN, GH_REPO, RUN_ID, PR.
+# Needs GH_TOKEN, GH_REPO, RUN_ID, PR.
+# $RUNNER_TEMP/autofix is the only folder the agent may read outside the PR checkout.
 set -euo pipefail
 
 dir="$RUNNER_TEMP/autofix"
