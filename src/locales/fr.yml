@@ -86,6 +86,12 @@ retryWithFuzzy: Réessayer en tolérant les fautes
 moreResults:
   1: 1 autre résultat…
   n: $1 autres résultats…
+openAll: Tout ouvrir ($1)
+open: Ouvrir
+confirmOpenAll: Ouvrir $1 onglets ?
+openAllFailed:
+  1: 1 favori n'a pas pu être ouvert.
+  n: $1 favoris n'ont pas pu être ouverts.
 bookmarkToolbar: Barre de favoris
 fuzzySearch: Recherche tolérante
 fuzzySearchDescription: "Tolérer les fautes et les abréviations dans la recherche de dossiers et de favoris : « vacanses » ou « vcnce » trouvent « Vacances »"
