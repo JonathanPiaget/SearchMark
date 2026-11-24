@@ -56,7 +56,7 @@ jobs:
       group: autofix-${{ github.event.workflow_run.head_branch }}
       cancel-in-progress: false
     permissions:
-      contents: read
+      contents: write # for gh pr merge --disable-auto; no step pushes with this token
       pull-requests: write
       issues: write
       actions: read
