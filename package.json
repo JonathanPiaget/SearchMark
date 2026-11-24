@@ -27,7 +27,7 @@
 	"dependencies": {
 		"@wxt-dev/i18n": "^0.2.8",
 		"fuzzysort": "^4.0.2",
-		"vue": "^3.5.45"
+		"vue": "^3.5.46"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.6.6",
