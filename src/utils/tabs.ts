@@ -1,4 +1,4 @@
-import { logError } from '@/utils/logger';
+import { logError } from './logger';
 import { cleanTabUrl } from '@/utils/trackingParams';
 
 const BLANK_PAGES = new Set([
