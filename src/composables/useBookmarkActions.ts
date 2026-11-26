@@ -35,6 +35,18 @@ export const countFolderContents = async (
 	return countDescendants(folder);
 };
 
+export const folderDeletionMessage = (
+	title: string,
+	{ bookmarks, folders }: FolderContents,
+): string => {
+	const counts = [
+		bookmarks && i18n.t('bookmarkCount', bookmarks),
+		folders && i18n.t('subfolderCount', folders),
+	].filter(Boolean);
+	if (!counts.length) return i18n.t('confirmDeleteFolder', { title });
+	return `${i18n.t('confirmDeleteFolderContents', { title })}\n${counts.join(', ')}`;
+};
+
 export function useBookmarkActions() {
 	const isDeleting = ref(false);
 	const deleteError = ref<string | null>(null);

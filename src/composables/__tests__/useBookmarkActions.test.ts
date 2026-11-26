@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import {
 	countDescendants,
+	folderDeletionMessage,
 	useBookmarkActions,
 } from '@/composables/useBookmarkActions';
 import { stubLocales } from '@/test-utils/locales';
@@ -78,6 +79,26 @@ describe('deleteFolder', () => {
 		await expect(deleteFolder('F1')).rejects.toThrow(failure);
 		expect(notify).not.toHaveBeenCalled();
 		expect(isDeleting.value).toBe(false);
+	});
+});
+
+describe('folderDeletionMessage', () => {
+	it('asks plainly for an empty folder', () => {
+		expect(folderDeletionMessage('Work', { bookmarks: 0, folders: 0 })).toBe(
+			'Delete the folder "Work"?',
+		);
+	});
+
+	it('lists only the kinds of content the folder holds', () => {
+		expect(folderDeletionMessage('Work', { bookmarks: 1, folders: 0 })).toBe(
+			'Delete the folder "Work" and everything in it?\n1 bookmark',
+		);
+	});
+
+	it('lists bookmarks then subfolders', () => {
+		expect(folderDeletionMessage('Work', { bookmarks: 2, folders: 1 })).toBe(
+			'Delete the folder "Work" and everything in it?\n2 bookmarks, 1 subfolder',
+		);
 	});
 });
 

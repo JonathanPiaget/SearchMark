@@ -48,6 +48,7 @@
 import { computed, ref } from 'vue';
 import {
 	countFolderContents,
+	folderDeletionMessage,
 	useBookmarkActions,
 } from '@/composables/useBookmarkActions';
 import { isFolder, type SearchItem } from '@/composables/useBookmarkBrowser';
@@ -96,20 +97,12 @@ const path = computed(() =>
 	isFolder(props.item) ? parentPath(props.item) : props.item.path,
 );
 
-const folderConfirmMessage = async (folder: BookmarkFolder) => {
-	const { bookmarks, folders } = await countFolderContents(folder.id);
-	const counts = [
-		bookmarks && i18n.t('bookmarkCount', bookmarks),
-		folders && i18n.t('subfolderCount', folders),
-	].filter(Boolean);
-	const named = { title: folder.title };
-	if (!counts.length) return i18n.t('confirmDeleteFolder', named);
-	return `${i18n.t('confirmDeleteFolderContents', named)}\n${counts.join(', ')}`;
-};
-
 const showConfirmDialog = async () => {
 	confirmMessage.value = isFolder(props.item)
-		? await folderConfirmMessage(props.item)
+		? folderDeletionMessage(
+				props.item.title,
+				await countFolderContents(props.item.id),
+			)
 		: i18n.t('confirmDelete');
 	confirmDialogVisible.value = true;
 };
