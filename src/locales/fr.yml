@@ -59,6 +59,7 @@ remove: Retirer
 stripTrackingParamsDescription: Supprimer les paramètres comme utm_source, fbclid ou gclid, qui servent seulement à suivre votre provenance
 alreadySaved: Déjà enregistré dans
 bookmarkDeleted: Favori supprimé
+folderDeleted: Dossier supprimé
 delete: Supprimer le favori
 confirmDelete: Voulez-vous vraiment supprimer ce favori ?
 seeLater: Voir plus tard

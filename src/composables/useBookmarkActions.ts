@@ -3,25 +3,56 @@ import { i18n } from '@/utils/i18n';
 import { logError } from '@/utils/logger';
 import { notify } from '@/utils/notify';
 
+interface TreeNode {
+	url?: string;
+	children?: TreeNode[];
+}
+
+export interface FolderContents {
+	bookmarks: number;
+	folders: number;
+}
+
+export const countDescendants = (node: TreeNode): FolderContents => {
+	const counts = { bookmarks: 0, folders: 0 };
+	for (const child of node.children ?? []) {
+		if (child.url) {
+			counts.bookmarks += 1;
+			continue;
+		}
+		const nested = countDescendants(child);
+		counts.bookmarks += nested.bookmarks;
+		counts.folders += nested.folders + 1;
+	}
+	return counts;
+};
+
+export const countFolderContents = async (
+	id: string,
+): Promise<FolderContents> => {
+	const [folder] = await browser.bookmarks.getSubTree(id);
+	if (!folder) throw new Error(`Folder ${id} not found`);
+	return countDescendants(folder);
+};
+
 export function useBookmarkActions() {
 	const isDeleting = ref(false);
 	const deleteError = ref<string | null>(null);
 
-	/**
-	 * Deletes a bookmark by ID and shows a notification
-	 * @param id - The bookmark ID to delete
-	 * @returns Promise that resolves when deletion is complete
-	 */
-	const deleteBookmark = async (id: string): Promise<void> => {
+	const runDeletion = async (
+		id: string,
+		remove: (id: string) => Promise<void>,
+		doneMessage: string,
+	): Promise<void> => {
 		isDeleting.value = true;
 		deleteError.value = null;
 
 		try {
-			await browser.bookmarks.remove(id);
+			await remove(id);
 
-			notify(i18n.t('bookmarkDeleted'));
+			notify(doneMessage);
 		} catch (error) {
-			logError(`Failed to delete bookmark with ID ${id}`, error);
+			logError(`Failed to delete bookmark node with ID ${id}`, error);
 			deleteError.value = i18n.t('bookmarkError');
 			throw error;
 		} finally {
@@ -29,9 +60,24 @@ export function useBookmarkActions() {
 		}
 	};
 
+	const deleteBookmark = (id: string) =>
+		runDeletion(
+			id,
+			(nodeId) => browser.bookmarks.remove(nodeId),
+			i18n.t('bookmarkDeleted'),
+		);
+
+	const deleteFolder = (id: string) =>
+		runDeletion(
+			id,
+			(nodeId) => browser.bookmarks.removeTree(nodeId),
+			i18n.t('folderDeleted'),
+		);
+
 	return {
 		isDeleting,
 		deleteError,
 		deleteBookmark,
+		deleteFolder,
 	};
 }

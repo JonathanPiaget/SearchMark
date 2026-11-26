@@ -57,6 +57,7 @@ remove: Remove
 stripTrackingParamsDescription: Drop parameters such as utm_source, fbclid or gclid that only track where you came from
 alreadySaved: Already saved in
 bookmarkDeleted: Bookmark deleted successfully
+folderDeleted: Folder deleted successfully
 delete: Delete bookmark
 confirmDelete: Are you sure you want to delete this bookmark?
 seeLater: See Later
