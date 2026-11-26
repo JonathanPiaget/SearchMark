@@ -78,7 +78,7 @@
       :is-loading="isLoading"
       :empty-message="emptyMessage"
       @select="handleSelect"
-      @bookmark-deleted="remove"
+      @bookmark-deleted="handleDeleted"
       @escape-top="focus"
     >
       <template #empty-action>
@@ -121,7 +121,7 @@ const CONFIRM_OPEN_ALL_FROM = 15;
 const bookmarkListRef = ref<ComponentPublicInstance | null>(null);
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
-const { folderMap, allFolders, loadFolders } = useFolderTree();
+const { folderMap, allFolders, loadFolders, refreshFolders } = useFolderTree();
 const {
 	scopeId,
 	query,
@@ -172,6 +172,11 @@ const handleSelect = (item: SearchItem) => {
 		return;
 	}
 	browser.tabs.create({ url: item.url, active: false });
+};
+
+const handleDeleted = async (id: string) => {
+	remove(id);
+	if (folderMap.value.has(id)) await refreshFolders();
 };
 
 const confirmOpenAllVisible = ref(false);

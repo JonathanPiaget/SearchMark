@@ -62,6 +62,15 @@ bookmarkDeleted: Favori supprimé
 folderDeleted: Dossier supprimé
 delete: Supprimer le favori
 confirmDelete: Voulez-vous vraiment supprimer ce favori ?
+deleteFolder: Supprimer le dossier
+confirmDeleteFolder: Supprimer le dossier « {title} » ?
+confirmDeleteFolderContents: Supprimer le dossier « {title} » et tout son contenu ?
+bookmarkCount:
+  1: 1 favori
+  n: $1 favoris
+subfolderCount:
+  1: 1 sous-dossier
+  n: $1 sous-dossiers
 seeLater: Voir plus tard
 seeLaterInstead: Enregistrer plutôt dans « {folder} »
 seeLaterSuccess: Enregistré dans « {folderName} » pour plus tard

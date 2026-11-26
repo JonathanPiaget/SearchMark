@@ -60,6 +60,15 @@ bookmarkDeleted: Bookmark deleted successfully
 folderDeleted: Folder deleted successfully
 delete: Delete bookmark
 confirmDelete: Are you sure you want to delete this bookmark?
+deleteFolder: Delete folder
+confirmDeleteFolder: Delete the folder "{title}"?
+confirmDeleteFolderContents: Delete the folder "{title}" and everything in it?
+bookmarkCount:
+  1: 1 bookmark
+  n: $1 bookmarks
+subfolderCount:
+  1: 1 subfolder
+  n: $1 subfolders
 seeLater: See Later
 seeLaterInstead: Save to "{folder}" instead
 seeLaterSuccess: Saved to "{folderName}" for later

@@ -106,9 +106,18 @@ export function useBookmarkBrowser(
 		await loadFuzzy();
 	};
 
+	const isRemovedWith = (bookmark: BookmarkItem, id: string) => {
+		if (bookmark.id === id || bookmark.parentId === id) return true;
+		const parent = folderMap.value.get(bookmark.parentId);
+		return Boolean(parent && isInside(parent, id));
+	};
+
 	const remove = (id: string) => {
-		scoped.removeBookmark(id);
-		all.removeBookmark(id);
+		for (const { bookmarks } of [scoped, all]) {
+			bookmarks.value = bookmarks.value.filter(
+				(bookmark) => !isRemovedWith(bookmark, id),
+			);
+		}
 	};
 
 	watch([scopeId, recursive], load);

@@ -25,20 +25,20 @@
       </div>
     </div>
     <button
-      v-if="!isFolder(item)"
+      v-if="canDelete"
       class="delete-button"
       :disabled="isDeleting"
-      :title="i18n.t('delete')"
+      :title="isFolder(item) ? i18n.t('deleteFolder') : i18n.t('delete')"
       @click.stop="showConfirmDialog"
     >
       <IconLoader v-if="isDeleting" class="spin" />
       <IconTrash v-else />
     </button>
-    <IconChevronRight v-else class="folder-chevron" />
+    <IconChevronRight v-if="isFolder(item)" class="folder-chevron" />
 
     <ConfirmDialog
       v-model="confirmDialogVisible"
-      :message="i18n.t('confirmDelete')"
+      :message="confirmMessage"
       @confirm="handleConfirmDelete"
       @cancel="confirmDialogVisible = false"
     />
@@ -47,9 +47,15 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useBookmarkActions } from '@/composables/useBookmarkActions';
+import {
+	countFolderContents,
+	useBookmarkActions,
+} from '@/composables/useBookmarkActions';
 import { isFolder, type SearchItem } from '@/composables/useBookmarkBrowser';
-import { useFolderTree } from '@/composables/useFolderTree';
+import {
+	type BookmarkFolder,
+	useFolderTree,
+} from '@/composables/useFolderTree';
 import { highlightByIndexes } from '@/utils/highlight';
 import { i18n } from '@/utils/i18n';
 import IconBookOpen from '~icons/lucide/book-open';
@@ -72,9 +78,17 @@ const emit = defineEmits<{
 	escapeTop: [];
 }>();
 
-const { isDeleting, deleteBookmark } = useBookmarkActions();
-const { parentPath } = useFolderTree();
+const { isDeleting, deleteBookmark, deleteFolder } = useBookmarkActions();
+const { parentPath, folderMap } = useFolderTree();
 const confirmDialogVisible = ref(false);
+const confirmMessage = ref('');
+
+const isBrowserRoot = (folder: BookmarkFolder) =>
+	!folderMap.value.get(folder.parentId ?? '')?.parentId;
+
+const canDelete = computed(
+	() => !isFolder(props.item) || !isBrowserRoot(props.item),
+);
 
 const highlightedTitle = computed(() =>
 	highlightByIndexes(props.item.title, props.highlightIndexes),
@@ -84,12 +98,27 @@ const path = computed(() =>
 	isFolder(props.item) ? parentPath(props.item) : props.item.path,
 );
 
-const showConfirmDialog = () => {
+const folderConfirmMessage = async (folder: BookmarkFolder) => {
+	const { bookmarks, folders } = await countFolderContents(folder.id);
+	const counts = [
+		bookmarks && i18n.t('bookmarkCount', bookmarks),
+		folders && i18n.t('subfolderCount', folders),
+	].filter(Boolean);
+	const named = { title: folder.title };
+	if (!counts.length) return i18n.t('confirmDeleteFolder', named);
+	return `${i18n.t('confirmDeleteFolderContents', named)}\n${counts.join(', ')}`;
+};
+
+const showConfirmDialog = async () => {
+	confirmMessage.value = isFolder(props.item)
+		? await folderConfirmMessage(props.item)
+		: i18n.t('confirmDelete');
 	confirmDialogVisible.value = true;
 };
 
 const handleConfirmDelete = async () => {
-	await deleteBookmark(props.item.id);
+	const remove = isFolder(props.item) ? deleteFolder : deleteBookmark;
+	await remove(props.item.id);
 	emit('deleted', props.item.id);
 };
 
@@ -99,6 +128,8 @@ const handleOpen = () => {
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
+	if (confirmDialogVisible.value) return;
+
 	if (event.key === 'Enter') {
 		handleOpen();
 		return;

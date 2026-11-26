@@ -218,25 +218,3 @@ describe('loadAllBookmarks', () => {
 		expect(items.value).toEqual([]);
 	});
 });
-
-describe('removeBookmark', () => {
-	it('removes the matching bookmark by id', async () => {
-		const map = folderMapOf([{ id: 'f1', title: 'Work', path: 'Work' }]);
-		stubChildren({
-			f1: [
-				node({ id: 'b1', title: 'A', url: 'https://a', parentId: 'f1' }),
-				node({ id: 'b2', title: 'B', url: 'https://b', parentId: 'f1' }),
-			],
-		});
-
-		const {
-			loadBookmarks,
-			removeBookmark,
-			bookmarks: items,
-		} = useBookmarkFolder(map);
-		await loadBookmarks('f1');
-		removeBookmark('b1');
-
-		expect(items.value.map((b) => b.id)).toEqual(['b2']);
-	});
-});

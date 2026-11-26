@@ -20,7 +20,6 @@ export interface UseBookmarkFolderReturn {
 	error: Ref<BookmarkErrorKey | null>;
 	loadBookmarks: (folderId: string, recursive?: boolean) => Promise<void>;
 	loadAllBookmarks: () => Promise<void>;
-	removeBookmark: (id: string) => void;
 }
 
 const walkBookmarks = async (
@@ -116,16 +115,11 @@ export function useBookmarkFolder(
 			return results.flat();
 		});
 
-	const removeBookmark = (id: string) => {
-		bookmarks.value = bookmarks.value.filter((b) => b.id !== id);
-	};
-
 	return {
 		bookmarks,
 		isLoading,
 		error,
 		loadBookmarks,
 		loadAllBookmarks,
-		removeBookmark,
 	};
 }

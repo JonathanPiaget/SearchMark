@@ -132,6 +132,7 @@ onUnmounted(() => {
   line-height: 1.5;
   margin-bottom: 24px;
   text-align: center;
+  white-space: pre-line;
   transition: color 0.2s ease;
 }
 

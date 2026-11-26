@@ -156,6 +156,32 @@ describe('useBookmarkBrowser', () => {
 		expect(state.hiddenCount.value).toBe(20);
 	});
 
+	it('remove drops the bookmarks of a deleted folder, subfolders included', async () => {
+		vi.spyOn(bookmarks, 'getTree').mockResolvedValue([
+			node({
+				id: 'root',
+				children: [
+					node({
+						id: '1',
+						title: 'Toolbar',
+						children: [
+							link('t0', 'Alpha outside', '1'),
+							link('b1', 'Alpha', 'f1'),
+							link('b2', 'Alpha nested', 'sub'),
+						],
+					}),
+				],
+			}),
+		]);
+		const state = await setup();
+		state.query.value = 'alpha';
+		await flush();
+
+		state.remove('f1');
+
+		expect(ids(state)).toEqual(['t0']);
+	});
+
 	it('remove drops the bookmark from both the folder and the all-bookmarks lists', async () => {
 		stubChildren();
 		stubTree(['Alpha']);

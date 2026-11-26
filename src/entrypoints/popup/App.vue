@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useBookmarkSearch } from '@/composables/useBookmarkSearch';
 import { useFolderTree } from '@/composables/useFolderTree';
 import { useSaveBookmark } from '@/composables/useSaveBookmark';
@@ -67,6 +67,12 @@ const {
 	isLoading: isSearching,
 	searchByUrl,
 } = useBookmarkSearch(folderMap);
+
+watch(folderMap, (folders) => {
+	if (!selectedFolderId.value || folders.has(selectedFolderId.value)) return;
+	selectedFolderId.value = '';
+	selectedFolderName.value = '';
+});
 
 const loadCurrentTab = async () => {
 	try {
