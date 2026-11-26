@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0]
+
+### Added
+
+- Search view: a folder can be deleted with the trash button on its row, which replaces the chevron. The confirmation names the folder and counts the bookmarks and subfolders deleted with it. The browser's own root folders cannot be deleted
+
 ## [1.21.0]
 
 ### Added
